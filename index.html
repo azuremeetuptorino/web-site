@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Meetup Torino | Community</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
+    <style>
+        :root {
+            --azure-blue: #0078D4;
+            --azure-dark: #002050;
+            --azure-light: #EBF3FC;
+            --azure-accent: #106EBE;
+            --text-dark: #1F1F1F;
+            --text-muted: #605E5C;
+            --bg-light: #F8F9FA;
+            --bg-white: #FFFFFF;
+            --border-color: #EDEBE9;
+            --shadow-sm: 0 2px 6px rgba(0,0,0,0.04);
+            --shadow-md: 0 8px 20px rgba(0,0,0,0.08);
+            --transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+
+            /* Brand Colors Ufficiali Eventi */
+            --color-meetup: #F64060;
+            --color-sessionize: #1AB394;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            color: var(--text-dark);
+            background-color: var(--bg-light);
+            line-height: 1.5;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a { text-decoration: none; color: inherit; }
+
+        /* =========================================
+           HERO FISSA AL 65% DELLO SCHERMO
+           ========================================= */
+        #hero-background {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 65vh; /* Regolato al 65% come richiesto */
+            z-index: 0;
+            background: #000;
+        }
+
+        #hero-background img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center 38%;
+            display: block;
+            opacity: 0.95;
+            will-change: transform, opacity;
+        }
+
+        /* Gradiente superiore per migliorare la lettura della navbar */
+        #hero-background::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 35vh;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.4) 45%, rgba(255, 255, 255, 0) 100%);
+        }
+
+        header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1000;
+            background-color: rgba(255, 255, 255, 0);
+            border-bottom: 1px solid rgba(237, 235, 233, 0);
+            will-change: background-color, box-shadow;
+        }
+
+        .nav-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 1.4rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            font-size: 1.15rem; 
+            font-weight: 700; 
+            color: var(--azure-dark); 
+            text-shadow: 0 1px 2px rgba(255,255,255,0.8);
+        }
+
+        .logo-img {
+            height: 84px;
+            width: auto;
+            object-fit: contain;
+            background-color: #FFFFFF;
+            padding: 4px; 
+            border-radius: 12px; 
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.16);
+            border: 1px solid rgba(0,0,0,0.06);
+            will-change: height, box-shadow;
+        }
+        
+        nav ul { display: flex; list-style: none; gap: 1.8rem; align-items: center; }
+        nav a { 
+            color: var(--text-dark); 
+            font-weight: 700; 
+            font-size: 0.85rem; 
+            text-transform: uppercase; 
+            letter-spacing: 0.04em; 
+            transition: var(--transition);
+            text-shadow: 0 1px 2px rgba(255,255,255,0.7);
+        }
+        nav a:hover { color: var(--azure-blue); }
+
+        /* =========================================
+           MAIN CONTENT
+           ========================================= */
+        main {
+            position: relative;
+            z-index: 2; /* Sopra la hero fissa */
+            margin-top: 65vh; /* Il contenuto parte esattamente alla fine della Hero */
+            background-color: var(--bg-light);
+            width: 100%;
+        }
+
+        section { padding: 4rem 1.5rem; width: 100%; }
+        section:nth-child(even) { background-color: var(--bg-white); }
+        
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .section-header {
+            max-width: 1280px;
+            margin: 0 auto 2rem auto;
+            padding: 0 45px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+        }
+
+        .section-header-centered {
+            text-align: center;
+            max-width: 760px;
+            margin: 0 auto 2.5rem auto;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--azure-dark);
+            position: relative;
+            padding-left: 14px;
+        }
+        .section-title::before {
+            content: '';
+            position: absolute; left: 0; top: 4px; bottom: 4px; width: 4px;
+            background-color: var(--azure-blue); border-radius: 2px;
+        }
+
+        .section-header-centered .section-title {
+            padding-left: 0;
+            display: inline-block;
+        }
+        .section-header-centered .section-title::before { display: none; }
+
+        .section-subtitle {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-top: 0.4rem;
+        }
+
+        /* =========================================
+           1. CHI SIAMO (Bisezione Perfetta e Nuova Griglia)
+           ========================================= */
+        #chi-siamo {
+            padding-top: 0; 
+        }
+
+        /* Il wrapper gestisce il posizionamento esatto a metà e annulla lo spazio fantasma */
+        .about-manifesto-wrapper {
+            position: relative;
+            z-index: 10;
+        }
+
+        @media (min-width: 901px) {
+            .about-manifesto-wrapper {
+                /* Trasla la box verso l'alto esattamente della metà della sua altezza dinamica */
+                transform: translateY(-50%);
+                /* Margine negativo compensativo (circa metà altezza della box media) 
+                   per far scorrere correttamente il contenuto sottostante */
+                margin-bottom: -160px; 
+            }
+        }
+
+        @media (max-width: 900px) {
+            #chi-siamo { padding-top: 3rem; }
+            .about-manifesto-wrapper {
+                transform: none;
+                margin-bottom: 0;
+                margin-top: -60px; /* Leggera sovrapposizione su mobile */
+            }
+        }
+
+        .about-manifesto {
+            background: linear-gradient(135deg, #002050 0%, #004578 100%);
+            border-radius: 12px;
+            padding: 3rem 2.5rem;
+            color: white;
+            display: grid;
+            /* Nuova Griglia: Testo largo (2.2), Statistiche (1), Logo (1) */
+            grid-template-columns: 2.2fr 1fr 1fr;
+            gap: 2.5rem;
+            align-items: center;
+            box-shadow: 0 12px 30px rgba(0, 32, 80, 0.25);
+        }
+
+        .about-manifesto h3 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.8rem; }
+        .about-manifesto p { font-size: 0.96rem; color: #E1DFDD; line-height: 1.65; }
+        
+        .manifesto-stats {
+            display: flex;
+            flex-direction: column; /* Impilati uno sopra l'altro */
+            gap: 2rem;
+            border-left: 1px solid rgba(255,255,255,0.18);
+            padding-left: 2.5rem;
+            justify-content: center;
+        }
+
+        .stat-item h4 { font-size: 2.2rem; font-weight: 800; color: #50E6FF; line-height: 1; margin-bottom: 4px; }
+        .stat-item p { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #C7E0F4; }
+
+        .manifesto-logo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .manifesto-logo img {
+            width: 150px;
+            height: 150px;
+            object-fit: contain;
+            background: #FFFFFF;
+            padding: 8px;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+        }
+
+        /* Adattamento Mobile Griglia Chi Siamo */
+        @media (max-width: 900px) {
+            .about-manifesto {
+                grid-template-columns: 1fr;
+                text-align: center;
+                padding: 2rem 1.5rem;
+                gap: 2rem;
+            }
+            .manifesto-stats {
+                border-left: none;
+                border-top: 1px solid rgba(255,255,255,0.18);
+                padding: 1.5rem 0 0 0;
+                flex-direction: row; /* Su mobile li mettiamo affiancati */
+                justify-content: space-around;
+                gap: 1rem;
+            }
+            .manifesto-logo img {
+                width: 120px;
+                height: 120px;
+            }
+        }
+
+        /* =========================================
+           2. PARTECIPANTI (Carosello limitato con Sfumatura in CSS Mask)
+           ========================================= */
+        .team-carousel-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            position: relative;
+            padding: 10px 0;
+            overflow: hidden;
+            
+            /* Maschera di sfumatura orizzontale */
+            -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+            mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+        }
+
+        .swiper-team {
+            width: 100%;
+            overflow: visible;
+        }
+
+        .swiper-team .swiper-wrapper {
+            transition-timing-function: linear !important;
+        }
+
+        .swiper-team .swiper-slide {
+            width: 230px !important;
+            height: auto;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+
+        .member-card {
+            background: var(--bg-white);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1.25rem 1rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            height: 100%;
+        }
+
+        .member-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--azure-blue);
+            box-shadow: var(--shadow-md);
+        }
+
+        .member-corner-link {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--bg-light);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            transition: var(--transition);
+            z-index: 2;
+        }
+
+        .member-card:hover .member-corner-link {
+            background: var(--azure-blue);
+            color: white;
+            border-color: var(--azure-blue);
+            transform: scale(1.1);
+        }
+
+        .member-avatar-wrapper { margin-bottom: 0.75rem; pointer-events: none; }
+
+        .member-avatar {
+            width: 96px;
+            height: 96px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--azure-light);
+            transition: var(--transition);
+        }
+
+        .member-card:hover .member-avatar { border-color: var(--azure-blue); }
+
+        .member-role-tag {
+            font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+            padding: 2px 7px; border-radius: 20px; background: var(--azure-light); color: var(--azure-dark);
+            margin-bottom: 0.4rem;
+        }
+
+        .member-name { font-size: 0.98rem; font-weight: 700; color: var(--azure-dark); line-height: 1.2; margin-bottom: 2px; }
+        .member-nick { font-size: 0.78rem; color: var(--azure-blue); font-weight: 500; margin-bottom: 0.45rem; }
+        .member-bio { font-size: 0.8rem; color: var(--text-muted); line-height: 1.35; }
+
+        /* =========================================
+           3. CALENDARIO EVENTI + TASTI UFFICIALI
+           ========================================= */
+        .event-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-event-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0.6rem 1.1rem;
+            border-radius: 6px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: white !important;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-meetup { background-color: var(--color-meetup); }
+        .btn-meetup:hover {
+            background-color: #d92d4c;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(246, 64, 96, 0.4);
+        }
+
+        .btn-sessionize { background-color: var(--color-sessionize); }
+        .btn-sessionize:hover {
+            background-color: #128e75;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(26, 179, 148, 0.4);
+        }
+
+        .swiper-container-wrapper {
+            max-width: 1280px;
+            margin: 0 auto;
+            position: relative;
+            padding: 0 45px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .swiper-events {
+            width: 100%; height: 100%; overflow: hidden; padding: 15px 0 25px 0 !important;
+        }
+
+        .card {
+            background: var(--bg-white); border: 1px solid var(--border-color); border-radius: 8px;
+            overflow: hidden; display: flex; flex-direction: column; height: 100%; width: 100%;
+            transition: var(--transition); box-shadow: var(--shadow-sm);
+        }
+
+        .card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: var(--azure-blue); }
+
+        .card-img-wrapper { position: relative; height: 140px; overflow: hidden; background: #eaeaea; }
+        .card-img-wrapper img { width: 100%; height: 100%; object-fit: cover; transition: var(--transition); }
+        .card:hover .card-img-wrapper img { transform: scale(1.04); }
+
+        .card.event-past .card-img-wrapper img { filter: grayscale(100%); opacity: 0.85; }
+        .card.event-past:hover .card-img-wrapper img { filter: grayscale(30%); opacity: 1; }
+
+        .badge {
+            position: absolute; top: 10px; right: 10px; padding: 4px 8px; border-radius: 4px;
+            font-size: 0.68rem; font-weight: 700; color: white; z-index: 10; text-transform: uppercase; letter-spacing: 0.04em;
+        }
+        .badge.upcoming { background-color: #107C10; }
+        .badge.past { background-color: var(--text-muted); }
+
+        .card-body { padding: 1rem; display: flex; flex-direction: column; flex-grow: 1; }
+        .card-title {
+            font-size: 0.92rem; font-weight: 600; color: var(--text-dark); line-height: 1.35;
+            display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+        }
+
+        .swiper-button-next, .swiper-button-prev {
+            position: absolute; top: 50%; transform: translateY(-50%); z-index: 10;
+            background: none !important; border: none !important; color: #A19F9D !important;
+            width: 32px !important; height: 60px !important; margin-top: 0 !important; display: flex;
+            align-items: center; justify-content: center; transition: var(--transition);
+        }
+        .swiper-button-prev { left: 5px !important; }
+        .swiper-button-next { right: 5px !important; }
+        .swiper-button-next:hover, .swiper-button-prev:hover { color: var(--azure-blue) !important; }
+        .swiper-button-next:hover { transform: translateY(-50%) translateX(3px); }
+        .swiper-button-prev:hover { transform: translateY(-50%) translateX(-3px); }
+        .swiper-button-next::after, .swiper-button-prev::after { font-size: 1.4rem !important; }
+        .swiper-button-disabled { opacity: 0 !important; pointer-events: none; }
+
+        /* =========================================
+           4. SPONSOR (Fittizi)
+           ========================================= */
+        .sponsors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1.25rem;
+            align-items: stretch;
+        }
+
+        .sponsor-card {
+            background: var(--bg-white);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            min-height: 100px;
+            padding: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .sponsor-card svg {
+            max-width: 100%;
+            height: 40px;
+            object-fit: contain;
+            transition: var(--transition);
+        }
+
+        .sponsor-card:hover {
+            border-color: var(--azure-blue);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-3px);
+        }
+
+        .sponsor-card:hover svg {
+            transform: scale(1.05);
+        }
+
+        /* =========================================
+           5. CONTATTI & FOOTER
+           ========================================= */
+        .contact-channels {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            margin: 2rem 0 1.5rem 0;
+        }
+
+        .channel-btn {
+            display: inline-flex; align-items: center; gap: 8px; padding: 0.7rem 1.2rem; border-radius: 8px;
+            font-size: 0.88rem; font-weight: 600; color: white; transition: var(--transition);
+        }
+        
+        .channel-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.25); }
+
+        .btn-telegram { background: #229ED9; }
+        .btn-telegram:hover { background: #1C87BA; }
+
+        .btn-whatsapp { background: #25D366; }
+        .btn-whatsapp:hover { background: #1EBE5D; }
+
+        .btn-email { background: #0078D4; }
+        .btn-email:hover { background: #005A9E; }
+
+        .email-copy-bar {
+            background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 6px;
+            display: inline-flex; align-items: center; gap: 10px; padding: 6px 14px; font-size: 0.85rem; color: #E1DFDD;
+            margin-top: 0.5rem; cursor: pointer; transition: var(--transition);
+        }
+        .email-copy-bar:hover { background: rgba(255, 255, 255, 0.15); color: #FFF; }
+
+        footer { 
+            background-color: var(--azure-dark); color: white; padding: 3.5rem 1.5rem 2.5rem 1.5rem; text-align: center; 
+        }
+        .footer-brand { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.3rem; }
+        .social-links { margin: 1.2rem 0; display: flex; justify-content: center; gap: 0.8rem; }
+        .social-links a { 
+            color: white; font-size: 1.1rem; background: rgba(255,255,255,0.08); width: 38px; height: 38px; 
+            display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; transition: var(--transition); 
+        }
+        .social-links a:hover { background: var(--azure-blue); transform: translateY(-3px); }
+
+    </style>
+</head>
+<body>
+
+    <!-- HERO BACKGROUND FISSO AL 65% -->
+    <div id="hero-background">
+        <img src="https://images.unsplash.com/photo-1546938482-2ad7abfb620c?auto=format&fit=crop&q=80&w=2000" alt="Torino Skyline" id="hero-img">
+    </div>
+
+    <!-- NAVBAR FIXED -->
+    <header id="main-header">
+        <div class="nav-container" id="nav-container">
+            <a href="#" class="logo">
+                <img src="https://media.licdn.com/dms/image/v2/D4D0BAQEhN0BwKgacBQ/company-logo_200_200/B4DZYBX6NlHwAI-/0/1743779767492/azure_meetup_torino_logo?e=2147483647&v=beta&t=Cdt2pJTS6y7cAX9074JPwxQ4BSl3pd9T1k1rDMnMbBQ" alt="Azure Meetup Torino Logo" class="logo-img" id="logo-img">
+                <span>Azure Meetup Torino</span>
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="#chi-siamo">Chi Siamo</a></li>
+                    <li><a href="#partecipanti">Partecipanti</a></li>
+                    <li><a href="#eventi">Eventi</a></li>
+                    <li><a href="#sponsors">Sponsor</a></li>
+                    <li><a href="#contacts">Contatti</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main id="main-content">
+        
+        <!-- =========================================
+             1. SEZIONE: CHI SIAMO (Bisezione perfetta)
+             ========================================= -->
+        <section id="chi-siamo">
+            <div class="container">
+                <div class="about-manifesto-wrapper">
+                    <div class="about-manifesto">
+                        
+                        <!-- Testo -->
+                        <div class="manifesto-text">
+                            <h3>Chi Siamo</h3>
+                            <p>
+                                <strong>Azure Meetup Torino</strong> è la tech community indipendente piemontese dedicata all'ecosistema Microsoft Azure, Cloud Architecture, DevOps e Intelligenza Artificiale. 
+                                Uno spazio inclusivo e gratuito aperto a sviluppatori, architetti, sistemisti e curiosi per scambiare know-how, case study reali e fare networking di persona.
+                            </p>
+                        </div>
+                        
+                        <!-- Statistiche Impilate verticalmente -->
+                        <div class="manifesto-stats">
+                            <div class="stat-item">
+                                <h4>1.2k+</h4>
+                                <p>Membri Attivi</p>
+                            </div>
+                            <div class="stat-item">
+                                <h4>30+</h4>
+                                <p>Meetup Svolti</p>
+                            </div>
+                        </div>
+
+                        <!-- Logo riproposto (Lato destro) -->
+                        <div class="manifesto-logo">
+                            <img src="https://media.licdn.com/dms/image/v2/D4D0BAQEhN0BwKgacBQ/company-logo_200_200/B4DZYBX6NlHwAI-/0/1743779767492/azure_meetup_torino_logo?e=2147483647&v=beta&t=Cdt2pJTS6y7cAX9074JPwxQ4BSl3pd9T1k1rDMnMbBQ" alt="Logo Azure Meetup Torino">
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================
+             2. SEZIONE: PARTECIPANTI (Carosello CSS Mask)
+             ========================================= -->
+        <section id="partecipanti">
+            <div class="container">
+                <div class="section-header-centered">
+                    <h2 class="section-title">Partecipanti & Team</h2>
+                    <p class="section-subtitle">I membri attivi, speaker e organizzatori che guidano e animano la community.</p>
+                </div>
+            </div>
+
+            <div class="team-carousel-container">
+                <div class="swiper swiper-team">
+                    <div class="swiper-wrapper">
+                        
+                        <!-- 1 -->
+                        <div class="swiper-slide">
+                            <div class="member-card">
+                                <a href="https://www.linkedin.com" target="_blank" class="member-corner-link" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                                <div class="member-avatar-wrapper">
+                                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=300" alt="Elena Rossi" class="member-avatar">
+                                </div>
+                                <span class="member-role-tag">Co-Founder</span>
+                                <h4 class="member-name">Elena Rossi</h4>
+                                <span class="member-nick">@elena_cloud</span>
+                                <p class="member-bio">Cloud Solution Architect & MVP. Serverless e AI.</p>
+                            </div>
+                        </div>
+
+                        <!-- 2 -->
+                        <div class="swiper-slide">
+                            <div class="member-card">
+                                <a href="https://github.com" target="_blank" class="member-corner-link" title="GitHub"><i class="bi bi-github"></i></a>
+                                <div class="member-avatar-wrapper">
+                                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=300" alt="Marco Bianchi" class="member-avatar">
+                                </div>
+                                <span class="member-role-tag">Organizer</span>
+                                <h4 class="member-name">Marco Bianchi</h4>
+                                <span class="member-nick">@mbianchi_dev</span>
+                                <p class="member-bio">Principal DevOps & Platform Engineer. IaC automation.</p>
+                            </div>
+                        </div>
+
+                        <!-- 3 -->
+                        <div class="swiper-slide">
+                            <div class="member-card">
+                                <a href="https://www.linkedin.com" target="_blank" class="member-corner-link" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                                <div class="member-avatar-wrapper">
+                                    <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=300" alt="Chiara Ferrari" class="member-avatar">
+                                </div>
+                                <span class="member-role-tag">Organizer</span>
+                                <h4 class="member-name">Chiara Ferrari</h4>
+                                <span class="member-nick">@chiara_sec</span>
+                                <p class="member-bio">Security Specialist su Entra ID e Zero-Trust.</p>
+                            </div>
+                        </div>
+
+                        <!-- 4 -->
+                        <div class="swiper-slide">
+                            <div class="member-card">
+                                <a href="https://blog.mattiacontessa.xyz" target="_blank" class="member-corner-link" title="Blog"><i class="bi bi-medium"></i></a>
+                                <div class="member-avatar-wrapper">
+                                    <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=300" alt="Matteo Contessa" class="member-avatar">
+                                </div>
+                                <span class="member-role-tag">Core Team</span>
+                                <h4 class="member-name">Matteo Contessa</h4>
+                                <span class="member-nick">@mattiac</span>
+                                <p class="member-bio">API Management addicted e Cloud Consultant.</p>
+                            </div>
+                        </div>
+
+                        <!-- 5 -->
+                        <div class="swiper-slide">
+                            <div class="member-card">
+                                <a href="https://www.linkedin.com" target="_blank" class="member-corner-link" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                                <div class="member-avatar-wrapper">
+                                    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=300" alt="Sara Esposito" class="member-avatar">
+                                </div>
+                                <span class="member-role-tag">Core Team</span>
+                                <h4 class="member-name">Sara Esposito</h4>
+                                <span class="member-nick">@sara_data</span>
+                                <p class="member-bio">Data Platform Engineer su Fabric e Synapse.</p>
+                            </div>
+                        </div>
+
+                        <!-- 6 -->
+                        <div class="swiper-slide">
+                            <div class="member-card">
+                                <a href="https://github.com" target="_blank" class="member-corner-link" title="GitHub"><i class="bi bi-github"></i></a>
+                                <div class="member-avatar-wrapper">
+                                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=300" alt="Davide Moretti" class="member-avatar">
+                                </div>
+                                <span class="member-role-tag">Core Team</span>
+                                <h4 class="member-name">Davide Moretti</h4>
+                                <span class="member-nick">@dmoretti</span>
+                                <p class="member-bio">Software Engineer & .NET lover su Kubernetes.</p>
+                            </div>
+                        </div>
+
+                        <!-- 7 -->
+                        <div class="swiper-slide">
+                            <div class="member-card">
+                                <a href="https://twitter.com" target="_blank" class="member-corner-link" title="X / Twitter"><i class="bi bi-twitter-x"></i></a>
+                                <div class="member-avatar-wrapper">
+                                    <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=300" alt="Federica Galli" class="member-avatar">
+                                </div>
+                                <span class="member-role-tag">Speaker</span>
+                                <h4 class="member-name">Federica Galli</h4>
+                                <span class="member-nick">@fedegalli_ai</span>
+                                <p class="member-bio">AI Research & Azure OpenAI prompt engineer.</p>
+                            </div>
+                        </div>
+
+                        <!-- 8 -->
+                        <div class="swiper-slide">
+                            <div class="member-card">
+                                <a href="https://www.linkedin.com" target="_blank" class="member-corner-link" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                                <div class="member-avatar-wrapper">
+                                    <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=300" alt="Andrea Villa" class="member-avatar">
+                                </div>
+                                <span class="member-role-tag">Speaker</span>
+                                <h4 class="member-name">Andrea Villa</h4>
+                                <span class="member-nick">@andreavilla_ops</span>
+                                <p class="member-bio">FinOps Practitioner per ottimizzazione costi.</p>
+                            </div>
+                        </div>
+
+                        <!-- 9 -->
+                        <div class="swiper-slide">
+                            <div class="member-card">
+                                <a href="https://www.instagram.com" target="_blank" class="member-corner-link" title="Instagram"><i class="bi bi-instagram"></i></a>
+                                <div class="member-avatar-wrapper">
+                                    <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=300" alt="Giulia Rinaldi" class="member-avatar">
+                                </div>
+                                <span class="member-role-tag">Staff</span>
+                                <h4 class="member-name">Giulia Rinaldi</h4>
+                                <span class="member-nick">@giulia_r</span>
+                                <p class="member-bio">Community Lead, logistica e social media.</p>
+                            </div>
+                        </div>
+
+                        <!-- 10 -->
+                        <div class="swiper-slide">
+                            <div class="member-card">
+                                <a href="https://github.com" target="_blank" class="member-corner-link" title="GitHub"><i class="bi bi-github"></i></a>
+                                <div class="member-avatar-wrapper">
+                                    <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=300" alt="Luca De Santis" class="member-avatar">
+                                </div>
+                                <span class="member-role-tag">Speaker</span>
+                                <h4 class="member-name">Luca De Santis</h4>
+                                <span class="member-nick">@lucads</span>
+                                <p class="member-bio">IoT & Edge Solutions Architect per l'industria.</p>
+                            </div>
+                        </div>
+
+                        <!-- 11 -->
+                        <div class="swiper-slide">
+                            <div class="member-card">
+                                <a href="https://youtube.com" target="_blank" class="member-corner-link" title="YouTube"><i class="bi bi-youtube"></i></a>
+                                <div class="member-avatar-wrapper">
+                                    <img src="https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&q=80&w=300" alt="Simone Barbieri" class="member-avatar">
+                                </div>
+                                <span class="member-role-tag">Staff</span>
+                                <h4 class="member-name">Simone Barbieri</h4>
+                                <span class="member-nick">@simone_dev</span>
+                                <p class="member-bio">Full Stack Developer & regia streaming talk.</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================
+             3. SEZIONE: CALENDARIO EVENTI
+             ========================================= -->
+        <section id="eventi">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">Calendario Eventi</h2>
+                    <p class="section-subtitle">Iscriviti ai prossimi incontri o rivedi le registrazioni passate</p>
+                </div>
+                
+                <div class="event-actions">
+                    <a href="https://www.meetup.com/it-IT/azure-meetup-torino/" target="_blank" class="btn-event-action btn-meetup" title="Seguici su Meetup">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                            <path d="M22.42 8.52c-.15-1.57-1.35-2.76-3-2.76-1.5 0-2.7 1.05-3 2.55-.45-1.35-1.8-2.25-3.3-2.25-1.35 0-2.55.9-3 2.1-.3-1.05-1.2-1.8-2.4-1.8C6.37 6.36 5.32 7.26 5.02 8.46c-1.35.3-2.4 1.5-2.4 3 0 1.2.75 2.25 1.8 2.7-.15.45-.15.9-.15 1.35 0 1.95 1.5 3.6 3.45 3.6 1.8 0 3.3-1.35 3.45-3 .45 1.05 1.5 1.8 2.7 1.8 1.5 0 2.7-1.05 3-2.55.45 1.35 1.8 2.25 3.15 2.25 1.8 0 3.3-1.5 3.3-3.3 0-1.05-.45-1.95-1.2-2.55.75-.75 1.35-1.8 1.35-3 .02-1.31-.73-2.49-1.95-3.03l.9.8ZM4.42 11.16c-.9 0-1.5-.75-1.5-1.65s.6-1.65 1.5-1.65 1.65.6 1.65 1.5c0 .15 0 .15-.15.3l-1.35.45c-.3.15-.3.45-.15.6.15.15.45.15.6 0l1.2-.6c.15.6.3 1.2.3 1.8-.15 0-.15-.15-.3-.3l-.45-.45c-.15-.15-.45-.15-.6 0-.15.15-.15.45 0 .6l1.2 1.2c.15.15.15.45 0 .6l-1.2 1.2c-.15.15-.45.15-.6 0-.15-.15-.15-.45 0-.6l.45-.45c.15-.15.15-.3.3-.3 0 .45-.15 1.05-.3 1.5-.15.15-.45.15-.6 0z" />
+                        </svg>
+                        <span>Seguici su Meetup</span>
+                    </a>
+
+                    <a href="https://sessionize.com/azure-meetup-torino" target="_blank" class="btn-event-action btn-sessionize" title="Invia il tuo talk">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                            <path d="M3.46 3.09L21.5 11.23c1.07.48 1.1 1.95.05 2.48L3.45 20.89c-.93.47-1.95-.36-1.74-1.37l1.7-8.08c.06-.27.28-.48.56-.53l8.83-1.58c.27-.05.27-.44 0-.49l-8.83-1.58c-.28-.05-.5-.26-.56-.53l-1.7-8.08C1.5 1.6 2.53.76 3.46 3.09z"/>
+                        </svg>
+                        <span>Proponi un Talk</span>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="swiper-container-wrapper">
+                <div class="swiper swiper-events">
+                    <div class="swiper-wrapper">
+                        
+                        <div class="swiper-slide">
+                            <a href="#" class="card">
+                                <div class="card-img-wrapper">
+                                    <span class="badge upcoming">In arrivo</span>
+                                    <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=600" alt="Evento">
+                                </div>
+                                <div class="card-body"><h3 class="card-title">Azure AI & Copilot: Il futuro dello sviluppo cloud</h3></div>
+                            </a>
+                        </div>
+                        <div class="swiper-slide">
+                            <a href="#" class="card">
+                                <div class="card-img-wrapper">
+                                    <span class="badge upcoming">In arrivo</span>
+                                    <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=600" alt="Evento">
+                                </div>
+                                <div class="card-body"><h3 class="card-title">Cloud Native in Azure: Kubernetes, Container Apps e Dintorni</h3></div>
+                            </a>
+                        </div>
+                        <div class="swiper-slide">
+                            <a href="#" class="card">
+                                <div class="card-img-wrapper">
+                                    <span class="badge upcoming">In arrivo</span>
+                                    <img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=600" alt="Evento">
+                                </div>
+                                <div class="card-body"><h3 class="card-title">Serverless Architecture & Azure Functions v4 a confronto</h3></div>
+                            </a>
+                        </div>
+                        <div class="swiper-slide">
+                            <a href="#" class="card event-past">
+                                <div class="card-img-wrapper">
+                                    <span class="badge past">Terminato</span>
+                                    <img src="https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&q=80&w=600" alt="Evento">
+                                </div>
+                                <div class="card-body"><h3 class="card-title">Global Azure - Edizione Torino</h3></div>
+                            </a>
+                        </div>
+                        <div class="swiper-slide">
+                            <a href="#" class="card event-past">
+                                <div class="card-img-wrapper">
+                                    <span class="badge past">Terminato</span>
+                                    <img src="https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&q=80&w=600" alt="Evento">
+                                </div>
+                                <div class="card-body"><h3 class="card-title">Sicurezza e Identità in Azure: Zero Trust con Entra ID</h3></div>
+                            </a>
+                        </div>
+                        <div class="swiper-slide">
+                            <a href="#" class="card event-past">
+                                <div class="card-img-wrapper">
+                                    <span class="badge past">Terminato</span>
+                                    <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=600" alt="Evento">
+                                </div>
+                                <div class="card-body"><h3 class="card-title">Cost Optimization & FinOps su Microsoft Azure</h3></div>
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="swiper-button-prev swiper-button-prev-events"></div>
+                <div class="swiper-button-next swiper-button-next-events"></div>
+            </div>
+        </section>
+
+        <!-- =========================================
+             4. SEZIONE: SPONSOR (Fittizi / Placeholder)
+             ========================================= -->
+        <section id="sponsors">
+            <div class="container">
+                <div class="section-header-centered">
+                    <h2 class="section-title">Sponsor & Partner</h2>
+                    <p class="section-subtitle">Aziende e realtà che supportano la community offrendo location, catering e risorse formative.</p>
+                </div>
+
+                <div class="sponsors-grid">
+                    
+                    <!-- FAKE 1 -->
+                    <div class="sponsor-card" title="CloudNova">
+                        <svg viewBox="0 0 150 40">
+                            <circle cx="20" cy="20" r="14" fill="#0EA5E9"/>
+                            <path d="M12 20 L25 10 L25 30 Z" fill="#ffffff"/>
+                            <text x="45" y="28" font-family="'Inter', sans-serif" font-size="22" font-weight="800" fill="#1F2937" letter-spacing="-0.5">CloudNova</text>
+                        </svg>
+                    </div>
+
+                    <!-- FAKE 2 -->
+                    <div class="sponsor-card" title="TechFlow">
+                        <svg viewBox="0 0 140 40">
+                            <rect x="5" y="10" width="10" height="20" rx="3" fill="#8B5CF6"/>
+                            <rect x="20" y="5" width="10" height="25" rx="3" fill="#8B5CF6"/>
+                            <rect x="35" y="15" width="10" height="15" rx="3" fill="#8B5CF6"/>
+                            <text x="55" y="27" font-family="'Inter', sans-serif" font-size="20" font-weight="700" fill="#374151">TechFlow</text>
+                        </svg>
+                    </div>
+
+                    <!-- FAKE 3 -->
+                    <div class="sponsor-card" title="InnovateIT">
+                        <svg viewBox="0 0 160 40">
+                            <path d="M10 20 L20 10 L30 20 L25 20 L25 30 L15 30 L15 20 Z" fill="#10B981"/>
+                            <text x="40" y="27" font-family="'Inter', sans-serif" font-size="21" font-weight="800" fill="#1F2937">INNOVATE<span fill="#10B981">IT</span></text>
+                        </svg>
+                    </div>
+
+                    <!-- FAKE 4 -->
+                    <div class="sponsor-card" title="SecurApp">
+                        <svg viewBox="0 0 150 40">
+                            <path d="M20 5 L35 12 L35 25 C35 32 20 38 20 38 C20 38 5 32 5 25 L5 12 Z" fill="#F43F5E"/>
+                            <circle cx="20" cy="20" r="5" fill="#FFF"/>
+                            <text x="45" y="27" font-family="'Inter', sans-serif" font-size="20" font-weight="700" fill="#1F2937">SecurApp</text>
+                        </svg>
+                    </div>
+
+                    <!-- FAKE 5 -->
+                    <div class="sponsor-card" title="DevOps Solutions">
+                        <svg viewBox="0 0 180 40">
+                            <path d="M20 10 L10 20 L20 30" stroke="#F59E0B" stroke-width="4" fill="none" stroke-linecap="round"/>
+                            <path d="M30 10 L40 20 L30 30" stroke="#F59E0B" stroke-width="4" fill="none" stroke-linecap="round"/>
+                            <text x="50" y="26" font-family="'Inter', sans-serif" font-size="18" font-weight="700" fill="#374151">DevOps Solutions</text>
+                        </svg>
+                    </div>
+
+                    <!-- FAKE 6 -->
+                    <div class="sponsor-card" title="DataSphere">
+                        <svg viewBox="0 0 160 40">
+                            <circle cx="20" cy="20" r="12" fill="none" stroke="#3B82F6" stroke-width="4"/>
+                            <circle cx="28" cy="20" r="12" fill="none" stroke="#60A5FA" stroke-width="4" opacity="0.6"/>
+                            <text x="48" y="27" font-family="'Inter', sans-serif" font-size="20" font-weight="600" fill="#1E3A8A">DataSphere</text>
+                        </svg>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- =========================================
+         5. CONTATTI & FOOTER
+         ========================================= -->
+    <footer id="contacts">
+        <div class="footer-brand">Azure Meetup Torino</div>
+        <p style="color: var(--azure-light); font-size: 0.9rem;">Entra in contatto con noi o unisciti ai nostri canali per restare aggiornato.</p>
+        
+        <div class="contact-channels">
+            <a href="mailto:info@azuremeetuptorino.it?subject=[Azure%20Meetup%20Torino]%20Richiesta%20Info" class="channel-btn btn-email">
+                <i class="bi bi-envelope-fill"></i> Scrivici una Mail
+            </a>
+
+            <a href="https://t.me/AzureMeetupTorino" target="_blank" class="channel-btn btn-telegram">
+                <i class="bi bi-telegram"></i> Canale Telegram
+            </a>
+
+            <a href="https://chat.whatsapp.com" target="_blank" class="channel-btn btn-whatsapp">
+                <i class="bi bi-whatsapp"></i> Canale WhatsApp
+            </a>
+        </div>
+
+        <div>
+            <div class="email-copy-bar" onclick="copyEmail(this)" title="Clicca per copiare l'email">
+                <i class="bi bi-copy"></i>
+                <span id="email-text">info@azuremeetuptorino.it</span>
+            </div>
+        </div>
+
+        <div class="social-links">
+            <a href="https://it.linkedin.com/company/azure-meetup-torino" target="_blank" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+            <a href="https://www.youtube.com/@AzureMeetupTorino" target="_blank" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
+            <a href="https://www.instagram.com/azuremeetuptorino" target="_blank" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+            <a href="https://github.com/Azure-Meetup-Torino" target="_blank" aria-label="GitHub"><i class="bi bi-github"></i></a>
+        </div>
+
+        <p style="font-size: 0.78rem; margin-top: 1.2rem; color: #A19F9D;">
+            &copy; 2026 Azure Meetup Torino. Community indipendente non affiliata con Microsoft Corporation.
+        </p>
+    </footer>
+
+    <!-- Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script>
+        /* ==========================================================
+           1. HERO PARALLAX & NAVBAR
+           ========================================================== */
+        const header = document.getElementById('main-header');
+        const logoImg = document.getElementById('logo-img');
+        const navContainer = document.getElementById('nav-container');
+        const heroImg = document.getElementById('hero-img');
+
+        function handleScroll() {
+            const scrollY = window.scrollY;
+            
+            heroImg.style.transform = `translateY(${scrollY * 0.25}px)`;
+            heroImg.style.opacity = Math.max(0, 0.95 - (scrollY / 800));
+
+            let progress = Math.min(scrollY / 200, 1);
+            
+            header.style.backgroundColor = `rgba(255, 255, 255, ${progress})`;
+            header.style.borderBottomColor = `rgba(237, 235, 233, ${progress})`;
+            header.style.boxShadow = `0 4px 15px rgba(0, 0, 0, ${progress * 0.08})`;
+
+            if (logoImg) {
+                const currentLogoH = 84 - (42 * progress);
+                logoImg.style.height = currentLogoH + 'px';
+                logoImg.style.boxShadow = `0 6px 20px rgba(0, 0, 0, ${0.16 - (progress * 0.12)})`;
+            }
+
+            if (navContainer) {
+                const currentPad = 1.4 - (0.6 * progress);
+                navContainer.style.padding = `${currentPad}rem 2rem`;
+            }
+        }
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        handleScroll(); 
+
+        /* ==========================================================
+           2. CAROSELLO TEAM & PARTECIPANTI (Eventi Controllati Manualmente)
+           ========================================================== */
+        const teamSwiper = new Swiper('.swiper-team', {
+            slidesPerView: 'auto',
+            spaceBetween: 16,
+            loop: true,
+            speed: 4000, 
+            allowTouchMove: true,
+            autoplay: {
+                delay: 0,
+                disableOnInteraction: false,
+                pauseOnMouseEnter: false
+            },
+            freeMode: {
+                enabled: true,
+                momentum: false
+            }
+        });
+
+        let isCardClicked = false;
+        
+        document.addEventListener('mousedown', (e) => {
+            if (e.target.closest('.swiper-team .member-card')) {
+                isCardClicked = true;
+                teamSwiper.autoplay.stop();
+            } else {
+                if(isCardClicked) {
+                    teamSwiper.autoplay.start();
+                    isCardClicked = false;
+                }
+            }
+        });
+
+        const teamEl = document.querySelector('.swiper-team');
+        teamEl.addEventListener('touchstart', () => {
+            teamSwiper.autoplay.stop();
+        }, { passive: true });
+        
+        teamEl.addEventListener('touchend', () => {
+            setTimeout(() => {
+                if (!isCardClicked) {
+                    teamSwiper.autoplay.start();
+                }
+            }, 50); 
+        }, { passive: true });
+
+        /* ==========================================================
+           3. CAROSELLO EVENTI
+           ========================================================== */
+        new Swiper('.swiper-events', {
+            slidesPerView: 1.25,
+            spaceBetween: 16,
+            grabCursor: true,
+            observer: true,
+            observeParents: true,
+            mousewheel: {
+                forceToAxis: true,
+                releaseOnEdges: true
+            },
+            breakpoints: {
+                576: { slidesPerView: 2.2, spaceBetween: 18 },
+                768: { slidesPerView: 3.2, spaceBetween: 20 },
+                1024: { slidesPerView: 4, spaceBetween: 24 }
+            },
+            navigation: {
+                nextEl: '.swiper-button-next-events',
+                prevEl: '.swiper-button-prev-events'
+            }
+        });
+
+        /* ==========================================================
+           4. COPIA RAPIDA EMAIL
+           ========================================================== */
+        function copyEmail(element) {
+            const email = document.getElementById('email-text').innerText;
+            navigator.clipboard.writeText(email).then(() => {
+                const originalHtml = element.innerHTML;
+                element.innerHTML = '<i class="bi bi-check-lg" style="color:#50E6FF"></i> <span>Copiato negli appunti!</span>';
+                setTimeout(() => {
+                    element.innerHTML = originalHtml;
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>
