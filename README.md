@@ -45,6 +45,7 @@ da solo a ogni avvio.
 ```bash
 npm start            # emulatore SWA su http://localhost:4280
 npm test             # test delle managed functions
+npm run seed         # ricarica src/data/*.json sul blob (Azurite)
 ```
 
 > **Node 20 non è un capriccio.** È la major che gira sulle managed functions
@@ -66,12 +67,27 @@ primo avvio da `api/local.settings.example.json` e non versionato.
 
 ## Dati
 
-I contenuti stanno in `src/data/*.json` e sono renderizzati a runtime dai
-moduli in `src/assets/js/render-*.js`.
+La sorgente primaria è il **container blob pubblico**, letto direttamente dal
+browser — non da `/api`, che pagherebbe 1-3 s di cold start a ogni visita. I
+file in `src/data/*.json` restano come rete di sicurezza: se il blob non
+risponde il sito mostra i dati imbarcati nell'ultimo deploy invece di svuotarsi.
+Il rendering sta nei moduli `src/assets/js/render-*.js`.
 
-Dalla P3 la sorgente primaria diventa il container blob pubblico e i file in
-`src/data/` restano come rete di sicurezza: se il blob non risponde il sito
-continua a mostrare i dati imbarcati nell'ultimo deploy invece di svuotarsi.
+In sviluppo il container pubblico è quello di Azurite. In produzione, finché la
+costante `STORAGE_ACCOUNT` di `src/assets/js/config.js` è vuota, si leggono i
+file del deploy: è lo stato corretto prima che le risorse Azure esistano.
+
+Il giro di una modifica:
+
+```
+/admin  ──PUT /api/team──►  site-data/team.json   (master, scrittura con ETag)
+                              └──ripubblica──►  public/team.json
+                                                  └──► il sito, entro 5 minuti
+```
+
+Due schede aperte sullo stesso editor non si sovrascrivono: la seconda riceve
+un 409 con la copia del server e decide cosa tenere. È l'unica difesa possibile,
+perché le function scalano su più istanze e un lock in-process non servirebbe.
 
 ## Deploy
 
@@ -86,7 +102,7 @@ risorse Azure vedi [docs/deploy.md](docs/deploy.md).
 | P0 | Refactor statico, contenuti su JSON | fatto |
 | P1 | Configurazione SWA, pagine di errore, CI/CD | fatto (risorse Azure da creare) |
 | P2 | `/admin` e autenticazione Entra ID | fatto |
-| P3 | CRUD team su Blob Storage | da fare |
+| P3 | CRUD team su Blob Storage | fatto (risorse Azure da creare) |
 | P4 | CRUD sponsor e upload loghi | da fare |
 | P5 | Integrazione Meetup e filtro temporale eventi | da fare |
 | P6 | Telemetria, SEO, accessibilità | da fare |

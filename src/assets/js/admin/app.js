@@ -1,4 +1,5 @@
 import { apiGet, SessionExpiredError } from './api.js';
+import { initTeamEditor } from './team-editor.js';
 
 /* ==========================================================
    SESSIONE
@@ -77,4 +78,9 @@ selectTab(fromHash ?? tabs[0]);
 /* ==========================================================
    AVVIO
    ========================================================== */
-await loadSession();
+const session = await loadSession();
+
+// Se /api/me non ha risposto non si deduce niente sui permessi: si lascia
+// provare e si sta a quello che dice il server al salvataggio. Il cancello e
+// la, non qui.
+await initTeamEditor(session?.isAdmin !== false);

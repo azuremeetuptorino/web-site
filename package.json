@@ -7,6 +7,7 @@
   "scripts": {
     "start": "swa start",
     "storage": "azurite --silent --location .azurite --skipApiVersionCheck",
+    "seed": "node scripts/seed-blob.mjs",
     "test": "node --test api/test/*.test.js"
   },
   "devDependencies": {

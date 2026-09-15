@@ -78,5 +78,28 @@ segnaposto), LinkedIn (il logo della community) e `secure.meetupstatic.com` (le
 copertine degli eventi, dalla P5). I primi due andrebbero eliminati scaricando
 gli asset in `src/assets/img/`.
 
-Quando i dati passeranno sul blob (P3), l'host dello storage va aggiunto sia a
-`img-src` sia a `connect-src`.
+`connect-src` e `img-src` elencano anche `http://127.0.0.1:10000`, che è
+Azurite. In sviluppo il sito gira su `:4280` e legge i dati dal container
+pubblico su `:10000`: è una richiesta cross-origin, e senza quella voce il
+browser la blocca. Il sito continuerebbe a funzionare — `data.js` ripiega sui
+JSON del deploy — ma si testerebbe proprio il ramo di riserva invece del
+percorso di produzione. Un host locale in CSP non allarga la superficie di
+attacco in modo interessante: `script-src` resta `'self'`, quindi per sfruttarlo
+servirebbe prima riuscire a iniettare uno script.
+
+Quando lo storage account esisterà, il suo host va aggiunto **sia** a `img-src`
+(gli avatar e i loghi caricati dall'admin) **sia** a `connect-src` (il `fetch`
+dei JSON), insieme alla costante `STORAGE_ACCOUNT` di
+`src/assets/js/config.js`. Vedi [deploy.md](deploy.md).
+
+## L'emulatore non distingue 403 da 401
+
+Provato con un principal autenticato ma senza ruolo `admin`: l'emulatore
+risponde **302 verso il login** (cioè tratta il caso come 401) sia su `/admin/`
+sia su `/api/team`, invece del 403 che si aspetta da Azure. La pagina
+`403.html` quindi in locale non si vede mai per quella strada, e va verificata
+in produzione con un account reale non invitato.
+
+È una delle divergenze che la CLI stessa annuncia all'avvio
+(*This emulator may not match the cloud environment exactly*). Non cambia
+niente lato sicurezza — l'accesso resta negato in entrambi i casi.

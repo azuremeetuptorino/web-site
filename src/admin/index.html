@@ -57,13 +57,40 @@
         </div>
 
         <section class="admin-panel" id="panel-team" role="tabpanel" aria-labelledby="tab-team" tabindex="0">
-            <div class="admin-placeholder">
-                <i class="bi bi-people" aria-hidden="true"></i>
-                <strong>Gestione team</strong>
-                <p>
-                    L'editor dei membri arriva con la fase successiva, insieme alla
-                    scrittura su Blob Storage. Per ora questa pagina serve a verificare
-                    che l'autenticazione e i ruoli funzionino.
+
+            <div class="admin-placeholder" id="team-loading">
+                <i class="bi bi-hourglass-split" aria-hidden="true"></i>
+                <strong>Carico il team...</strong>
+            </div>
+
+            <div class="editor" id="team-editor" hidden>
+                <div class="editor-bar">
+                    <div class="editor-actions">
+                        <button type="button" class="editor-btn editor-btn-primary" id="team-save">
+                            <i class="bi bi-cloud-arrow-up" aria-hidden="true"></i> Salva e pubblica
+                        </button>
+                        <button type="button" class="editor-btn" id="team-add">
+                            <i class="bi bi-person-plus" aria-hidden="true"></i> Aggiungi membro
+                        </button>
+                        <button type="button" class="editor-btn" id="team-reload">
+                            <i class="bi bi-arrow-clockwise" aria-hidden="true"></i> Ricarica
+                        </button>
+                    </div>
+                    <p class="editor-state" id="team-state" role="status" aria-live="polite"></p>
+                </div>
+
+                <div class="editor-alert" id="team-alert" hidden></div>
+
+                <ol class="member-list" id="team-list"></ol>
+
+                <p class="editor-empty" id="team-empty" hidden>
+                    Nessun membro. Usa <strong>Aggiungi membro</strong> per crearne uno.
+                </p>
+
+                <p class="editor-hint">
+                    L'ordine delle schede e l'ordine in cui compaiono sul sito.
+                    Dopo il salvataggio la pagina pubblica si aggiorna entro 5 minuti,
+                    il tempo della cache.
                 </p>
             </div>
         </section>
@@ -79,6 +106,121 @@
             </div>
         </section>
     </main>
+
+    <!--
+        Scheda di un membro. Si clona e si riempie via .value invece di comporre
+        HTML con i dati: nessuna concatenazione, nessun problema di escaping.
+    -->
+    <template id="member-template">
+        <li class="member-row">
+            <details class="member-details">
+                <summary class="member-summary">
+                    <img class="member-thumb" src="/assets/img/placeholder-avatar.svg" alt="" data-preview="avatar">
+                    <span class="member-heading">
+                        <strong data-preview="name">Nuovo membro</strong>
+                        <span data-preview="role"></span>
+                    </span>
+                    <span class="member-flag" data-preview="hidden" hidden>non mostrato</span>
+                    <i class="bi bi-chevron-down member-chevron" aria-hidden="true"></i>
+                </summary>
+
+                <div class="member-body">
+                    <div class="field field-wide">
+                        <label data-label-for="name">Nome e cognome</label>
+                        <input type="text" data-field="name" maxlength="80" autocomplete="off">
+                        <span class="field-error" data-error-for="name" hidden></span>
+                    </div>
+
+                    <div class="field">
+                        <label data-label-for="id">Identificativo</label>
+                        <input type="text" data-field="id" maxlength="49" autocomplete="off" spellcheck="false">
+                        <span class="field-note">Minuscole, cifre e trattini. Si compila da solo dal nome.</span>
+                        <span class="field-error" data-error-for="id" hidden></span>
+                    </div>
+
+                    <div class="field">
+                        <label data-label-for="roleKey">Gruppo</label>
+                        <select data-field="roleKey">
+                            <option value="co-founder">Co-Founder</option>
+                            <option value="organizer">Organizer</option>
+                            <option value="core-team">Core Team</option>
+                            <option value="speaker">Speaker</option>
+                            <option value="staff">Staff</option>
+                        </select>
+                        <span class="field-error" data-error-for="roleKey" hidden></span>
+                    </div>
+
+                    <div class="field">
+                        <label data-label-for="role">Etichetta mostrata</label>
+                        <input type="text" data-field="role" maxlength="60" autocomplete="off">
+                        <span class="field-note">Il testo sulla scheda, libero.</span>
+                        <span class="field-error" data-error-for="role" hidden></span>
+                    </div>
+
+                    <div class="field">
+                        <label data-label-for="nick">Nickname</label>
+                        <input type="text" data-field="nick" maxlength="40" autocomplete="off">
+                        <span class="field-error" data-error-for="nick" hidden></span>
+                    </div>
+
+                    <div class="field field-wide">
+                        <label data-label-for="bio">Bio</label>
+                        <textarea data-field="bio" maxlength="240" rows="2"></textarea>
+                        <span class="field-error" data-error-for="bio" hidden></span>
+                    </div>
+
+                    <div class="field field-wide">
+                        <label data-label-for="avatarUrl">Foto (URL)</label>
+                        <input type="url" data-field="avatarUrl" autocomplete="off" spellcheck="false">
+                        <span class="field-note">Deve iniziare con https://. Senza foto si usa il segnaposto.</span>
+                        <span class="field-error" data-error-for="avatarUrl" hidden></span>
+                    </div>
+
+                    <div class="field">
+                        <label data-label-for="link.type">Tipo di link</label>
+                        <select data-field="link.type">
+                            <option value="">nessuno</option>
+                            <option value="linkedin">LinkedIn</option>
+                            <option value="github">GitHub</option>
+                            <option value="x">X / Twitter</option>
+                            <option value="blog">Blog</option>
+                            <option value="website">Sito web</option>
+                            <option value="instagram">Instagram</option>
+                            <option value="youtube">YouTube</option>
+                            <option value="mastodon">Mastodon</option>
+                            <option value="bluesky">Bluesky</option>
+                        </select>
+                        <span class="field-error" data-error-for="link.type" hidden></span>
+                    </div>
+
+                    <div class="field">
+                        <label data-label-for="link.url">Indirizzo del link</label>
+                        <input type="url" data-field="link.url" autocomplete="off" spellcheck="false">
+                        <span class="field-error" data-error-for="link.url" hidden></span>
+                    </div>
+
+                    <div class="field field-wide member-controls">
+                        <label class="field-check">
+                            <input type="checkbox" data-field="active">
+                            Mostrato sul sito
+                        </label>
+
+                        <div class="member-buttons">
+                            <button type="button" class="icon-btn" data-action="up" title="Sposta su">
+                                <i class="bi bi-arrow-up" aria-hidden="true"></i><span class="visually-hidden">Sposta su</span>
+                            </button>
+                            <button type="button" class="icon-btn" data-action="down" title="Sposta giu">
+                                <i class="bi bi-arrow-down" aria-hidden="true"></i><span class="visually-hidden">Sposta giu</span>
+                            </button>
+                            <button type="button" class="icon-btn icon-btn-danger" data-action="remove" title="Elimina">
+                                <i class="bi bi-trash" aria-hidden="true"></i><span class="visually-hidden">Elimina</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </details>
+        </li>
+    </template>
 
     <script type="module" src="/assets/js/admin/app.js"></script>
 </body>

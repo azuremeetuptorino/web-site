@@ -212,3 +212,314 @@
 @media (prefers-reduced-motion: reduce) {
     .admin-tab, .admin-logout { transition: none; }
 }
+
+/* =========================================
+   EDITOR (team, e dalla P4 sponsor)
+   ========================================= */
+.editor-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.1rem;
+}
+
+.editor-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.editor-btn {
+    appearance: none;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.5rem 0.9rem;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-white);
+    color: var(--azure-dark);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    transition: var(--transition);
+}
+
+.editor-btn:hover:not(:disabled) {
+    border-color: var(--azure-blue);
+    color: var(--azure-blue);
+}
+
+.editor-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.editor-btn:focus-visible {
+    outline: 2px solid var(--azure-blue);
+    outline-offset: 2px;
+}
+
+.editor-btn-primary {
+    background: var(--azure-blue);
+    border-color: var(--azure-blue);
+    color: #FFFFFF;
+}
+
+.editor-btn-primary:hover:not(:disabled) {
+    background: var(--azure-accent);
+    border-color: var(--azure-accent);
+    color: #FFFFFF;
+}
+
+.editor-state {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+}
+
+/* Le modifiche non salvate sono l'unico stato che vale la pena far notare. */
+.editor-state[data-dirty="true"] {
+    color: #8A5A00;
+    font-weight: 600;
+}
+
+.editor-hint {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-top: 1.1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.editor-empty {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    text-align: center;
+    padding: 2rem 1rem;
+}
+
+/* ---------- Avvisi dell'editor ---------- */
+.editor-alert {
+    border-radius: 8px;
+    padding: 0.9rem 1.1rem;
+    font-size: 0.87rem;
+    line-height: 1.55;
+    margin-bottom: 1.1rem;
+}
+
+.editor-alert-warn {
+    background: #FFF4CE;
+    border: 1px solid #F2D07B;
+    color: #6B5200;
+}
+
+.editor-alert-error {
+    background: #FDE7E9;
+    border: 1px solid #F1BBC0;
+    color: #8A2B34;
+}
+
+.editor-alert ul {
+    margin: 0.5rem 0 0 1.1rem;
+    padding: 0;
+}
+
+.editor-alert-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.8rem;
+}
+
+/* ---------- Lista dei membri ---------- */
+.member-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.member-details {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--bg-white);
+}
+
+.member-details[open] {
+    border-color: #C7E0F4;
+    box-shadow: var(--shadow-sm);
+}
+
+.member-summary {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.7rem 0.9rem;
+    cursor: pointer;
+    list-style: none;
+    border-radius: 8px;
+}
+
+.member-summary::-webkit-details-marker { display: none; }
+
+.member-summary:hover { background: var(--bg-light); }
+
+.member-summary:focus-visible {
+    outline: 2px solid var(--azure-blue);
+    outline-offset: -2px;
+}
+
+.member-thumb {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--bg-light);
+    flex-shrink: 0;
+}
+
+.member-heading {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex: 1;
+}
+
+.member-heading strong {
+    font-size: 0.92rem;
+    color: var(--azure-dark);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.member-heading span {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+
+.member-flag {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #8A5A00;
+    background: #FFF4CE;
+    border: 1px solid #F2D07B;
+    border-radius: 999px;
+    padding: 2px 8px;
+    flex-shrink: 0;
+}
+
+.member-chevron {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    transition: var(--transition);
+    flex-shrink: 0;
+}
+
+.member-details[open] .member-chevron { transform: rotate(180deg); }
+
+/* ---------- Campi ---------- */
+.member-body {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.9rem;
+    padding: 0.4rem 0.9rem 1rem 0.9rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+
+.field-wide { grid-column: 1 / -1; }
+
+.field label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.field input[type="text"],
+.field input[type="url"],
+.field select,
+.field textarea {
+    font-family: inherit;
+    font-size: 0.88rem;
+    color: var(--text-dark);
+    background: var(--bg-white);
+    padding: 0.45rem 0.6rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    width: 100%;
+    resize: vertical;
+}
+
+.field input:focus-visible,
+.field select:focus-visible,
+.field textarea:focus-visible {
+    outline: 2px solid var(--azure-blue);
+    outline-offset: -1px;
+    border-color: var(--azure-blue);
+}
+
+.field [aria-invalid="true"] { border-color: #C4314B; background: #FFF8F8; }
+
+.field-note { font-size: 0.74rem; color: var(--text-muted); }
+
+.field-error { font-size: 0.76rem; font-weight: 600; color: #C4314B; }
+
+.field-check {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem !important;
+    font-weight: 500 !important;
+    color: var(--text-dark) !important;
+    display: inline-flex;
+    cursor: pointer;
+}
+
+.member-controls {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    border-top: 1px dashed var(--border-color);
+    padding-top: 0.8rem;
+}
+
+.member-buttons { display: flex; gap: 0.35rem; }
+
+.icon-btn {
+    appearance: none;
+    background: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.icon-btn:hover { border-color: var(--azure-blue); color: var(--azure-blue); }
+
+.icon-btn:focus-visible {
+    outline: 2px solid var(--azure-blue);
+    outline-offset: 2px;
+}
+
+.icon-btn-danger:hover { border-color: #C4314B; color: #C4314B; }
+
+@media (max-width: 640px) {
+    .member-body { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .editor-btn, .icon-btn, .member-chevron { transition: none; }
+}

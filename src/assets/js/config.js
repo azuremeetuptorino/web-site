@@ -1,18 +1,35 @@
 /**
  * Configurazione runtime risolta a browser, senza build step.
  *
- * In P0 i dati arrivano dai file statici serviti insieme al sito.
- * In P1 PUBLIC_DATA_BASE punterà al container blob pubblico e
- * LOCAL_DATA_BASE resterà come ultima rete di sicurezza: se il blob
- * non risponde il sito continua a mostrare i dati imbarcati nel deploy.
+ * La sorgente primaria dei dati e il container blob pubblico, non `/api`: le
+ * managed functions sono su Consumption e pagherebbero 1-3 s di cold start su
+ * ogni visita, mentre SWA non mette in cache le risposte delle API.
+ *
+ * LOCAL_DATA_BASE resta l'ultima rete di sicurezza: se il blob non risponde il
+ * sito mostra i dati imbarcati nell'ultimo deploy invece di svuotarsi.
  */
 
 const LOCAL_HOSTS = ['localhost', '127.0.0.1', '[::1]'];
 
 export const IS_LOCAL = LOCAL_HOSTS.includes(location.hostname);
 
+/**
+ * Nome dell'account di storage, da riempire dopo provision-azure.ps1.
+ *
+ * Finche e vuoto il sito legge i JSON del deploy: e lo stato corretto prima che
+ * le risorse Azure esistano, meglio di una fetch che fallisce a ogni visita.
+ * Cambiandolo va aggiunto lo stesso host a img-src e connect-src nella CSP di
+ * staticwebapp.config.json, altrimenti il browser blocca la lettura.
+ */
+const STORAGE_ACCOUNT = '';
+
+/** In locale il container pubblico e quello di Azurite. */
+const AZURITE_PUBLIC = 'http://127.0.0.1:10000/devstoreaccount1/public';
+
 /** Sorgente primaria dei dati pubblici. */
-export const PUBLIC_DATA_BASE = '/data';
+export const PUBLIC_DATA_BASE = IS_LOCAL
+    ? AZURITE_PUBLIC
+    : (STORAGE_ACCOUNT ? `https://${STORAGE_ACCOUNT}.blob.core.windows.net/public` : '/data');
 
 /** Copia imbarcata nel deploy, usata se la sorgente primaria fallisce. */
 export const LOCAL_DATA_BASE = '/data';
