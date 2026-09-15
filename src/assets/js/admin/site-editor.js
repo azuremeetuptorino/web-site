@@ -21,6 +21,7 @@ const PLACEHOLDER_LOGO = '/assets/img/placeholder-logo.svg';
 /** Campi semplici: il percorso nel documento e anche il nome del campo. */
 const FIELDS = [
     'brand.name',
+    'brand.tagline',
     'brand.logoUrl',
     'brand.heroImageUrl',
     'brand.heroImageAlt',

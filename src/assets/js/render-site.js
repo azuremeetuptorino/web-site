@@ -74,6 +74,38 @@ function applyFields(root, document_) {
 }
 
 /* ==========================================================
+   TITOLO E FAVICON
+   ========================================================== */
+
+/**
+ * Il titolo della scheda e l'icona del sito.
+ *
+ * Il titolo e `nome | tagline`, o il solo nome se la tagline manca. Sono due
+ * campi separati perche il nome compare anche nella barra in alto e nel footer,
+ * dove un "| Community" appiccicato dietro sarebbe sbagliato.
+ *
+ * La favicon si sostituisce rimuovendo e reinserendo il <link>, non cambiando
+ * l'href sul posto: alcuni browser ignorano la modifica di un href gia
+ * applicato e continuano a mostrare la vecchia icona finche non si svuota la
+ * cache.
+ */
+function applyMeta(root, brand) {
+    if (!brand) return;
+
+    if (filled(brand.name) && typeof root.title === 'string') {
+        root.title = filled(brand.tagline) ? `${brand.name} | ${brand.tagline}` : brand.name;
+    }
+
+    const icon = root.querySelector('link[rel="icon"]');
+    const url = filled(brand.logoUrl) ? safeUrl(brand.logoUrl, '') : '';
+    if (!icon || !url || icon.getAttribute('href') === url) return;
+
+    const replacement = icon.cloneNode(true);
+    replacement.setAttribute('href', url);
+    icon.replaceWith(replacement);
+}
+
+/* ==========================================================
    CHI SIAMO
    ========================================================== */
 
@@ -193,6 +225,7 @@ function applySocial(root, social) {
 export function renderSite(root, payload) {
     if (!payload || typeof payload !== 'object') return 0;
 
+    applyMeta(root, payload.brand);
     applyFields(root, payload);
     applyAbout(root, payload.about);
     applyStats(root, payload.stats);

@@ -274,6 +274,8 @@ function validateBrand(issues, value) {
     const brand = section(value);
     return {
         name: text(issues, 'brand.name', brand.name, { max: LIMITS.name }),
+        // Segue il nome nel titolo della scheda del browser: "Nome | Tagline".
+        tagline: text(issues, 'brand.tagline', brand.tagline, { max: 60 }),
         logoUrl: webUrl(issues, 'brand.logoUrl', brand.logoUrl),
         heroImageUrl: webUrl(issues, 'brand.heroImageUrl', brand.heroImageUrl),
         // Descrive la foto a chi non la vede: e testo, non decorazione.

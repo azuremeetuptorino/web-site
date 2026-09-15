@@ -207,14 +207,32 @@
                                 </label>
                             </div>
                             <img class="site-preview" data-preview="brand.logoUrl" alt="" hidden>
-                            <span class="field-note">Compare due volte: nella barra in alto e accanto a "Chi siamo".</span>
+                            <span class="field-note">
+                                Compare nella barra in alto, accanto a "Chi siamo" e come
+                                <strong>icona del sito</strong> nella scheda del browser. Per l'icona
+                                conviene un'immagine quadrata.
+                            </span>
                             <span class="field-error" data-error-for="brand.logoUrl" hidden></span>
                         </div>
 
-                        <div class="field field-wide">
+                        <div class="field">
                             <label data-label-for="brand.name">Nome della community</label>
                             <input type="text" data-field="brand.name" maxlength="80" autocomplete="off">
+                            <span class="field-note">
+                                Barra in alto, footer e <strong>titolo della scheda</strong> del browser.
+                            </span>
                             <span class="field-error" data-error-for="brand.name" hidden></span>
+                        </div>
+
+                        <div class="field">
+                            <label data-label-for="brand.tagline">Seguito del titolo</label>
+                            <input type="text" data-field="brand.tagline" maxlength="60" autocomplete="off"
+                                   placeholder="Community">
+                            <span class="field-note">
+                                Solo nel titolo della scheda, dopo il nome: <code>Nome | Seguito</code>.
+                                Vuoto, resta il nome da solo.
+                            </span>
+                            <span class="field-error" data-error-for="brand.tagline" hidden></span>
                         </div>
                     </div>
                 </section>

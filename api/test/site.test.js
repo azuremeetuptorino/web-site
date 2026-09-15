@@ -38,6 +38,17 @@ test('si puo impostare una sola sezione senza toccare le altre', () => {
     assert.deepEqual(result.value, { version: 1, about: { text: 'Siamo una community.' } });
 });
 
+test('nome e tagline sono due campi: il nome compare anche fuori dal titolo', () => {
+    const result = validateSite({ brand: { name: 'Azure Meetup Torino', tagline: 'Community' } });
+    assert.equal(result.ok, true);
+    assert.equal(result.value.brand.name, 'Azure Meetup Torino');
+    assert.equal(result.value.brand.tagline, 'Community');
+
+    // Senza tagline il titolo resta il solo nome, e il campo non finisce sul blob.
+    const senza = validateSite({ brand: { name: 'Azure Meetup Torino' } });
+    assert.equal('tagline' in senza.value.brand, false);
+});
+
 test('le immagini seguono le stesse regole degli altri URL', () => {
     assert.equal(validateSite({ brand: { heroImageUrl: 'https://cdn.example/hero.jpg' } }).ok, true);
     assert.equal(validateSite({ brand: { logoUrl: '/assets/img/logo.svg' } }).ok, true);

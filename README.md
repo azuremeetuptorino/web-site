@@ -97,7 +97,7 @@ foto cambia URL. Gli SVG vengono sanificati e serviti come allegato. Resta
 possibile incollare a mano una URL `https://` già ospitata altrove.
 
 I contenuti fissi della home — foto principale, logo, "Chi siamo", le due
-statistiche e il footer — stanno in `site.json` e si modificano dalla scheda
+statistiche, il footer, il titolo della scheda del browser e la favicon — stanno in `site.json` e si modificano dalla scheda
 **Home e footer**. Qui vale una regola diversa dalle altre sezioni: l'HTML
 conserva i testi attuali e il JavaScript **sovrascrive solo ciò che riceve**.
 La pagina ha senso anche senza JavaScript, i crawler vedono contenuto vero, e un

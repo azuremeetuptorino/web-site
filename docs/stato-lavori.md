@@ -110,6 +110,11 @@ riga legale, canali e profili social).
   su `footer.channels[0].url` trova da solo la sua riga senza configurazione.
 - `POST /api/assets` accetta un terzo `kind`, `site`, per foto e logo.
 - Terza scheda **Home e footer** nell'admin, con anteprima delle due immagini.
+- Il **titolo della scheda** del browser è `brand.name | brand.tagline` (o il solo
+  nome se la tagline manca: sono due campi perché il nome compare anche nella
+  barra in alto e nel footer, dove un "| Community" appiccicato dietro sarebbe
+  sbagliato), e la **favicon** è `brand.logoUrl`. Entrambi restano scritti anche
+  nell'HTML, che è quello che vedono i crawler e le anteprime dei link.
 - 107 test.
 
 Il testo di "Chi siamo" ha l'apertura in grassetto come campo separato
