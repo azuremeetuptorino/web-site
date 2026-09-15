@@ -1,0 +1,52 @@
+{
+  "name": "Azure Meetup Torino",
+
+  // Node 20: e la stessa major che gira sulle managed functions di Static Web
+  // Apps. Non alzarla senza motivo: Azure Functions Core Tools v4 non supporta
+  // le versioni piu recenti di Node, ed e esattamente il muro contro cui si
+  // sbatte provando a sviluppare sull'host con Node 22+.
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-20-bookworm",
+
+  "features": {
+    // Serve a scripts/provision-azure.ps1 e a leggere/scrivere le app settings.
+    "ghcr.io/devcontainers/features/azure-cli:1": { "version": "latest" },
+    // Per i secret del repo e le PR.
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    // provision-azure.ps1 e uno script PowerShell.
+    "ghcr.io/devcontainers/features/powershell:1": {}
+  },
+
+  "forwardPorts": [4280, 7071, 10000, 10001, 10002],
+  "portsAttributes": {
+    "4280": { "label": "Sito (emulatore SWA)", "onAutoForward": "notify" },
+    "7071": { "label": "Azure Functions" },
+    "10000": { "label": "Azurite Blob" },
+    "10001": { "label": "Azurite Queue" },
+    "10002": { "label": "Azurite Table" }
+  },
+
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "postStartCommand": "bash .devcontainer/post-start.sh",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-azuretools.vscode-azurestaticwebapps",
+        "ms-azuretools.vscode-azurefunctions",
+        "ms-azuretools.vscode-azurestorage",
+        "Azurite.azurite",
+        "editorconfig.editorconfig"
+      ],
+      "settings": {
+        "files.eol": "\n",
+        "azureFunctions.deploySubpath": "api",
+        "azureFunctions.projectLanguage": "JavaScript",
+        "azureFunctions.projectRuntime": "~4",
+        "azurite.location": ".azurite",
+        "azurite.silent": true
+      }
+    }
+  },
+
+  "remoteUser": "node"
+}

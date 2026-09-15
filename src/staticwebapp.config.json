@@ -3,22 +3,87 @@
   "trailingSlash": "auto",
   "routes": [
     {
+      "route": "/login",
+      "redirect": "/.auth/login/aad"
+    },
+    {
+      "route": "/logout",
+      "redirect": "/.auth/logout"
+    },
+    {
+      "route": "/.auth/login/github",
+      "statusCode": 404
+    },
+    {
+      "route": "/api/me",
+      "methods": [
+        "GET"
+      ],
+      "allowedRoles": [
+        "authenticated"
+      ]
+    },
+    {
+      "route": "/api/*",
+      "allowedRoles": [
+        "admin"
+      ]
+    },
+    {
+      "route": "/admin",
+      "redirect": "/admin/",
+      "statusCode": 301
+    },
+    {
+      "route": "/admin/index.html",
+      "allowedRoles": [
+        "admin"
+      ],
+      "headers": {
+        "Cache-Control": "no-store"
+      }
+    },
+    {
+      "route": "/admin/*",
+      "allowedRoles": [
+        "admin"
+      ],
+      "headers": {
+        "Cache-Control": "no-store"
+      }
+    },
+    {
       "route": "/assets/vendor/*",
-      "headers": { "Cache-Control": "public, max-age=31536000, immutable" }
+      "headers": {
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
     },
     {
       "route": "/assets/img/*",
-      "headers": { "Cache-Control": "public, max-age=2592000" }
+      "headers": {
+        "Cache-Control": "public, max-age=2592000"
+      }
     },
     {
       "route": "/data/*",
-      "headers": { "Cache-Control": "public, max-age=300, must-revalidate" }
+      "headers": {
+        "Cache-Control": "public, max-age=300, must-revalidate"
+      }
     }
   ],
-  "_comment_navigationFallback": "Deliberatamente assente. Il sito non e una SPA: ogni pagina e un file reale e non c'e routing client-side. Con un navigationFallback verso /index.html qualsiasi URL sbagliata risponderebbe 200 con la homepage (soft 404), e soprattutto le richieste servite dal fallback SALTANO le route rules, quindi /admin/* diventerebbe raggiungibile senza autenticazione.",
   "responseOverrides": {
-    "403": { "rewrite": "/403.html", "statusCode": 403 },
-    "404": { "rewrite": "/404.html", "statusCode": 404 }
+    "401": {
+      "statusCode": 302,
+      "redirect": "/.auth/login/aad?post_login_redirect_uri=/admin/"
+    },
+    "403": {
+      "rewrite": "/403.html",
+      "statusCode": 403
+    },
+    "404": {
+      "rewrite": "/404.html",
+      "statusCode": 404
+    }
   },
   "globalHeaders": {
     "X-Content-Type-Options": "nosniff",

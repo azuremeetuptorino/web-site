@@ -6,7 +6,8 @@
   "license": "MIT",
   "scripts": {
     "start": "swa start",
-    "storage": "azurite --silent --location .azurite --skipApiVersionCheck"
+    "storage": "azurite --silent --location .azurite --skipApiVersionCheck",
+    "test": "node --test api/test/*.test.js"
   },
   "devDependencies": {
     "@azure/static-web-apps-cli": "^2.0.2",

@@ -35,10 +35,22 @@ docs/                     deploy, runbook
 
 ## Sviluppo locale
 
+Usa il **devcontainer**: `.devcontainer/` contiene tutto (Node 20, Azure
+Functions Core Tools, Azurite, SWA CLI, Azure CLI, GitHub CLI, PowerShell).
+
+In VS Code: *Reopen in Container*. Alla creazione vengono installate le
+dipendenze, creati i container Azurite `public` e `site-data`, e Azurite parte
+da solo a ogni avvio.
+
 ```bash
-npm install          # solo tooling di sviluppo: SWA CLI e Azurite
 npm start            # emulatore SWA su http://localhost:4280
+npm test             # test delle managed functions
 ```
+
+> **Node 20 non è un capriccio.** È la major che gira sulle managed functions
+> di Azure, e Azure Functions Core Tools v4 *rifiuta* di partire su Node 22+.
+> Sviluppando sull'host con un Node recente, `swa start` non riesce ad avviare
+> l'API. È il motivo per cui esiste il devcontainer.
 
 L'emulatore applica davvero `staticwebapp.config.json` (route, `allowedRoles`,
 header, pagine di errore) ed emula il login: da `/.auth/login/aad` si inserisce
@@ -49,11 +61,8 @@ uno username e i **ruoli, uno per riga** — scrivere `admin` per entrare in
 > modificato, riavvia `npm start`, altrimenti continui a testare la vecchia
 > configurazione.
 
-Per lavorare sull'API servirà anche lo storage emulato:
-
-```bash
-npm run storage      # Azurite, in un altro terminale
-```
+Le impostazioni locali dell'API stanno in `api/local.settings.json`, creato al
+primo avvio da `api/local.settings.example.json` e non versionato.
 
 ## Dati
 

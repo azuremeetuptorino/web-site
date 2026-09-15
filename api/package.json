@@ -1,0 +1,14 @@
+{
+  "name": "azure-meetup-torino-api",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Managed functions della sola area amministrativa. Il sito pubblico non passa di qui.",
+  "type": "module",
+  "main": "src/functions/*.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@azure/functions": "^4.7.0"
+  }
+}

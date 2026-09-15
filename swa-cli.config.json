@@ -7,7 +7,8 @@
       "apiLanguage": "node",
       "apiVersion": "20",
       "port": 4280,
-      "open": false
+      "open": false,
+      "apiLocation": "api"
     }
   }
 }

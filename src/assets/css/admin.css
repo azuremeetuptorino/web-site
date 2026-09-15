@@ -1,0 +1,214 @@
+/* =========================================
+   AREA AMMINISTRATIVA
+   ========================================= */
+.admin-body {
+    background: var(--bg-light);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ---------- Testata ---------- */
+.admin-header {
+    background: var(--azure-dark);
+    color: #FFFFFF;
+    padding: 0.9rem 1.5rem;
+}
+
+.admin-header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.admin-brand {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    font-weight: 700;
+    font-size: 1.05rem;
+}
+
+.admin-brand small {
+    font-weight: 500;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #9FC4E8;
+}
+
+.admin-session {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-size: 0.85rem;
+    color: #C7E0F4;
+    flex-wrap: wrap;
+}
+
+.admin-user {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    max-width: 320px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-logout {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0.35rem 0.8rem;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: #FFFFFF;
+    font-size: 0.82rem;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.admin-logout:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* ---------- Corpo ---------- */
+.admin-main {
+    flex: 1;
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 1.75rem 1.5rem 3rem 1.5rem;
+}
+
+.admin-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--azure-dark);
+    margin-bottom: 0.3rem;
+}
+
+.admin-subtitle {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+}
+
+/* ---------- Tab ---------- */
+.admin-tabs {
+    display: flex;
+    gap: 0.4rem;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.admin-tab {
+    appearance: none;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 0.7rem 1rem;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.admin-tab:hover { color: var(--azure-blue); }
+
+.admin-tab[aria-selected="true"] {
+    color: var(--azure-dark);
+    border-bottom-color: var(--azure-blue);
+}
+
+.admin-tab:focus-visible {
+    outline: 2px solid var(--azure-blue);
+    outline-offset: -2px;
+    border-radius: 4px 4px 0 0;
+}
+
+/* ---------- Pannelli ---------- */
+.admin-panel {
+    background: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.admin-placeholder {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    color: var(--text-muted);
+}
+
+.admin-placeholder i {
+    font-size: 2rem;
+    color: #C8C6C4;
+    display: block;
+    margin-bottom: 0.7rem;
+}
+
+.admin-placeholder strong {
+    display: block;
+    color: var(--azure-dark);
+    font-size: 1rem;
+    margin-bottom: 0.3rem;
+}
+
+.admin-placeholder p {
+    font-size: 0.88rem;
+    max-width: 440px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* ---------- Avvisi ---------- */
+.admin-notice {
+    border-radius: 8px;
+    padding: 0.9rem 1.1rem;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+}
+
+.admin-notice i { flex-shrink: 0; margin-top: 2px; }
+
+.admin-notice-info {
+    background: var(--azure-light);
+    border: 1px solid #C7E0F4;
+    color: #10375C;
+}
+
+.admin-notice-warn {
+    background: #FFF4CE;
+    border: 1px solid #F2D07B;
+    color: #6B5200;
+}
+
+.admin-notice-error {
+    background: #FDE7E9;
+    border: 1px solid #F1BBC0;
+    color: #8A2B34;
+}
+
+.admin-notice a { text-decoration: underline; font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+    .admin-tab, .admin-logout { transition: none; }
+}

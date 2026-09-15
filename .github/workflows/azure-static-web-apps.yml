@@ -16,7 +16,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build_and_deploy:
+  build_and_deploy_job:
     # Le PR da un fork non ricevono i secret del repo: senza questa guardia
     # il deploy fallirebbe rumorosamente a ogni contributo esterno.
     if: >
@@ -38,13 +38,12 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: upload
           app_location: "src"
-          # P2 portera questo valore a "api" quando esisteranno le managed functions.
-          api_location: ""
+          api_location: "api"
           output_location: ""
           # Il frontend non ha build: src/ va caricato verbatim, senza Oryx.
           skip_app_build: true
 
-  close_pull_request:
+  close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     runs-on: ubuntu-latest
     name: Close Pull Request Environment

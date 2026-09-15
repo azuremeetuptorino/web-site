@@ -20,11 +20,16 @@ provider Entra ID **custom**, cioè limitare il login a un solo tenant — vedi
 
 ## 1. Prerequisiti
 
-- [Azure CLI](https://aka.ms/installazurecliwindows)
 - Una subscription Azure con permessi di creazione risorse
 - Permessi di amministrazione sul repo GitHub
+- Azure CLI e PowerShell
 
-```powershell
+Azure CLI e PowerShell sono **già dentro il devcontainer**: aprendo il repo in
+VS Code con *Reopen in Container* non serve installare nulla. Fuori dal
+container servono [Azure CLI](https://aka.ms/installazurecliwindows) e
+PowerShell installati a mano.
+
+```bash
 az login
 az account set --subscription "<nome o id della subscription>"
 ```
@@ -33,9 +38,9 @@ az account set --subscription "<nome o id della subscription>"
 
 Lo script è idempotente: rilanciarlo non rompe nulla. Prima una prova a vuoto:
 
-```powershell
-./scripts/provision-azure.ps1 -StorageAccountName azmeetuptorino -WhatIf
-./scripts/provision-azure.ps1 -StorageAccountName azmeetuptorino
+```bash
+pwsh -File ./scripts/provision-azure.ps1 -StorageAccountName azmeetuptorino -WhatIf
+pwsh -File ./scripts/provision-azure.ps1 -StorageAccountName azmeetuptorino
 ```
 
 `-StorageAccountName` deve essere **globalmente univoco**, 3-24 caratteri, solo
@@ -63,13 +68,17 @@ a ogni contributo esterno perché non ricevono i secret.
 
 ## 4. Verifica
 
-```powershell
-$host = az staticwebapp show -n swa-azure-meetup-torino -g rg-azure-meetup-torino --query defaultHostname -o tsv
+```bash
+SITE=$(az staticwebapp show -n swa-azure-meetup-torino -g rg-azure-meetup-torino --query defaultHostname -o tsv)
 
-curl.exe -I "https://$host/"                       # 200 + header di sicurezza
-curl.exe -I "https://$host/data/team.json"         # 200, Cache-Control 300s
-curl.exe -o nul -w "%{http_code}`n" "https://$host/pagina-inesistente"   # 404
+curl -I "https://$SITE/"                # 200 + header di sicurezza
+curl -I "https://$SITE/data/team.json"  # 200, Cache-Control 300s
+curl -o /dev/null -w '%{http_code}\n' "https://$SITE/pagina-inesistente"   # 404
+curl -o /dev/null -w '%{http_code}\n' "https://$SITE/admin/"               # 302 verso il login
 ```
+
+In PowerShell non chiamare la variabile `$host`: è una variabile automatica
+riservata e l'assegnazione fallisce.
 
 Nel browser, DevTools aperto: nessuna violazione CSP in console, carosello team
 in movimento, eventi e sponsor renderizzati.

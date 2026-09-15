@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Area riservata | Azure Meetup Torino</title>
+    <meta name="robots" content="noindex, nofollow">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/assets/vendor/bootstrap-icons/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/assets/css/tokens.css">
+    <link rel="stylesheet" href="/assets/css/base.css">
+    <link rel="stylesheet" href="/assets/css/admin.css">
+</head>
+<body class="admin-body">
+
+    <header class="admin-header">
+        <div class="admin-header-inner">
+            <div class="admin-brand">
+                Azure Meetup Torino
+                <small>Area riservata</small>
+            </div>
+
+            <div class="admin-session">
+                <span class="admin-user">
+                    <i class="bi bi-person-circle" aria-hidden="true"></i>
+                    <span id="admin-user">caricamento...</span>
+                </span>
+                <a class="admin-logout" href="/.auth/logout">
+                    <i class="bi bi-box-arrow-right" aria-hidden="true"></i> Esci
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="admin-main">
+        <h1 class="admin-title">Gestione contenuti</h1>
+        <p class="admin-subtitle">
+            Da qui si modificano il team e gli sponsor mostrati sul sito pubblico.
+            Gli eventi arrivano da Meetup e non si modificano a mano.
+        </p>
+
+        <div id="admin-notice" class="admin-notice" hidden></div>
+
+        <div class="admin-tabs" role="tablist" aria-label="Sezioni gestibili">
+            <button type="button" class="admin-tab" role="tab" id="tab-team"
+                    data-tab="team" aria-controls="panel-team" aria-selected="true">
+                <i class="bi bi-people" aria-hidden="true"></i> Team
+            </button>
+            <button type="button" class="admin-tab" role="tab" id="tab-sponsor"
+                    data-tab="sponsor" aria-controls="panel-sponsor" aria-selected="false" tabindex="-1">
+                <i class="bi bi-award" aria-hidden="true"></i> Sponsor
+            </button>
+        </div>
+
+        <section class="admin-panel" id="panel-team" role="tabpanel" aria-labelledby="tab-team" tabindex="0">
+            <div class="admin-placeholder">
+                <i class="bi bi-people" aria-hidden="true"></i>
+                <strong>Gestione team</strong>
+                <p>
+                    L'editor dei membri arriva con la fase successiva, insieme alla
+                    scrittura su Blob Storage. Per ora questa pagina serve a verificare
+                    che l'autenticazione e i ruoli funzionino.
+                </p>
+            </div>
+        </section>
+
+        <section class="admin-panel" id="panel-sponsor" role="tabpanel" aria-labelledby="tab-sponsor" tabindex="0" hidden>
+            <div class="admin-placeholder">
+                <i class="bi bi-award" aria-hidden="true"></i>
+                <strong>Gestione sponsor</strong>
+                <p>
+                    L'editor degli sponsor, con il caricamento dei loghi, arriva subito
+                    dopo quello del team.
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <script type="module" src="/assets/js/admin/app.js"></script>
+</body>
+</html>
