@@ -91,6 +91,12 @@ risorse Azure vedi [docs/deploy.md](docs/deploy.md).
 | P5 | Integrazione Meetup e filtro temporale eventi | da fare |
 | P6 | Telemetria, SEO, accessibilità | da fare |
 
+## Riprendere il lavoro
+
+[docs/stato-lavori.md](docs/stato-lavori.md) tiene il punto della situazione:
+cosa e fatto, le decisioni gia prese, i bloccanti aperti e il prossimo passo.
+Il piano completo e in [docs/piano.md](docs/piano.md).
+
 ## Licenza
 
 [MIT](LICENSE)
