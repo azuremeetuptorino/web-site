@@ -85,7 +85,7 @@ risorse Azure vedi [docs/deploy.md](docs/deploy.md).
 |---|---|---|
 | P0 | Refactor statico, contenuti su JSON | fatto |
 | P1 | Configurazione SWA, pagine di errore, CI/CD | fatto (risorse Azure da creare) |
-| P2 | `/admin` e autenticazione Entra ID | da fare |
+| P2 | `/admin` e autenticazione Entra ID | fatto |
 | P3 | CRUD team su Blob Storage | da fare |
 | P4 | CRUD sponsor e upload loghi | da fare |
 | P5 | Integrazione Meetup e filtro temporale eventi | da fare |
