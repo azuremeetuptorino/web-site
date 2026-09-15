@@ -1,0 +1,15 @@
+{
+  "name": "azure-meetup-torino-web-site",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Sito della community Azure Meetup Torino su Azure Static Web Apps. Il frontend e statico e non ha build: queste dipendenze servono solo allo sviluppo locale.",
+  "license": "MIT",
+  "scripts": {
+    "start": "swa start",
+    "storage": "azurite --silent --location .azurite --skipApiVersionCheck"
+  },
+  "devDependencies": {
+    "@azure/static-web-apps-cli": "^2.0.2",
+    "azurite": "^3.33.0"
+  }
+}

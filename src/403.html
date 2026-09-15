@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accesso non autorizzato | Azure Meetup Torino</title>
+    <meta name="robots" content="noindex">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/assets/vendor/bootstrap-icons/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/assets/css/tokens.css">
+    <link rel="stylesheet" href="/assets/css/base.css">
+    <link rel="stylesheet" href="/assets/css/status.css">
+</head>
+<body>
+    <main class="status-page">
+        <div class="status-card">
+            <i class="bi bi-shield-lock status-icon" aria-hidden="true"></i>
+            <span class="status-code">Errore 403</span>
+            <h1>Il tuo account non ha accesso</h1>
+            <p>
+                L'autenticazione è andata a buon fine, ma questa area è riservata agli
+                organizzatori della community. L'accesso viene concesso su invito: se
+                pensi di doverne avere uno, scrivici.
+            </p>
+
+            <div class="status-actions">
+                <a class="status-btn status-btn-primary" href="/">
+                    <i class="bi bi-house-door" aria-hidden="true"></i> Torna alla home
+                </a>
+                <a class="status-btn" href="mailto:info@azuremeetuptorino.it?subject=[Azure%20Meetup%20Torino]%20Richiesta%20accesso%20area%20riservata">
+                    <i class="bi bi-envelope" aria-hidden="true"></i> Richiedi accesso
+                </a>
+                <a class="status-btn" href="/.auth/logout">
+                    <i class="bi bi-box-arrow-right" aria-hidden="true"></i> Esci
+                </a>
+            </div>
+
+            <p class="status-hint">
+                Se hai fatto accesso con l'account sbagliato, esci e riprova con quello invitato.
+            </p>
+        </div>
+    </main>
+</body>
+</html>

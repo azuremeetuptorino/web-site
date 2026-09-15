@@ -1,0 +1,101 @@
+/* =========================================
+   PAGINE DI STATO (403 / 404)
+   ========================================= */
+.status-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1.5rem;
+    background: linear-gradient(135deg, #002050 0%, #004578 100%);
+}
+
+.status-card {
+    background: var(--bg-white);
+    border-radius: 12px;
+    box-shadow: 0 12px 30px rgba(0, 32, 80, 0.25);
+    max-width: 520px;
+    width: 100%;
+    padding: 2.5rem 2rem;
+    text-align: center;
+}
+
+.status-icon {
+    font-size: 2.6rem;
+    color: var(--azure-blue);
+    line-height: 1;
+    margin-bottom: 0.9rem;
+    display: block;
+}
+
+.status-code {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.status-card h1 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--azure-dark);
+    margin: 0.4rem 0 0.8rem 0;
+}
+
+.status-card p {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+.status-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: center;
+    margin-top: 1.6rem;
+}
+
+.status-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0.65rem 1.2rem;
+    border-radius: 6px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    transition: var(--transition);
+    border: 1px solid var(--border-color);
+    color: var(--text-dark);
+    background: var(--bg-light);
+}
+
+.status-btn:hover {
+    border-color: var(--azure-blue);
+    color: var(--azure-blue);
+    transform: translateY(-2px);
+}
+
+.status-btn-primary {
+    background: var(--azure-blue);
+    border-color: var(--azure-blue);
+    color: #FFFFFF;
+}
+
+.status-btn-primary:hover {
+    background: var(--azure-accent);
+    border-color: var(--azure-accent);
+    color: #FFFFFF;
+}
+
+.status-hint {
+    margin-top: 1.4rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .status-btn { transition: none; }
+    .status-btn:hover { transform: none; }
+}

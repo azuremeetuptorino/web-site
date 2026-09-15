@@ -1,0 +1,13 @@
+{
+  "$schema": "https://aka.ms/azure/static-web-apps-cli/schema",
+  "configurations": {
+    "azure-meetup-torino": {
+      "appLocation": "src",
+      "outputLocation": "",
+      "apiLanguage": "node",
+      "apiVersion": "20",
+      "port": 4280,
+      "open": false
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json.schemastore.org/staticwebapp.config.json",
+  "trailingSlash": "auto",
+  "routes": [
+    {
+      "route": "/assets/vendor/*",
+      "headers": { "Cache-Control": "public, max-age=31536000, immutable" }
+    },
+    {
+      "route": "/assets/img/*",
+      "headers": { "Cache-Control": "public, max-age=2592000" }
+    },
+    {
+      "route": "/data/*",
+      "headers": { "Cache-Control": "public, max-age=300, must-revalidate" }
+    }
+  ],
+  "_comment_navigationFallback": "Deliberatamente assente. Il sito non e una SPA: ogni pagina e un file reale e non c'e routing client-side. Con un navigationFallback verso /index.html qualsiasi URL sbagliata risponderebbe 200 con la homepage (soft 404), e soprattutto le richieste servite dal fallback SALTANO le route rules, quindi /admin/* diventerebbe raggiungibile senza autenticazione.",
+  "responseOverrides": {
+    "403": { "rewrite": "/403.html", "statusCode": 403 },
+    "404": { "rewrite": "/404.html", "statusCode": 404 }
+  },
+  "globalHeaders": {
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "DENY",
+    "Referrer-Policy": "strict-origin-when-cross-origin",
+    "Permissions-Policy": "geolocation=(), microphone=(), camera=()",
+    "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+    "Content-Security-Policy": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://images.unsplash.com https://media.licdn.com https://secure.meetupstatic.com; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+  },
+  "mimeTypes": {
+    ".json": "application/json",
+    ".webmanifest": "application/manifest+json",
+    ".webp": "image/webp",
+    ".svg": "image/svg+xml"
+  }
+}
