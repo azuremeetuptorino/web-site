@@ -1,4 +1,5 @@
 import { createEditorCore } from './editor-core.js';
+import { renderRichText } from '../rich-text.js';
 
 /**
  * Editor dei contenuti della home: foto principale, logo, "Chi siamo",
@@ -124,6 +125,7 @@ export const siteEditor = createEditorCore({
         setList('footer.social', data.footer?.social ?? []);
 
         refreshImages(form(), field);
+        refreshAbout(form(), field);
     },
 
     collect({ value, form, readList }) {
@@ -137,15 +139,32 @@ export const siteEditor = createEditorCore({
         return document_;
     },
 
-    /** Le due anteprime in cima al modulo seguono i campi mentre si scrive. */
+    /** Le anteprime seguono i campi mentre si scrive. */
     onEdit(_, { field, form }) {
         refreshImages(form(), field);
+        refreshAbout(form(), field);
     },
 
     onUpload(_, { field, form }) {
         refreshImages(form(), field);
     }
 });
+
+/**
+ * Anteprima di "Chi siamo".
+ *
+ * Serve a rendere scopribile la sintassi: `**grassetto**` e `[testo](url)` non
+ * si indovinano, e un campo che accetta una notazione senza mostrarne il
+ * risultato la fa sembrare rotta. Passa dallo stesso modulo che renderizza il
+ * sito, quindi non e una simulazione: e proprio quello che si vedra.
+ */
+function refreshAbout(form, field) {
+    const slot = form.querySelector('#about-preview');
+    if (!slot) return;
+
+    const html = renderRichText(field(form, 'about.text').value, field(form, 'about.lead').value);
+    slot.innerHTML = html || '<p class="rich-preview-empty">Il testo comparira qui.</p>';
+}
 
 function refreshImages(form, field) {
     for (const [path, fallback] of [['brand.logoUrl', PLACEHOLDER_LOGO], ['brand.heroImageUrl', '']]) {

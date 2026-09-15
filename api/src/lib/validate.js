@@ -283,13 +283,58 @@ function validateBrand(issues, value) {
     };
 }
 
+/**
+ * I link scritti dentro un testo lungo. Tenuta allineata a INLINE di
+ * src/assets/js/rich-text.js.
+ */
+const RICH_LINK = /\[([^\]\n]+)\]\(([^)\s]+)\)/g;
+
+/**
+ * Destinazioni ammesse dentro un testo: le stesse di un campo URL, piu i
+ * rimandi a una sezione della pagina, che in un paragrafo hanno senso e in un
+ * campo "logo" no.
+ */
+function isLinkTarget(raw) {
+    if (raw.startsWith('#')) return raw.length > 1;
+    if (raw.startsWith('//')) return false;
+    if (raw.startsWith('/')) return true;
+
+    try {
+        return isAllowedOrigin(new URL(raw));
+    } catch {
+        return false;
+    }
+}
+
+/**
+ * Il rendering pubblico degrada un link non valido a testo semplice: e la rete
+ * di sicurezza, non il posto dove accorgersene. Qui si risponde 400 col nome
+ * del link, cosi chi scrive lo sistema subito invece di vedere delle parentesi
+ * quadre comparire sul sito.
+ */
+function checkRichLinks(issues, path, value) {
+    if (typeof value !== 'string') return;
+
+    for (const match of value.matchAll(RICH_LINK)) {
+        if (!isLinkTarget(match[2])) {
+            add(issues, path, `il link "${match[1]}" punta a un indirizzo non ammesso: usa https://, un percorso del sito oppure #sezione`);
+        }
+    }
+}
+
 function validateAbout(issues, value) {
     const about = section(value);
+    const body = text(issues, 'about.text', about.text, { max: 1200 });
+
+    // Il testo ammette **grassetto** e [link](url): le destinazioni vanno
+    // controllate come qualunque altro URL.
+    checkRichLinks(issues, 'about.text', body);
+
     return {
         title: text(issues, 'about.title', about.title, { max: 60 }),
         // L'apertura in grassetto, di solito il nome della community.
         lead: text(issues, 'about.lead', about.lead, { max: 80 }),
-        text: text(issues, 'about.text', about.text, { max: 1200 })
+        text: body
     };
 }
 

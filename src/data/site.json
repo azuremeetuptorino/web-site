@@ -12,25 +12,51 @@
   "about": {
     "title": "Chi Siamo",
     "lead": "Azure Meetup Torino",
-    "text": "è la tech community indipendente piemontese dedicata all'ecosistema Microsoft Azure, Cloud Architecture, DevOps e Intelligenza Artificiale. Uno spazio inclusivo e gratuito aperto a sviluppatori, architetti, sistemisti e curiosi per scambiare know-how, case study reali e fare networking di persona."
+    "text": "è la tech community indipendente piemontese dedicata all'ecosistema Microsoft Azure, Cloud Architecture, DevOps e Intelligenza Artificiale. Uno spazio inclusivo e gratuito aperto a sviluppatori, architetti, sistemisti e curiosi per scambiare know-how, case study reali e fare networking di persona.\n\nIl prossimo incontro si annuncia qui: **iscriviti su [Meetup](https://www.meetup.com/it-IT/azure-meetup-torino/)** per non perdertelo."
   },
   "stats": [
-    { "value": "1.2k+", "label": "Membri Attivi" },
-    { "value": "30+", "label": "Meetup Svolti" }
+    {
+      "value": "1.2k+",
+      "label": "Membri Attivi"
+    },
+    {
+      "value": "30+",
+      "label": "Meetup Svolti"
+    }
   ],
   "footer": {
     "intro": "Entra in contatto con noi o unisciti ai nostri canali per restare aggiornato.",
     "email": "info@azuremeetuptorino.it",
     "legal": "© 2026 Azure Meetup Torino. Community indipendente non affiliata con Microsoft Corporation.",
     "channels": [
-      { "type": "telegram", "label": "Canale Telegram", "url": "https://t.me/AzureMeetupTorino" },
-      { "type": "whatsapp", "label": "Canale WhatsApp", "url": "https://chat.whatsapp.com" }
+      {
+        "type": "telegram",
+        "label": "Canale Telegram",
+        "url": "https://t.me/AzureMeetupTorino"
+      },
+      {
+        "type": "whatsapp",
+        "label": "Canale WhatsApp",
+        "url": "https://chat.whatsapp.com"
+      }
     ],
     "social": [
-      { "type": "linkedin", "url": "https://it.linkedin.com/company/azure-meetup-torino" },
-      { "type": "youtube", "url": "https://www.youtube.com/@AzureMeetupTorino" },
-      { "type": "instagram", "url": "https://www.instagram.com/azuremeetuptorino" },
-      { "type": "github", "url": "https://github.com/Azure-Meetup-Torino" }
+      {
+        "type": "linkedin",
+        "url": "https://it.linkedin.com/company/azure-meetup-torino"
+      },
+      {
+        "type": "youtube",
+        "url": "https://www.youtube.com/@AzureMeetupTorino"
+      },
+      {
+        "type": "instagram",
+        "url": "https://www.instagram.com/azuremeetuptorino"
+      },
+      {
+        "type": "github",
+        "url": "https://github.com/Azure-Meetup-Torino"
+      }
     ]
   }
 }

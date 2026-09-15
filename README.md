@@ -96,6 +96,12 @@ contiene l'impronta del contenuto, così la cache può durare un anno e cambiare
 foto cambia URL. Gli SVG vengono sanificati e serviti come allegato. Resta
 possibile incollare a mano una URL `https://` già ospitata altrove.
 
+Il testo di "Chi siamo" ammette `**grassetto**` e `[link](https://...)` — un
+sottoinsieme minimo, utile per esempio a segnalare l'iscrizione al prossimo
+evento. Non è HTML: `src/assets/js/rich-text.js` scappa tutto e poi reintroduce
+solo il markup che ha generato lui, così non esiste un percorso per cui del
+markup scritto nell'editor arrivi intatto nella pagina.
+
 I contenuti fissi della home — foto principale, logo, "Chi siamo", le due
 statistiche, il footer, il titolo della scheda del browser e la favicon — stanno in `site.json` e si modificano dalla scheda
 **Home e footer**. Qui vale una regola diversa dalle altre sezioni: l'HTML

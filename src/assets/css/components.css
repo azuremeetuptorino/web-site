@@ -45,6 +45,29 @@
 
 .about-manifesto h3 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.8rem; }
 .about-manifesto p { font-size: 0.96rem; color: #E1DFDD; line-height: 1.65; }
+.about-manifesto p + p { margin-top: 0.8rem; }
+
+/*
+   `base.css` fa ereditare colore e decorazione ai link, il che qui li rendeva
+   identici al testo intorno: dentro un paragrafo scuro un link di iscrizione
+   invisibile non serve a niente. Stesso ciano delle statistiche, che su questo
+   fondo ha contrasto abbondante, piu la sottolineatura — il colore da solo non
+   basta a chi non distingue le tinte.
+*/
+.about-manifesto a {
+    color: #50E6FF;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.about-manifesto a:hover { color: #FFFFFF; }
+
+.about-manifesto a:focus-visible {
+    outline: 2px solid #50E6FF;
+    outline-offset: 2px;
+    border-radius: 2px;
+}
 
 .manifesto-stats {
     display: flex;

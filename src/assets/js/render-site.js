@@ -1,4 +1,5 @@
 import { escapeHtml, safeUrl } from './dom.js';
+import { renderRichText, paragraphsOf } from './rich-text.js';
 
 /**
  * Contenuti fissi della home: foto principale, logo, "Chi siamo", statistiche,
@@ -110,30 +111,20 @@ function applyMeta(root, brand) {
    ========================================================== */
 
 /**
- * L'apertura in grassetto e il resto del testo sono due campi separati: il
- * grassetto e una scelta grafica ricorrente (il nome della community che apre
- * il paragrafo), e chiederlo come markup dentro un textarea vorrebbe dire
- * accettare HTML da un campo di testo. Qui si compone, e si scappa tutto.
+ * Il testo ammette grassetto e link (vedi rich-text.js), utile per esempio a
+ * mettere in evidenza l'iscrizione al prossimo evento senza toccare il repo.
  *
- * Le righe vuote separano i paragrafi.
+ * L'apertura in grassetto resta un campo a parte: e una scelta grafica fissa,
+ * il nome della community che apre il paragrafo, non una decorazione che si
+ * decide ogni volta.
  */
 function applyAbout(root, about) {
     const slot = root.querySelector('[data-site-about]');
     if (!slot || !about) return;
 
-    const paragraphs = filled(about.text)
-        ? about.text.split(/\n\s*\n/).map((piece) => piece.trim()).filter(Boolean)
-        : [];
+    if (paragraphsOf(about.text).length === 0 && !filled(about.lead)) return;
 
-    if (paragraphs.length === 0 && !filled(about.lead)) return;
-
-    const lead = filled(about.lead) ? `<strong>${escapeHtml(about.lead)}</strong> ` : '';
-    const [first, ...rest] = paragraphs.length > 0 ? paragraphs : [''];
-
-    slot.innerHTML = [
-        `<p>${lead}${escapeHtml(first)}</p>`,
-        ...rest.map((piece) => `<p>${escapeHtml(piece)}</p>`)
-    ].join('\n');
+    slot.innerHTML = renderRichText(about.text ?? '', about.lead ?? '');
 }
 
 /* ==========================================================

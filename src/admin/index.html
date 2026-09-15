@@ -257,9 +257,19 @@
 
                         <div class="field field-wide">
                             <label data-label-for="about.text">Testo</label>
-                            <textarea data-field="about.text" maxlength="1200" rows="5"></textarea>
-                            <span class="field-note">Una riga vuota separa due paragrafi. Niente HTML: viene mostrato come testo.</span>
+                            <textarea data-field="about.text" maxlength="1200" rows="6"></textarea>
+                            <span class="field-note">
+                                Una riga vuota separa due paragrafi. Si possono usare
+                                <code>**grassetto**</code> e <code>[testo del link](https://...)</code>
+                                &mdash; utile per esempio a segnalare l'iscrizione al prossimo evento.
+                                Come destinazione vanno <code>https://</code>, un percorso del sito
+                                come <code>/403.html</code> o una sezione come <code>#eventi</code>.
+                                Niente HTML: verrebbe mostrato come testo.
+                            </span>
                             <span class="field-error" data-error-for="about.text" hidden></span>
+
+                            <p class="rich-preview-label">Anteprima</p>
+                            <div class="rich-preview" id="about-preview"></div>
                         </div>
                     </div>
                 </section>

@@ -118,8 +118,19 @@ riga legale, canali e profili social).
 - 107 test.
 
 Il testo di "Chi siamo" ha l'apertura in grassetto come campo separato
-(`about.lead`). L'alternativa era accettare HTML dentro un textarea, cioè
-rinunciare a scappare l'input di un campo di testo.
+(`about.lead`), ed **ammette `**grassetto**` e `[link](url)`** nel corpo —
+serviva a segnalare l'iscrizione al prossimo evento senza toccare il repo.
+
+Non è HTML, ed è una scelta precisa: `src/assets/js/rich-text.js` scappa tutto
+e poi reintroduce solo il markup che ha generato lui. Accettare HTML nel
+textarea avrebbe voluto dire rinunciare all'escaping proprio dove il testo è
+modificabile, e sanificarlo a valle è un lavoro che basta sbagliare una volta
+per aprire un buco (lo si era già visto con gli SVG). Il server rifiuta con un
+400 i link che puntano altrove che a `https://`, a un percorso del sito o a una
+sezione; il rendering pubblico, se uno passa lo stesso, lo degrada a testo.
+
+Limite noto: un link dentro il grassetto funziona, il grassetto dentro il testo
+di un link no.
 
 ## Passata sul mobile
 

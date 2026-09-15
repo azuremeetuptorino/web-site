@@ -665,3 +665,36 @@
     .editor-row-inline { flex-direction: column; align-items: stretch; }
     .editor-row-inline .editor-buttons { margin-left: 0; justify-content: flex-end; }
 }
+
+/* ---------- Anteprima dei testi con formattazione ---------- */
+.rich-preview-label {
+    margin-top: 0.7rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+/* Sfondo scuro come la sezione vera del sito: un'anteprima su fondo bianco
+   direbbe poco di come si legge davvero. */
+.rich-preview {
+    margin-top: 0.3rem;
+    padding: 0.9rem 1.1rem;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #002050 0%, #004578 100%);
+    color: #E1DFDD;
+    font-size: 0.88rem;
+    line-height: 1.6;
+}
+
+.rich-preview p + p { margin-top: 0.7rem; }
+
+.rich-preview strong { color: #FFFFFF; }
+
+.rich-preview a {
+    color: #50E6FF;
+    text-decoration: underline;
+}
+
+.rich-preview-empty { color: #9FC4E8; font-style: italic; }
