@@ -77,7 +77,7 @@ In sviluppo il container pubblico è quello di Azurite. In produzione, finché l
 costante `STORAGE_ACCOUNT` di `src/assets/js/config.js` è vuota, si leggono i
 file del deploy: è lo stato corretto prima che le risorse Azure esistano.
 
-Il giro di una modifica:
+Il giro di una modifica, uguale per team e sponsor:
 
 ```
 /admin  ──PUT /api/team──►  site-data/team.json   (master, scrittura con ETag)
@@ -89,12 +89,17 @@ Due schede aperte sullo stesso editor non si sovrascrivono: la seconda riceve
 un 409 con la copia del server e decide cosa tenere. È l'unica difesa possibile,
 perché le function scalano su più istanze e un lock in-process non servirebbe.
 
-Le foto dei membri (e dalla P4 i loghi degli sponsor) si caricano dall'admin con
+Le foto dei membri e i loghi degli sponsor si caricano dall'admin con
 `POST /api/assets` e finiscono nel container pubblico: PNG, JPEG, WebP o SVG,
 max 512 KB, tipo verificato sui byte e non sul nome del file. Il nome del blob
 contiene l'impronta del contenuto, così la cache può durare un anno e cambiare
 foto cambia URL. Gli SVG vengono sanificati e serviti come allegato. Resta
 possibile incollare a mano una URL `https://` già ospitata altrove.
+
+Per gli sponsor, la **fascia** (`gold`, `silver`, `bronze`, `partner`, `venue`,
+`media`) è l'unico dato che governa dimensione del logo, raggruppamento e ordine
+in pagina. È deliberato: aggiungere uno sponsor non deve mai voler dire toccare
+il CSS.
 
 ## Deploy
 
@@ -110,7 +115,7 @@ risorse Azure vedi [docs/deploy.md](docs/deploy.md).
 | P1 | Configurazione SWA, pagine di errore, CI/CD | fatto (risorse Azure da creare) |
 | P2 | `/admin` e autenticazione Entra ID | fatto |
 | P3 | CRUD team su Blob Storage | fatto (risorse Azure da creare) |
-| P4 | CRUD sponsor e upload loghi | da fare |
+| P4 | CRUD sponsor e upload loghi | fatto (risorse Azure da creare) |
 | P5 | Integrazione Meetup e filtro temporale eventi | da fare |
 | P6 | Telemetria, SEO, accessibilità | da fare |
 

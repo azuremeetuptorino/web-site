@@ -24,13 +24,14 @@ export const LINK_TYPES = [
 ];
 
 const ID_PATTERN = /^[a-z0-9][a-z0-9-]{1,48}$/;
-const MAX_MEMBERS = 200;
+const MAX_ITEMS = 200;
 
 const LIMITS = {
     name: 80,
     nick: 40,
     role: 60,
     bio: 240,
+    description: 200,
     url: 2048
 };
 
@@ -67,9 +68,14 @@ function oneOf(issues, path, value, allowed, { required = false } = {}) {
 }
 
 /**
- * Solo https, con un'eccezione per l'host locale.
+ * Solo https, con due eccezioni.
  *
- * L'eccezione serve allo sviluppo: con Azurite gli avatar caricati stanno su
+ * `/percorso` serve ai file che il sito serve gia da se (i loghi segnaposto
+ * stanno in `src/assets/img/sponsors/`). `//host` invece NON e un percorso: e
+ * una URL che eredita lo schema, e va rifiutata come qualunque host esterno
+ * scritto male.
+ *
+ * `http://localhost` serve allo sviluppo: con Azurite i file caricati stanno su
  * http://127.0.0.1:10000, e senza questo scarto l'editor rifiuterebbe in locale
  * esattamente i dati che in produzione sono validi.
  */
@@ -78,9 +84,15 @@ function isAllowedOrigin(url) {
     return url.protocol === 'http:' && ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname);
 }
 
-function httpsUrl(issues, path, value, { required = false } = {}) {
+function webUrl(issues, path, value, { required = false } = {}) {
     const raw = text(issues, path, value, { required, max: LIMITS.url });
     if (raw === undefined) return undefined;
+
+    if (raw.startsWith('/')) {
+        return raw.startsWith('//')
+            ? add(issues, path, 'non e un indirizzo valido')
+            : raw;
+    }
 
     let url;
     try {
@@ -88,7 +100,7 @@ function httpsUrl(issues, path, value, { required = false } = {}) {
     } catch {
         return add(issues, path, 'non e un indirizzo valido');
     }
-    if (!isAllowedOrigin(url)) return add(issues, path, 'deve iniziare con https://');
+    if (!isAllowedOrigin(url)) return add(issues, path, 'deve iniziare con https:// oppure con /');
 
     return url.toString();
 }
@@ -128,7 +140,7 @@ function validateLink(issues, path, value) {
     if (empty) return undefined;
 
     const type = oneOf(issues, `${path}.type`, value.type, LINK_TYPES, { required: true });
-    const url = httpsUrl(issues, `${path}.url`, value.url, { required: true });
+    const url = webUrl(issues, `${path}.url`, value.url, { required: true });
 
     return type && url ? { type, url } : undefined;
 }
@@ -156,7 +168,7 @@ function validateMember(issues, path, value, seenIds) {
         role: text(issues, `${path}.role`, value.role, { max: LIMITS.role }),
         roleKey: oneOf(issues, `${path}.roleKey`, value.roleKey, ROLE_KEYS, { required: true }),
         bio: text(issues, `${path}.bio`, value.bio, { max: LIMITS.bio }),
-        avatarUrl: httpsUrl(issues, `${path}.avatarUrl`, value.avatarUrl),
+        avatarUrl: webUrl(issues, `${path}.avatarUrl`, value.avatarUrl),
         link: validateLink(issues, `${path}.link`, value.link),
         order: integer(issues, `${path}.order`, value.order),
         active: flag(issues, `${path}.active`, value.active)
@@ -171,33 +183,122 @@ function validateMember(issues, path, value, seenIds) {
     return member;
 }
 
+/* ==========================================================
+   SPONSOR
+   ========================================================== */
+
 /**
- * Valida il documento del team.
+ * Il tier e l'unico dato che governa dimensione del logo, raggruppamento e
+ * ordine delle fasce. E una scelta precisa: aggiungere uno sponsor non deve
+ * mai voler dire toccare il CSS.
+ *
+ * Tenuto allineato a TIER_WEIGHT di src/assets/js/render-sponsors.js.
+ */
+export const TIERS = ['gold', 'silver', 'bronze', 'partner', 'venue', 'media'];
+
+/** `since` e l'anno da cui ci sostengono, non una data: basta l'anno. */
+function year(issues, path, value) {
+    const raw = text(issues, path, value, { max: 4 });
+    if (raw === undefined) return undefined;
+
+    if (!/^\d{4}$/.test(raw) || Number(raw) < 2000 || Number(raw) > 2100) {
+        return add(issues, path, 'deve essere un anno, per esempio 2025');
+    }
+    return raw;
+}
+
+function validateSponsor(issues, path, value, seenIds) {
+    if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+        return add(issues, path, 'deve essere un oggetto');
+    }
+
+    const id = text(issues, `${path}.id`, value.id, { required: true, max: 49 });
+    if (id !== undefined) {
+        if (!ID_PATTERN.test(id)) {
+            add(issues, `${path}.id`, 'ammessi solo minuscole, cifre e trattini, da 2 a 49 caratteri');
+        } else if (seenIds.has(id)) {
+            add(issues, `${path}.id`, `gia usato da un altro sponsor: ${id}`);
+        } else {
+            seenIds.add(id);
+        }
+    }
+
+    const sponsor = {
+        id,
+        name: text(issues, `${path}.name`, value.name, { required: true, max: LIMITS.name }),
+        tier: oneOf(issues, `${path}.tier`, value.tier, TIERS, { required: true }),
+        // Il logo e obbligatorio: senza, la card sarebbe un rettangolo vuoto.
+        logoUrl: webUrl(issues, `${path}.logoUrl`, value.logoUrl, { required: true }),
+        // Serve solo ai loghi che spariscono su fondo scuro.
+        logoDarkUrl: webUrl(issues, `${path}.logoDarkUrl`, value.logoDarkUrl),
+        // Senza sito la card non e un link, ed e un caso legittimo.
+        websiteUrl: webUrl(issues, `${path}.websiteUrl`, value.websiteUrl),
+        description: text(issues, `${path}.description`, value.description, { max: LIMITS.description }),
+        since: year(issues, `${path}.since`, value.since),
+        order: integer(issues, `${path}.order`, value.order),
+        active: flag(issues, `${path}.active`, value.active)
+    };
+
+    for (const [key, entry] of Object.entries(sponsor)) {
+        if (entry === undefined) delete sponsor[key];
+    }
+    return sponsor;
+}
+
+/* ==========================================================
+   DOCUMENTI
+   ========================================================== */
+
+/**
+ * Scheletro comune ai due documenti: un oggetto con una lista dentro.
  *
  * `updatedAt` e `updatedBy` non si leggono dall'input: li mette il server, sono
- * traccia di chi ha salvato e non un campo modificabile dal client.
- *
- * @returns {{ok: true, value: object} | {ok: false, issues: {path: string, message: string}[]}}
+ * traccia di chi ha salvato e non un campo modificabile dal client. Anche
+ * `version` viene riscritta: e il formato del documento, non un dato.
  */
-export function validateTeam(input) {
+function validateCollection(input, { key, label, max, validateItem }) {
     const issues = [];
 
     if (typeof input !== 'object' || input === null || Array.isArray(input)) {
         return { ok: false, issues: [{ path: '', message: 'il documento deve essere un oggetto' }] };
     }
-    if (!Array.isArray(input.members)) {
-        return { ok: false, issues: [{ path: 'members', message: 'deve essere una lista di membri' }] };
+    if (!Array.isArray(input[key])) {
+        return { ok: false, issues: [{ path: key, message: `deve essere una lista di ${label}` }] };
     }
-    if (input.members.length > MAX_MEMBERS) {
-        return { ok: false, issues: [{ path: 'members', message: `troppi membri, massimo ${MAX_MEMBERS}` }] };
+    // Il limite scatta prima di validare: una lista assurda non deve costare
+    // tempo di CPU proporzionale a quanto e assurda.
+    if (input[key].length > max) {
+        return { ok: false, issues: [{ path: key, message: `troppi ${label}, massimo ${max}` }] };
     }
 
     const seenIds = new Set();
-    const members = input.members.map((member, index) =>
-        validateMember(issues, `members[${index}]`, member, seenIds)
+    const items = input[key].map((item, index) =>
+        validateItem(issues, `${key}[${index}]`, item, seenIds)
     );
 
     if (issues.length > 0) return { ok: false, issues };
 
-    return { ok: true, value: { version: 1, members } };
+    return { ok: true, value: { version: 1, [key]: items } };
+}
+
+/**
+ * @returns {{ok: true, value: object} | {ok: false, issues: {path: string, message: string}[]}}
+ */
+export function validateTeam(input) {
+    return validateCollection(input, {
+        key: 'members',
+        label: 'membri',
+        max: MAX_ITEMS,
+        validateItem: validateMember
+    });
+}
+
+/** @returns {{ok: true, value: object} | {ok: false, issues: {path: string, message: string}[]}} */
+export function validateSponsors(input) {
+    return validateCollection(input, {
+        key: 'sponsors',
+        label: 'sponsor',
+        max: MAX_ITEMS,
+        validateItem: validateSponsor
+    });
 }

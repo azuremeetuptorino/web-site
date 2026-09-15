@@ -291,6 +291,24 @@
 /* =========================================
    4. SPONSOR
    ========================================= */
+/* Le fasce, nell'ordine deciso da render-sponsors.js. Quelle senza sponsor non
+   vengono proprio emesse: nessun titolo sospeso su una griglia vuota. */
+.sponsor-tiers {
+    display: flex;
+    flex-direction: column;
+    gap: 2.25rem;
+}
+
+.sponsor-tier-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
 .sponsors-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -305,8 +323,10 @@
     min-height: 100px;
     padding: 1.2rem;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 0.5rem;
     transition: var(--transition);
     box-shadow: var(--shadow-sm);
 }
@@ -317,6 +337,40 @@
     height: 40px;
     object-fit: contain;
     transition: var(--transition);
+}
+
+/* LA DIMENSIONE DEL LOGO LA DECIDE IL TIER.
+   E tutto quello che serve per aggiungere uno sponsor senza toccare il CSS:
+   l'editor sceglie la fascia, il resto viene da qui. */
+.sponsor-tier[data-tier="gold"] .sponsors-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+.sponsor-card[data-tier="gold"] { min-height: 140px; }
+.sponsor-card[data-tier="gold"] img,
+.sponsor-card[data-tier="gold"] svg { height: 62px; }
+
+.sponsor-card[data-tier="silver"] { min-height: 118px; }
+.sponsor-card[data-tier="silver"] img,
+.sponsor-card[data-tier="silver"] svg { height: 48px; }
+
+.sponsor-tier[data-tier="media"] .sponsors-grid,
+.sponsor-tier[data-tier="venue"] .sponsors-grid,
+.sponsor-tier[data-tier="bronze"] .sponsors-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+}
+
+.sponsor-card[data-tier="bronze"] img,
+.sponsor-card[data-tier="bronze"] svg,
+.sponsor-card[data-tier="venue"] img,
+.sponsor-card[data-tier="venue"] svg,
+.sponsor-card[data-tier="media"] img,
+.sponsor-card[data-tier="media"] svg { height: 32px; }
+
+.sponsor-since {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
 }
 
 .sponsor-card:hover {

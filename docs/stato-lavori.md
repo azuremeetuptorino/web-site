@@ -17,8 +17,8 @@ Branch **`feat/azure-static-web-apps`**, mai pushato.
 | P1 | Configurazione SWA, pagine di errore, CI/CD | codice fatto, **risorse Azure da creare** |
 | P2 | `/admin` e autenticazione Entra ID | fatto, verificato con l'emulatore |
 | P3 | CRUD team su Blob Storage | fatto, verificato in locale contro Azurite |
-| P4 | CRUD sponsor e upload loghi | da fare, è il prossimo |
-| P5 | Integrazione Meetup e filtro temporale eventi | da fare |
+| P4 | CRUD sponsor e upload loghi | fatto, verificato in locale contro Azurite |
+| P5 | Integrazione Meetup e filtro temporale eventi | da fare, è il prossimo |
 | P6 | Telemetria, SEO, accessibilità | da fare |
 
 ## Cosa è entrato con la P3
@@ -57,6 +57,35 @@ Anche l'upload: PNG caricato → 201 con la URL, sul blob con
 né l'uno né l'altro e con `Content-Disposition: attachment`; `.exe` rinominato
 `.png` → 415; 600 KB → 413; anonimo → login.
 
+## Cosa è entrato con la P4
+
+Poco codice nuovo: quasi tutto era già lì dalla P3, ed è stato messo in comune
+invece che copiato.
+
+- `api/src/lib/document.js` — il contratto GET/PUT (ETag, 409 con la copia del
+  server, ripubblicazione) estratto da `team.js`. Team e sponsor sono due righe
+  di configurazione sopra lo stesso modulo: `team.js` è passato da ~120 righe a
+  30, e `sponsors.js` ne è costato altrettante.
+- `validateSponsors` accanto a `validateTeam`, sopra uno scheletro comune.
+  `since` vuole un anno e non una data; `logoUrl` è obbligatoria, perché senza
+  la card sarebbe un rettangolo vuoto.
+- `src/assets/js/admin/collection-editor.js` — stessa operazione lato browser.
+  Gli editor sono ora la sola *forma* dei dati (`fill`, `collect`, `preview`);
+  riordino, conflitto, errori per campo e upload stanno in un posto solo.
+- Editor sponsor in `/admin`, con due caricatori di logo (normale e per fondo
+  scuro).
+- `render-sponsors.js` raggruppa per fascia e il CSS dimensiona il logo dal
+  `data-tier`. Uno sponsor con una fascia sconosciuta **non sparisce**: finisce
+  fra i Partner. Il sito pubblico non valida niente, e far scomparire in
+  silenzio chi ci sostiene sarebbe il modo peggiore di reagire a un dato
+  inatteso.
+- `npm run seed` crea anche il master `site-data/sponsors.json`.
+- 90 test.
+
+Verificato end-to-end sull'emulatore: `GET /api/sponsors` con ETag, `PUT` che
+ripubblica, secondo `PUT` con lo stesso ETag → 409 con la copia del server,
+`tier` inventato e `since: "ieri"` → 400 con quattro issues sul campo giusto.
+
 ## Decisioni già prese
 
 Non vanno ridiscusse salvo ripensamenti espliciti.
@@ -74,6 +103,7 @@ Non vanno ridiscusse salvo ripensamenti espliciti.
 | Concorrenza | Optimistic con ETag, 409 con la copia del server. Niente lock |
 | `order` dei membri | Non è un campo da compilare: si riordina con le frecce e si rinumera 10, 20, 30 al salvataggio |
 | Foto e loghi | Si **caricano**, non si linkano: finiscono sul nostro storage. Il campo URL resta scrivibile per chi ha già l'immagine altrove, e per questo `img-src` è `https:` |
+| Fascia sponsor | È l'unico dato che governa dimensione del logo, raggruppamento e ordine. Aggiungere uno sponsor non deve mai voler dire toccare il CSS |
 
 ## Vincoli verificati
 
@@ -141,16 +171,19 @@ Errori trovati testando, non in astratto.
    setting `DATA_STORAGE_CONNECTION`, un `npm run seed`, e il nome dell'account
    dentro `STORAGE_ACCOUNT` (`config.js`) **e** nella CSP.
 
-2. **Le foto vere non ci sono.** Gli 11 avatar sono ancora URL di Unsplash. Ora
-   che il caricamento funziona basta aprire `/admin`, scegliere il file e
-   salvare, ma **servono le foto delle persone**.
+2. **I contenuti veri non ci sono.** Gli 11 membri del team e i 6 sponsor sono
+   inventati, foto e loghi compresi. Gli editor ci sono e il caricamento
+   funziona: **servono i nomi, le foto delle persone e i loghi degli sponsor**.
+   Da lì in poi si fa tutto da `/admin`, senza toccare il repo.
 
-   Nota: l'editor è stato controllato in un browser, ma **prima** che ci fosse
-   il bottone *Carica*. Il percorso lato server è verificato con curl (201, 415,
-   413, e l'SVG che arriva sul blob sanificato e come allegato); quello che non
-   ha ancora visto nessuno è il bottone che lo aziona.
+3. **L'editor sponsor non è mai stato aperto in un browser.** Quello del team
+   sì, upload compreso. Il lato server degli sponsor è verificato con curl (200
+   con ETag, 409, 400 con le issues) e il cablaggio DOM a tavolino, ma la
+   pagina no. Vale anche per il nuovo rendering a fasce sul sito pubblico: il
+   markup è stato controllato da Node, la resa visiva no. Nel devcontainer non
+   c'è un browser headless.
 
-3. **Logo e hero puntano a URL esterne volatili** (CDN di LinkedIn e Unsplash).
+4. **Logo e hero puntano a URL esterne volatili** (CDN di LinkedIn e Unsplash).
    Sono in `img-src` nella CSP per non rompere nulla, ma il logo vero andrebbe
    scaricato in `src/assets/img/`. **Serve il file del logo**, non ce l'ho.
 
@@ -185,23 +218,34 @@ username qualsiasi e nel campo dei ruoli scrivi `admin`, uno per riga.
 > L'emulatore rilegge `staticwebapp.config.json` **solo all'avvio**: dopo averlo
 > modificato riavvia `npm start`, altrimenti stai testando la vecchia config.
 
-## Prossimo passo: P4
+## Prossimo passo: P5
 
-Sponsor e upload dei loghi. Il grosso è riuso diretto della P3:
+Eventi da Meetup. È la fase con più incognite esterne di tutte.
 
-- `GET/PUT /api/sponsors` — stesso schema di `team.js`, con
-  `validateSponsors()` accanto a `validateTeam()`: `tier ∈
-  gold|silver|bronze|partner|venue|media` è l'unico dato che governa dimensione
-  del logo, raggruppamento e ordine delle fasce, così aggiungere uno sponsor non
-  tocca mai il CSS.
-- Editor sponsor nell'admin: il pannello e il `<template>` ricalcano quelli del
-  team, e `team-editor.js` è già scritto per essere ricalcato (le uniche parti
-  specifiche sono i campi e le anteprime). Per il logo si riusa
-  `admin/upload.js` passando `kind: 'sponsor'`: l'upload **è già fatto**.
-- Rendering sponsor raggruppato per tier in `render-sponsors.js`.
+- **Prima di scrivere codice: provare la query nel playground.**
+  `Group.pastEvents` e `upcomingEvents` sono stati rimossi dopo febbraio 2025;
+  con l'account Pro si passa da
+  `proNetwork(urlname).eventsSearch(input:{filter:{status:…}})`. Finché la query
+  non torna dati veri, tutto il resto è congettura.
+- `meetup/jwt.js` + `token.js`: il JWT si firma con `node:crypto`, senza
+  librerie. Il token va in cache su `site-data/_cache/meetup-token.json` e si
+  riusa finché mancano più di 300 s alla scadenza.
+- `meetup/query.js` + `map.js`: la query sta in un modulo solo, e `map.js`
+  traduce la risposta nello schema di `public/events.json`. `id` è una **stringa
+  opaca**: gli id Meetup sembrano numeri ma non vanno parsati come tali.
+- `POST /api/refresh-events`: accetta **o** un principal `admin` **o** l'header
+  `x-refresh-token` confrontato con `crypto.timingSafeEqual`. No-op dentro il
+  TTL di un'ora, forzabile con `?force=1`. **Su qualsiasi errore Meetup si serve
+  l'ultimo `public/events.json` buono e si risponde 200**: un breaking change
+  dello schema Meetup non deve mai svuotare il sito.
+- `.github/workflows/refresh-events.yml`: cron ogni 6 ore. Serve perché le
+  managed functions sono **solo HTTP**, dentro SWA non esiste timer trigger.
+- Poi il nuovo rendering eventi e il filtro `Prossimi | Passati` con le chip per
+  anno, disegnato in [docs/piano.md](piano.md), sezione *Filtro temporale*.
 
-Lo schema di `sponsors.json` è in [docs/piano.md](piano.md), sezione
-*Modelli dati*.
+Attenzione: questa è la prima fase che **non** si può verificare davvero con
+l'emulatore, perché dipende da credenziali vere. `MEETUP_MOCK=true` in
+`api/local.settings.json` serve a sviluppare il resto senza chiamare Meetup.
 
 ## Cose lasciate indietro di proposito
 
@@ -213,8 +257,8 @@ Lo schema di `sponsors.json` è in [docs/piano.md](piano.md), sezione
   invisibili ai crawler senza JS e alle anteprime dei link su LinkedIn e
   WhatsApp. Recuperabile in P6 con uno snapshot statico generato dal job di
   refresh.
-- **I 6 sponsor sono finti** (CloudNova, TechFlow, …), come i loghi. Vanno
-  sostituiti con quelli veri quando ci sarà l'editor di P4.
+- **I 6 sponsor sono finti** (CloudNova, TechFlow, …), come i loghi. Adesso
+  l'editor c'è: vanno sostituiti con quelli veri, e **servono i loghi**.
 - **Gli 11 membri del team sono placeholder** con foto Unsplash, tranne forse
   Matteo Contessa. Adesso però si correggono da `/admin` invece che a mano nel
   JSON.

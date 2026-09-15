@@ -332,26 +332,26 @@
     margin-top: 0.8rem;
 }
 
-/* ---------- Lista dei membri ---------- */
-.member-list {
+/* ---------- Lista delle schede (team e sponsor) ---------- */
+.editor-list {
     list-style: none;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
 }
 
-.member-details {
+.editor-details {
     border: 1px solid var(--border-color);
     border-radius: 8px;
     background: var(--bg-white);
 }
 
-.member-details[open] {
+.editor-details[open] {
     border-color: #C7E0F4;
     box-shadow: var(--shadow-sm);
 }
 
-.member-summary {
+.editor-summary {
     display: flex;
     align-items: center;
     gap: 0.8rem;
@@ -361,32 +361,39 @@
     border-radius: 8px;
 }
 
-.member-summary::-webkit-details-marker { display: none; }
+.editor-summary::-webkit-details-marker { display: none; }
 
-.member-summary:hover { background: var(--bg-light); }
+.editor-summary:hover { background: var(--bg-light); }
 
-.member-summary:focus-visible {
+.editor-summary:focus-visible {
     outline: 2px solid var(--azure-blue);
     outline-offset: -2px;
 }
 
-.member-thumb {
+.editor-thumb {
     width: 34px;
     height: 34px;
-    border-radius: 50%;
-    object-fit: cover;
+    object-fit: contain;
     background: var(--bg-light);
+    border-radius: 4px;
     flex-shrink: 0;
 }
 
-.member-heading {
+/* Le foto delle persone si ritagliano tonde, i loghi no: un logo tagliato a
+   cerchio perde proprio i bordi che lo rendono riconoscibile. */
+.editor-thumb-round {
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.editor-heading {
     display: flex;
     flex-direction: column;
     min-width: 0;
     flex: 1;
 }
 
-.member-heading strong {
+.editor-heading strong {
     font-size: 0.92rem;
     color: var(--azure-dark);
     overflow: hidden;
@@ -394,12 +401,12 @@
     white-space: nowrap;
 }
 
-.member-heading span {
+.editor-heading span {
     font-size: 0.78rem;
     color: var(--text-muted);
 }
 
-.member-flag {
+.editor-flag {
     font-size: 0.72rem;
     font-weight: 600;
     text-transform: uppercase;
@@ -412,17 +419,17 @@
     flex-shrink: 0;
 }
 
-.member-chevron {
+.editor-chevron {
     color: var(--text-muted);
     font-size: 0.85rem;
     transition: var(--transition);
     flex-shrink: 0;
 }
 
-.member-details[open] .member-chevron { transform: rotate(180deg); }
+.editor-details[open] .editor-chevron { transform: rotate(180deg); }
 
 /* ---------- Campi ---------- */
-.member-body {
+.editor-body {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.9rem;
@@ -480,7 +487,7 @@
     cursor: pointer;
 }
 
-.member-controls {
+.editor-controls {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
@@ -490,7 +497,7 @@
     padding-top: 0.8rem;
 }
 
-.member-buttons { display: flex; gap: 0.35rem; }
+.editor-buttons { display: flex; gap: 0.35rem; }
 
 .icon-btn {
     appearance: none;
@@ -559,11 +566,11 @@
 }
 
 @media (max-width: 640px) {
-    .member-body { grid-template-columns: minmax(0, 1fr); }
+    .editor-body { grid-template-columns: minmax(0, 1fr); }
     .upload-row { flex-direction: column; }
     .upload-btn { justify-content: center; padding: 0.5rem 0.8rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .editor-btn, .icon-btn, .member-chevron { transition: none; }
+    .editor-btn, .icon-btn, .editor-chevron, .upload-btn { transition: none; }
 }

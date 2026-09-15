@@ -56,6 +56,7 @@
             </button>
         </div>
 
+        <!-- ================= TEAM ================= -->
         <section class="admin-panel" id="panel-team" role="tabpanel" aria-labelledby="tab-team" tabindex="0">
 
             <div class="admin-placeholder" id="team-loading">
@@ -81,7 +82,7 @@
 
                 <div class="editor-alert" id="team-alert" hidden></div>
 
-                <ol class="member-list" id="team-list"></ol>
+                <ol class="editor-list" id="team-list"></ol>
 
                 <p class="editor-empty" id="team-empty" hidden>
                     Nessun membro. Usa <strong>Aggiungi membro</strong> per crearne uno.
@@ -95,36 +96,68 @@
             </div>
         </section>
 
+        <!-- ================= SPONSOR ================= -->
         <section class="admin-panel" id="panel-sponsor" role="tabpanel" aria-labelledby="tab-sponsor" tabindex="0" hidden>
-            <div class="admin-placeholder">
-                <i class="bi bi-award" aria-hidden="true"></i>
-                <strong>Gestione sponsor</strong>
-                <p>
-                    L'editor degli sponsor, con il caricamento dei loghi, arriva subito
-                    dopo quello del team.
+
+            <div class="admin-placeholder" id="sponsor-loading">
+                <i class="bi bi-hourglass-split" aria-hidden="true"></i>
+                <strong>Carico gli sponsor...</strong>
+            </div>
+
+            <div class="editor" id="sponsor-editor" hidden>
+                <div class="editor-bar">
+                    <div class="editor-actions">
+                        <button type="button" class="editor-btn editor-btn-primary" id="sponsor-save">
+                            <i class="bi bi-cloud-arrow-up" aria-hidden="true"></i> Salva e pubblica
+                        </button>
+                        <button type="button" class="editor-btn" id="sponsor-add">
+                            <i class="bi bi-plus-square" aria-hidden="true"></i> Aggiungi sponsor
+                        </button>
+                        <button type="button" class="editor-btn" id="sponsor-reload">
+                            <i class="bi bi-arrow-clockwise" aria-hidden="true"></i> Ricarica
+                        </button>
+                    </div>
+                    <p class="editor-state" id="sponsor-state" role="status" aria-live="polite"></p>
+                </div>
+
+                <div class="editor-alert" id="sponsor-alert" hidden></div>
+
+                <ol class="editor-list" id="sponsor-list"></ol>
+
+                <p class="editor-empty" id="sponsor-empty" hidden>
+                    Nessuno sponsor. Usa <strong>Aggiungi sponsor</strong> per crearne uno.
+                </p>
+
+                <p class="editor-hint">
+                    La <strong>fascia</strong> decide da sola quanto grande si vede il logo e in
+                    quale gruppo finisce sul sito: non c'e altro da impostare. Dentro la stessa
+                    fascia vale l'ordine delle schede.
                 </p>
             </div>
         </section>
     </main>
 
     <!--
-        Scheda di un membro. Si clona e si riempie via .value invece di comporre
-        HTML con i dati: nessuna concatenazione, nessun problema di escaping.
+        Schede clonate e riempite via .value invece di comporre HTML con i dati:
+        nessuna concatenazione, nessun problema di escaping. Le classi sono
+        condivise fra i due editor, cambiano solo i campi.
     -->
     <template id="member-template">
-        <li class="member-row">
-            <details class="member-details">
-                <summary class="member-summary">
-                    <img class="member-thumb" src="/assets/img/placeholder-avatar.svg" alt="" data-preview="avatar">
-                    <span class="member-heading">
+        <li class="editor-row">
+            <details class="editor-details">
+                <summary class="editor-summary">
+                    <img class="editor-thumb editor-thumb-round" alt="" data-preview="avatar"
+                         src="/assets/img/placeholder-avatar.svg"
+                         data-preview-fallback="/assets/img/placeholder-avatar.svg">
+                    <span class="editor-heading">
                         <strong data-preview="name">Nuovo membro</strong>
                         <span data-preview="role"></span>
                     </span>
-                    <span class="member-flag" data-preview="hidden" hidden>non mostrato</span>
-                    <i class="bi bi-chevron-down member-chevron" aria-hidden="true"></i>
+                    <span class="editor-flag" data-preview="hidden" hidden>non mostrato</span>
+                    <i class="bi bi-chevron-down editor-chevron" aria-hidden="true"></i>
                 </summary>
 
-                <div class="member-body">
+                <div class="editor-body">
                     <div class="field field-wide">
                         <label data-label-for="name">Nome e cognome</label>
                         <input type="text" data-field="name" maxlength="80" autocomplete="off">
@@ -177,7 +210,7 @@
                             <label class="upload-btn">
                                 <i class="bi bi-upload" aria-hidden="true"></i>
                                 <span data-upload-label>Carica</span>
-                                <input type="file" data-upload="avatar" hidden
+                                <input type="file" hidden data-upload="avatar" data-upload-target="avatarUrl"
                                        accept="image/png,image/jpeg,image/webp,image/svg+xml">
                             </label>
                         </div>
@@ -211,13 +244,132 @@
                         <span class="field-error" data-error-for="link.url" hidden></span>
                     </div>
 
-                    <div class="field field-wide member-controls">
+                    <div class="field field-wide editor-controls">
                         <label class="field-check">
                             <input type="checkbox" data-field="active">
                             Mostrato sul sito
                         </label>
 
-                        <div class="member-buttons">
+                        <div class="editor-buttons">
+                            <button type="button" class="icon-btn" data-action="up" title="Sposta su">
+                                <i class="bi bi-arrow-up" aria-hidden="true"></i><span class="visually-hidden">Sposta su</span>
+                            </button>
+                            <button type="button" class="icon-btn" data-action="down" title="Sposta giu">
+                                <i class="bi bi-arrow-down" aria-hidden="true"></i><span class="visually-hidden">Sposta giu</span>
+                            </button>
+                            <button type="button" class="icon-btn icon-btn-danger" data-action="remove" title="Elimina">
+                                <i class="bi bi-trash" aria-hidden="true"></i><span class="visually-hidden">Elimina</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </details>
+        </li>
+    </template>
+
+    <template id="sponsor-template">
+        <li class="editor-row">
+            <details class="editor-details">
+                <summary class="editor-summary">
+                    <img class="editor-thumb" alt="" data-preview="logo"
+                         src="/assets/img/placeholder-logo.svg"
+                         data-preview-fallback="/assets/img/placeholder-logo.svg">
+                    <span class="editor-heading">
+                        <strong data-preview="name">Nuovo sponsor</strong>
+                        <span data-preview="tier"></span>
+                    </span>
+                    <span class="editor-flag" data-preview="hidden" hidden>non mostrato</span>
+                    <i class="bi bi-chevron-down editor-chevron" aria-hidden="true"></i>
+                </summary>
+
+                <div class="editor-body">
+                    <div class="field field-wide">
+                        <label data-label-for="name">Nome</label>
+                        <input type="text" data-field="name" maxlength="80" autocomplete="off">
+                        <span class="field-error" data-error-for="name" hidden></span>
+                    </div>
+
+                    <div class="field">
+                        <label data-label-for="id">Identificativo</label>
+                        <input type="text" data-field="id" maxlength="49" autocomplete="off" spellcheck="false">
+                        <span class="field-note">Minuscole, cifre e trattini. Si compila da solo dal nome.</span>
+                        <span class="field-error" data-error-for="id" hidden></span>
+                    </div>
+
+                    <div class="field">
+                        <label data-label-for="tier">Fascia</label>
+                        <select data-field="tier">
+                            <option value="gold">Gold</option>
+                            <option value="silver">Silver</option>
+                            <option value="bronze">Bronze</option>
+                            <option value="partner">Partner</option>
+                            <option value="venue">Location</option>
+                            <option value="media">Media partner</option>
+                        </select>
+                        <span class="field-note">Decide dimensione del logo e gruppo sul sito.</span>
+                        <span class="field-error" data-error-for="tier" hidden></span>
+                    </div>
+
+                    <div class="field field-wide">
+                        <label data-label-for="logoUrl">Logo</label>
+                        <div class="upload-row">
+                            <input type="url" data-field="logoUrl" autocomplete="off" spellcheck="false"
+                                   placeholder="https://...">
+                            <label class="upload-btn">
+                                <i class="bi bi-upload" aria-hidden="true"></i>
+                                <span data-upload-label>Carica</span>
+                                <input type="file" hidden data-upload="sponsor" data-upload-target="logoUrl"
+                                       accept="image/png,image/jpeg,image/webp,image/svg+xml">
+                            </label>
+                        </div>
+                        <span class="field-note">Obbligatorio. PNG, JPEG, WebP o SVG, max 512 KB.</span>
+                        <span class="field-error" data-error-for="logoUrl" hidden></span>
+                    </div>
+
+                    <div class="field field-wide">
+                        <label data-label-for="logoDarkUrl">Logo per fondo scuro</label>
+                        <div class="upload-row">
+                            <input type="url" data-field="logoDarkUrl" autocomplete="off" spellcheck="false"
+                                   placeholder="https://...">
+                            <label class="upload-btn">
+                                <i class="bi bi-upload" aria-hidden="true"></i>
+                                <span data-upload-label>Carica</span>
+                                <input type="file" hidden data-upload="sponsor" data-upload-target="logoDarkUrl"
+                                       accept="image/png,image/jpeg,image/webp,image/svg+xml">
+                            </label>
+                        </div>
+                        <span class="field-note">Solo per i loghi scuri, che sparirebbero su fondo nero.</span>
+                        <span class="field-error" data-error-for="logoDarkUrl" hidden></span>
+                    </div>
+
+                    <div class="field">
+                        <label data-label-for="websiteUrl">Sito</label>
+                        <input type="url" data-field="websiteUrl" autocomplete="off" spellcheck="false"
+                               placeholder="https://...">
+                        <span class="field-note">Senza, la card non e cliccabile.</span>
+                        <span class="field-error" data-error-for="websiteUrl" hidden></span>
+                    </div>
+
+                    <div class="field">
+                        <label data-label-for="since">Dal</label>
+                        <input type="text" data-field="since" maxlength="4" inputmode="numeric"
+                               autocomplete="off" placeholder="2025">
+                        <span class="field-error" data-error-for="since" hidden></span>
+                    </div>
+
+                    <div class="field field-wide">
+                        <label data-label-for="description">Descrizione</label>
+                        <textarea data-field="description" maxlength="200" rows="2"></textarea>
+                        <span class="field-error" data-error-for="description" hidden></span>
+                    </div>
+
+                    <div class="field field-wide editor-controls">
+                        <label class="field-check">
+                            <input type="checkbox" data-field="active">
+                            Mostrato sul sito
+                        </label>
+
+                        <div class="editor-buttons">
                             <button type="button" class="icon-btn" data-action="up" title="Sposta su">
                                 <i class="bi bi-arrow-up" aria-hidden="true"></i><span class="visually-hidden">Sposta su</span>
                             </button>

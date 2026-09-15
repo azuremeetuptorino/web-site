@@ -1,5 +1,6 @@
 import { apiGet, SessionExpiredError } from './api.js';
-import { initTeamEditor } from './team-editor.js';
+import { teamEditor } from './team-editor.js';
+import { sponsorsEditor } from './sponsors-editor.js';
 
 /* ==========================================================
    SESSIONE
@@ -83,4 +84,19 @@ const session = await loadSession();
 // Se /api/me non ha risposto non si deduce niente sui permessi: si lascia
 // provare e si sta a quello che dice il server al salvataggio. Il cancello e
 // la, non qui.
-await initTeamEditor(session?.isAdmin !== false);
+const canWrite = session?.isAdmin !== false;
+
+// In parallelo: sono due chiamate indipendenti, e aspettare la prima per
+// iniziare la seconda raddoppierebbe l'attesa a freddo, quando le function si
+// stanno ancora svegliando.
+await Promise.allSettled([
+    teamEditor.init(canWrite),
+    sponsorsEditor.init(canWrite)
+]);
+
+// Rete di sicurezza contro la chiusura distratta della scheda. Sta qui e non
+// dentro i singoli editor: il browser ne considera comunque uno solo, e la
+// domanda da porsi e "c'e qualcosa di non salvato, da qualunque parte".
+window.addEventListener('beforeunload', (event) => {
+    if (teamEditor.isDirty() || sponsorsEditor.isDirty()) event.preventDefault();
+});

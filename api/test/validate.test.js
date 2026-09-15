@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { validateTeam, ROLE_KEYS, LINK_TYPES } from '../src/lib/validate.js';
+import { validateTeam, validateSponsors, ROLE_KEYS, LINK_TYPES, TIERS } from '../src/lib/validate.js';
 
 /** Un membro minimo ma valido, da cui partire per i casi singoli. */
 const member = (overrides = {}) => ({
@@ -184,4 +184,114 @@ test('una lista assurdamente lunga viene fermata prima di validarla tutta', () =
     const result = validateTeam({ version: 1, members: Array.from({ length: 201 }, () => member()) });
     assert.equal(result.ok, false);
     assert.deepEqual(paths(result), ['members']);
+});
+
+/* ==========================================================
+   SPONSOR
+   ========================================================== */
+
+const sponsor = (overrides = {}) => ({
+    id: 'acme-cloud',
+    name: 'ACME Cloud',
+    tier: 'gold',
+    logoUrl: 'https://cdn.example/acme.svg',
+    ...overrides
+});
+
+const sponsorDoc = (...sponsors) => ({ version: 1, sponsors });
+
+test('sponsor: il documento seed del repo e valido cosi com e', async () => {
+    const { readFileSync } = await import('node:fs');
+    const seed = JSON.parse(readFileSync(new URL('../../src/data/sponsors.json', import.meta.url), 'utf8'));
+
+    const result = validateSponsors(seed);
+    assert.equal(result.ok, true, JSON.stringify(result.issues));
+    assert.equal(result.value.sponsors.length, 6);
+});
+
+test('sponsor: uno sponsor completo passa e torna ripulito', () => {
+    const result = validateSponsors(sponsorDoc(sponsor({
+        logoDarkUrl: 'https://cdn.example/acme-dark.svg',
+        websiteUrl: 'https://acme.example',
+        description: 'Partner infrastrutturale dal 2025.',
+        since: '2025',
+        order: 10,
+        active: true
+    })));
+
+    assert.equal(result.ok, true);
+    assert.equal(result.value.sponsors[0].since, '2025');
+    assert.equal(result.value.sponsors[0].websiteUrl, 'https://acme.example/');
+});
+
+test('sponsor: il logo e obbligatorio, senza la card sarebbe vuota', () => {
+    const result = validateSponsors(sponsorDoc(sponsor({ logoUrl: '' })));
+    assert.equal(result.ok, false);
+    assert.deepEqual(paths(result), ['sponsors[0].logoUrl']);
+});
+
+test('sponsor: il tier deve stare nell enum', () => {
+    const rifiutato = validateSponsors(sponsorDoc(sponsor({ tier: 'platinum' })));
+    assert.equal(rifiutato.ok, false);
+    assert.deepEqual(paths(rifiutato), ['sponsors[0].tier']);
+
+    for (const tier of TIERS) {
+        assert.equal(validateSponsors(sponsorDoc(sponsor({ tier }))).ok, true, tier);
+    }
+});
+
+test('sponsor: senza websiteUrl va bene, la card non sara un link', () => {
+    const result = validateSponsors(sponsorDoc(sponsor({ websiteUrl: null })));
+    assert.equal(result.ok, true);
+    assert.equal('websiteUrl' in result.value.sponsors[0], false);
+});
+
+test('sponsor: since accetta un anno, non una data', () => {
+    assert.equal(validateSponsors(sponsorDoc(sponsor({ since: '2025' }))).ok, true);
+
+    for (const since of ['2025-03-01', 'duemila', '25', '1999']) {
+        const result = validateSponsors(sponsorDoc(sponsor({ since })));
+        assert.equal(result.ok, false, `"${since}" non doveva passare`);
+        assert.deepEqual(paths(result), ['sponsors[0].since']);
+    }
+});
+
+test('sponsor: una descrizione oltre i 200 caratteri viene respinta', () => {
+    const result = validateSponsors(sponsorDoc(sponsor({ description: 'a'.repeat(201) })));
+    assert.equal(result.ok, false);
+    assert.match(result.issues[0].message, /200/);
+});
+
+test('sponsor: due id uguali sono un errore e lo dice quale', () => {
+    const result = validateSponsors(sponsorDoc(sponsor(), sponsor({ name: 'ACME bis' })));
+    assert.equal(result.ok, false);
+    assert.deepEqual(paths(result), ['sponsors[1].id']);
+    assert.match(result.issues[0].message, /acme-cloud/);
+});
+
+test('sponsor: i campi sconosciuti non finiscono sul blob', () => {
+    const result = validateSponsors(sponsorDoc(sponsor({ prezzo: 5000, contratto: 'segreto' })));
+    assert.deepEqual(
+        Object.keys(result.value.sponsors[0]).sort(),
+        ['active', 'id', 'logoUrl', 'name', 'order', 'tier']
+    );
+});
+
+/* ==========================================================
+   URL: REGOLE CONDIVISE
+   ========================================================== */
+
+test('un percorso del sito e ammesso, uno che eredita lo schema no', () => {
+    assert.equal(validateSponsors(sponsorDoc(sponsor({ logoUrl: '/assets/img/sponsors/acme.svg' }))).ok, true);
+
+    // //evil.example non e un percorso: e una URL senza schema.
+    const protocolRelative = validateSponsors(sponsorDoc(sponsor({ logoUrl: '//evil.example/x.svg' })));
+    assert.equal(protocolRelative.ok, false);
+    assert.deepEqual(paths(protocolRelative), ['sponsors[0].logoUrl']);
+});
+
+test('gli schemi pericolosi restano fuori da qualunque campo URL', () => {
+    for (const logoUrl of ['javascript:alert(1)', 'data:image/svg+xml;base64,PHN2Zz4=', 'vbscript:x']) {
+        assert.equal(validateSponsors(sponsorDoc(sponsor({ logoUrl }))).ok, false, logoUrl);
+    }
 });
