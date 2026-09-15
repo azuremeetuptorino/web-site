@@ -1,4 +1,5 @@
 import { apiGet, apiPut, ApiError, SessionExpiredError } from './api.js';
+import { uploadImage } from './upload.js';
 
 /**
  * Editor del team.
@@ -433,9 +434,55 @@ el.list.addEventListener('input', (event) => {
 el.list.addEventListener('change', (event) => {
     const row = event.target.closest('.member-row');
     if (!row) return;
+
+    if (event.target.dataset.upload) {
+        uploadInto(row, event.target);
+        return;
+    }
+
     refreshPreview(row);
     markDirty();
 });
+
+/**
+ * Carica il file scelto e ne scrive la URL nel campo della foto.
+ *
+ * Il membro NON viene salvato: il file e sul blob, ma nessun JSON lo cita
+ * finche non si preme Salva. Se si cambia idea e si chiude la pagina resta un
+ * blob orfano da qualche frazione di centesimo — molto meglio di un salvataggio
+ * non richiesto del resto della scheda.
+ */
+async function uploadInto(row, input) {
+    const file = input.files?.[0];
+    if (!file) return;
+
+    const slot = row.querySelector('[data-error-for="avatarUrl"]');
+    const label = input.closest('.upload-btn');
+    const text = label.querySelector('[data-upload-label]');
+
+    slot.hidden = true;
+    label.classList.add('is-busy');
+    text.textContent = 'Carico...';
+
+    try {
+        field(row, 'avatarUrl').value = await uploadImage(file, 'avatar');
+        refreshPreview(row);
+        markDirty();
+    } catch (error) {
+        if (error instanceof SessionExpiredError) {
+            handleSaveError(error);
+        } else {
+            slot.textContent = error.message;
+            slot.hidden = false;
+        }
+    } finally {
+        label.classList.remove('is-busy');
+        text.textContent = 'Carica';
+        // Senza questo, riselezionare lo stesso file non scatena un altro
+        // change e il secondo tentativo sembrerebbe non fare niente.
+        input.value = '';
+    }
+}
 
 el.list.addEventListener('click', (event) => {
     const button = event.target.closest('[data-action]');

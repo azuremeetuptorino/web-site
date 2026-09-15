@@ -93,6 +93,10 @@ niente di visibile.
 DATA_STORAGE_CONNECTION="$CONN" npm run seed
 ```
 
+`PUBLIC_BASE_URL` è **facoltativa**: senza, le URL dei file caricati si
+ricavano dall'endpoint dell'account. Va impostata solo se un giorno lo storage
+finisse dietro un dominio custom o una CDN.
+
 Il comando carica `src/data/*.json` sul container pubblico e crea il master
 privato `site-data/team.json`. Il master **non** viene sovrascritto se esiste
 già: quello è il documento che l'admin modifica, e rimetterci sopra il seed

@@ -73,10 +73,23 @@ elementi del carosello. `script-src` invece è `'self'` puro: è il motivo per c
 Swiper e Bootstrap Icons sono vendorizzati in `src/assets/vendor/` invece di
 arrivare da un CDN.
 
-`img-src` elenca gli host esterni ancora in uso: Unsplash (immagini
-segnaposto), LinkedIn (il logo della community) e `secure.meetupstatic.com` (le
-copertine degli eventi, dalla P5). I primi due andrebbero eliminati scaricando
-gli asset in `src/assets/img/`.
+`img-src` è `https:`, cioè qualunque host in HTTPS. È una scelta, non una
+distrazione. Le foto del team e i loghi degli sponsor si caricano dall'admin e
+finiscono sul nostro storage, ma il campo resta scrivibile a mano: chi preferisce
+puntare al proprio avatar GitHub o a un logo già ospitato altrove deve poterlo
+fare, e con una allowlist di host quella URL non darebbe errore — semplicemente
+l'immagine non comparirebbe, senza dire perché.
+
+Il costo è modesto: un'immagine non esegue codice, e `script-src` resta `'self'`,
+quindi per abusarne servirebbe prima riuscire a iniettare uno script. Quello che
+si perde è la capacità di accorgersi, dalla sola CSP, che qualcuno ha messo una
+URL di terzi in un campo foto — e per quello c'è la revisione del JSON.
+
+Gli SVG caricati sono il caso delicato, perché il container è pubblico e
+raggiungibile per URL diretta: vengono sanificati e salvati con
+`Content-Disposition: attachment`, così aprirli in una scheda li scarica invece
+di renderizzarli. Dentro un `<img>` continuano a funzionare, perché per le
+sottorisorse quell'header è ignorato.
 
 `connect-src` e `img-src` elencano anche `http://127.0.0.1:10000`, che è
 Azurite. In sviluppo il sito gira su `:4280` e legge i dati dal container

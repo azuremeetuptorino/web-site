@@ -516,8 +516,52 @@
 
 .icon-btn-danger:hover { border-color: #C4314B; color: #C4314B; }
 
+/* ---------- Caricamento immagini ---------- */
+.upload-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: stretch;
+}
+
+.upload-row input { flex: 1; min-width: 0; }
+
+.upload-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    font-size: 0.82rem !important;
+    font-weight: 600 !important;
+    color: var(--azure-dark) !important;
+    background: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 0 0.8rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.upload-btn:hover {
+    border-color: var(--azure-blue);
+    color: var(--azure-blue) !important;
+}
+
+/* Il focus sta sull'input nascosto: senza questo, arrivandoci da tastiera non
+   si vedrebbe niente. */
+.upload-btn:focus-within {
+    outline: 2px solid var(--azure-blue);
+    outline-offset: 2px;
+}
+
+.upload-btn.is-busy {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
 @media (max-width: 640px) {
     .member-body { grid-template-columns: minmax(0, 1fr); }
+    .upload-row { flex-direction: column; }
+    .upload-btn { justify-content: center; padding: 0.5rem 0.8rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {

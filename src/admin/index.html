@@ -170,9 +170,21 @@
                     </div>
 
                     <div class="field field-wide">
-                        <label data-label-for="avatarUrl">Foto (URL)</label>
-                        <input type="url" data-field="avatarUrl" autocomplete="off" spellcheck="false">
-                        <span class="field-note">Deve iniziare con https://. Senza foto si usa il segnaposto.</span>
+                        <label data-label-for="avatarUrl">Foto</label>
+                        <div class="upload-row">
+                            <input type="url" data-field="avatarUrl" autocomplete="off" spellcheck="false"
+                                   placeholder="https://...">
+                            <label class="upload-btn">
+                                <i class="bi bi-upload" aria-hidden="true"></i>
+                                <span data-upload-label>Carica</span>
+                                <input type="file" data-upload="avatar" hidden
+                                       accept="image/png,image/jpeg,image/webp,image/svg+xml">
+                            </label>
+                        </div>
+                        <span class="field-note">
+                            Carica un file (max 512 KB) e finisce sul nostro storage, oppure
+                            incolla una URL https:// gia ospitata altrove.
+                        </span>
                         <span class="field-error" data-error-for="avatarUrl" hidden></span>
                     </div>
 

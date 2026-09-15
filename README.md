@@ -89,6 +89,13 @@ Due schede aperte sullo stesso editor non si sovrascrivono: la seconda riceve
 un 409 con la copia del server e decide cosa tenere. È l'unica difesa possibile,
 perché le function scalano su più istanze e un lock in-process non servirebbe.
 
+Le foto dei membri (e dalla P4 i loghi degli sponsor) si caricano dall'admin con
+`POST /api/assets` e finiscono nel container pubblico: PNG, JPEG, WebP o SVG,
+max 512 KB, tipo verificato sui byte e non sul nome del file. Il nome del blob
+contiene l'impronta del contenuto, così la cache può durare un anno e cambiare
+foto cambia URL. Gli SVG vengono sanificati e serviti come allegato. Resta
+possibile incollare a mano una URL `https://` già ospitata altrove.
+
 ## Deploy
 
 Ogni push su `main` fa il deploy tramite

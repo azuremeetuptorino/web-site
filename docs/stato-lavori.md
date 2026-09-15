@@ -31,13 +31,19 @@ Branch **`feat/azure-static-web-apps`**, mai pushato.
   quello, mai il body del client.
 - `api/src/functions/team.js` — `GET`/`PUT /api/team`, una sola registrazione
   per i due metodi. Ogni `PUT` scrive il master e ripubblica su `public/`.
-- Editor del team in `/admin`, con riordino, anteprima, errori accanto al campo
-  e gestione del 409.
+- `api/src/lib/image.js` + `POST /api/assets` — **anticipati dalla P4**. Cap 512
+  KB, allowlist di content-type verificata sui **byte** (un `.exe` rinominato
+  `.png` viene fermato lì), nome con l'impronta del contenuto, SVG sanificati e
+  salvati con `Content-Disposition: attachment`. L'endpoint è già generico:
+  accetta `kind: 'sponsor'`, quindi la P4 non ci torna sopra.
+- Editor del team in `/admin`, con riordino, anteprima, errori accanto al campo,
+  gestione del 409 e bottone **Carica** per la foto (`admin/upload.js`, scritto
+  per essere riusato dall'editor sponsor).
 - `scripts/seed-blob.mjs` + `npm run seed` — carica `src/data/*.json` sul blob.
   Serviva: il provisioning crea i container ma non ci mette dentro niente.
 - `src/assets/js/config.js` legge dal container pubblico; `127.0.0.1:10000`
-  aggiunto a `img-src` e `connect-src` nella CSP.
-- 45 test (`npm test`), nessuna dipendenza di test: `node --test` e uno store
+  aggiunto a `connect-src` e `img-src` allargato a `https:` nella CSP.
+- 73 test (`npm test`), nessuna dipendenza di test: `node --test` e uno store
   finto con lo stesso contratto di `blob.js`.
 
 Verificato end-to-end sull'emulatore contro Azurite: `GET` con ETag, `PUT` che
@@ -45,6 +51,11 @@ ripubblica, secondo `PUT` con lo stesso ETag → **409 con la copia del server**
 payload sporco → **400 con le issues per campo**, anonimo su `/api/team` → login.
 La copia pubblica esce con `Cache-Control: public, max-age=300,
 stale-while-revalidate=86400` e l'`ETag` giusto.
+
+Anche l'upload: PNG caricato → 201 con la URL, sul blob con
+`max-age=31536000, immutable`; SVG con `onload` e `<script>` → salvato **senza**
+né l'uno né l'altro e con `Content-Disposition: attachment`; `.exe` rinominato
+`.png` → 415; 600 KB → 413; anonimo → login.
 
 ## Decisioni già prese
 
@@ -62,6 +73,7 @@ Non vanno ridiscusse salvo ripensamenti espliciti.
 | Ambiente di sviluppo | **Devcontainer**, non tooling sull'host |
 | Concorrenza | Optimistic con ETag, 409 con la copia del server. Niente lock |
 | `order` dei membri | Non è un campo da compilare: si riordina con le frecce e si rinumera 10, 20, 30 al salvataggio |
+| Foto e loghi | Si **caricano**, non si linkano: finiscono sul nostro storage. Il campo URL resta scrivibile per chi ha già l'immagine altrove, e per questo `img-src` è `https:` |
 
 ## Vincoli verificati
 
@@ -129,13 +141,14 @@ Errori trovati testando, non in astratto.
    setting `DATA_STORAGE_CONNECTION`, un `npm run seed`, e il nome dell'account
    dentro `STORAGE_ACCOUNT` (`config.js`) **e** nella CSP.
 
-2. **L'editor del team non è mai stato aperto in un browser.** L'API è
-   verificata con curl e i test, il cablaggio DOM è verificato a tavolino
-   (ogni `id`, `data-field` e `data-preview` usato dal JS esiste nel template),
-   ma nessuno ha visto la pagina. Nel devcontainer non c'è un browser headless.
-   Da fare a mano: `npm start`, login emulato con ruolo `admin`, e provare
-   aggiunta, riordino, eliminazione, errori di validazione e il 409 con due
-   schede aperte.
+2. **Le foto vere non ci sono.** Gli 11 avatar sono ancora URL di Unsplash. Ora
+   che il caricamento funziona basta aprire `/admin`, scegliere il file e
+   salvare, ma **servono le foto delle persone**.
+
+   Nota: l'editor è stato controllato in un browser, ma **prima** che ci fosse
+   il bottone *Carica*. Il percorso lato server è verificato con curl (201, 415,
+   413, e l'SVG che arriva sul blob sanificato e come allegato); quello che non
+   ha ancora visto nessuno è il bottone che lo aziona.
 
 3. **Logo e hero puntano a URL esterne volatili** (CDN di LinkedIn e Unsplash).
    Sono in `img-src` nella CSP per non rompere nulla, ma il logo vero andrebbe
@@ -183,13 +196,8 @@ Sponsor e upload dei loghi. Il grosso è riuso diretto della P3:
   tocca mai il CSS.
 - Editor sponsor nell'admin: il pannello e il `<template>` ricalcano quelli del
   team, e `team-editor.js` è già scritto per essere ricalcato (le uniche parti
-  specifiche sono i campi e le anteprime).
-- `POST /api/assets` con `lib/image.js`: body JSON con base64 (niente
-  multipart), cap 512 KB, allowlist di content-type, nome normalizzato più
-  suffisso hash. Gli **SVG vanno sanificati** prima della scrittura — `<script>`,
-  `<foreignObject>`, attributi `on*` e `href`/`xlink:href` non-`#`: un `<img>`
-  non esegue lo script di un SVG, ma il blob è raggiungibile per URL diretto e
-  lì lo eseguirebbe.
+  specifiche sono i campi e le anteprime). Per il logo si riusa
+  `admin/upload.js` passando `kind: 'sponsor'`: l'upload **è già fatto**.
 - Rendering sponsor raggruppato per tier in `render-sponsors.js`.
 
 Lo schema di `sponsors.json` è in [docs/piano.md](piano.md), sezione

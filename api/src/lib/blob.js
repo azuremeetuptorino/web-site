@@ -103,16 +103,14 @@ export async function readJson(container, path) {
 }
 
 /**
- * Scrive un documento JSON.
+ * Scrive dei byte.
  *
  * @param {object} options
  * @param {string} [options.ifMatch]   ETag atteso; se non corrisponde -> ConflictError.
  * @param {boolean} [options.ifAbsent] scrive solo se il blob non esiste ancora.
  * @returns {Promise<{etag: string, lastModified: string}>}
  */
-export async function writeJson(container, path, data, options = {}) {
-    const body = Buffer.from(`${JSON.stringify(data, null, 2)}\n`, 'utf8');
-
+export async function writeBuffer(container, path, body, options = {}) {
     const conditions = {};
     if (options.ifMatch) conditions.ifMatch = strongEtag(options.ifMatch);
     if (options.ifAbsent) conditions.ifNoneMatch = '*';
@@ -121,8 +119,9 @@ export async function writeJson(container, path, data, options = {}) {
         const response = await blob(container, path).upload(body, body.length, {
             conditions,
             blobHTTPHeaders: {
-                blobContentType: JSON_CONTENT_TYPE,
-                blobCacheControl: options.cacheControl
+                blobContentType: options.contentType,
+                blobCacheControl: options.cacheControl,
+                blobContentDisposition: options.contentDisposition
             }
         });
         return {
@@ -135,6 +134,16 @@ export async function writeJson(container, path, data, options = {}) {
         if (error?.statusCode === 412 || error?.statusCode === 409) throw new ConflictError();
         throw error;
     }
+}
+
+/** Scrive un documento JSON. Stesse condizioni di writeBuffer. */
+export function writeJson(container, path, data, options = {}) {
+    return writeBuffer(
+        container,
+        path,
+        Buffer.from(`${JSON.stringify(data, null, 2)}\n`, 'utf8'),
+        { ...options, contentType: JSON_CONTENT_TYPE }
+    );
 }
 
 /** Legge un master dal container privato. */
@@ -153,5 +162,29 @@ export const writePrivate = (path, data, options) =>
 export const publishPublic = (path, data) =>
     writeJson(PUBLIC_CONTAINER(), path, data, { cacheControl: PUBLIC_CACHE_CONTROL });
 
+/**
+ * Carica un file nel container pubblico e ne restituisce la URL.
+ *
+ * Nessuna condizione e nessun controllo di esistenza: il nome contiene
+ * l'impronta del contenuto, quindi riscrivere lo stesso path significa
+ * riscrivere byte identici.
+ */
+export async function uploadPublicAsset(path, body, headers = {}) {
+    const written = await writeBuffer(PUBLIC_CONTAINER(), path, body, headers);
+    return { url: publicUrl(path), etag: written.etag };
+}
+
+/**
+ * URL pubblica di un blob.
+ *
+ * PUBLIC_BASE_URL permette di servire i file da un dominio custom o da una CDN
+ * davanti allo storage. Se non c'e si ricava dall'endpoint dell'account: una
+ * app setting in meno da ricordarsi dopo il provisioning.
+ */
+export function publicUrl(path) {
+    const base = process.env.PUBLIC_BASE_URL || `${service().url.replace(/\/+$/, '')}/${PUBLIC_CONTAINER()}`;
+    return `${base.replace(/\/+$/, '')}/${path}`;
+}
+
 /** Store di default delle function. I test ne iniettano uno finto. */
-export const blobStore = { readPrivate, writePrivate, publishPublic };
+export const blobStore = { readPrivate, writePrivate, publishPublic, uploadPublicAsset };
