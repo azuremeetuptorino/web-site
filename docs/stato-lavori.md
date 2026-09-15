@@ -121,6 +121,60 @@ Il testo di "Chi siamo" ha l'apertura in grassetto come campo separato
 (`about.lead`). L'alternativa era accettare HTML dentro un textarea, cioè
 rinunciare a scappare l'input di un campo di testo.
 
+## Passata sul mobile
+
+`layout.css` non aveva **nessuna** media query: il sito era disegnato a 1280 px
+e basta. Su un telefono i cinque link della barra finivano fuori schermo, e
+`overflow-x: hidden` sul body lo nascondeva invece di segnalarlo.
+
+- Menu a pannello sotto i 900 px (`src/assets/js/nav.js`): si chiude da solo
+  dopo aver scelto una voce, con Esc, toccando fuori e tornando a schermo largo.
+- Logo e imbottitura della testata rimpiccioliti su mobile. Le misure stanno in
+  `main.js` e non nel CSS perché quella funzione scrive **stili inline**, che
+  batterebbero qualunque media query.
+- Altezza della hero in una variabile, in `svh` dove supportato: `vh` su mobile
+  è la finestra a barre nascoste (la foto risulta più alta dello schermo),
+  `dvh` cambia in continuazione mentre le barre entrano ed escono e fa saltare
+  una hero `position: fixed`.
+- Sponsor due per riga, bottoni del footer a tutta larghezza, frecce del
+  carosello nascoste (c'è lo swipe), paragrafo di "Chi siamo" allineato a
+  sinistra: dieci righe centrate su schermo stretto sono sfrangiate da
+  entrambi i lati.
+
+### Tre bug trovati guardando, non leggendo
+
+Nessuno dei tre era solo mobile.
+
+1. **La CSP bloccava il font delle frecce di Swiper.** `swiper-bundle.min.css`
+   imbarca il glifo come URL `data:`, e `font-src` non la ammetteva: le frecce
+   del carosello eventi erano vuote **dalla P0**, su ogni schermo. Aggiunto
+   `data:` a `font-src`.
+
+2. **Il footer finiva sotto la hero.** Sta fuori da `<main>` ed era
+   `position: static`: un elemento `position: fixed` con z-index 0 dipinge
+   sopra uno statico, quindi arrivati in fondo il rettangolo nero della hero
+   copriva metà footer. Anche questo su ogni schermo.
+
+3. **I loghi sponsor venivano tagliati.** Gli SVG scrivono il nome con
+   `font-family="Inter, …"`, ma caricati dentro un `<img>` sono un documento
+   isolato che **non può usare il font della pagina**: cadono su un font di
+   sistema più largo, e il `viewBox` (che per un `<svg>` esterno vale
+   `overflow: hidden`) tagliava la coda della parola. Risolto con
+   `textLength` + `lengthAdjust`, che fissa la larghezza qualunque font ci sia.
+
+Mancavano anche gli `scroll-margin-top`: arrivando da un'ancora il titolo della
+sezione finiva sotto la testata fissa — cioè proprio usando il menu nuovo.
+
+### Come guardare
+
+Nel devcontainer non c'è un browser, ma si installa in un minuto e serve
+esattamente a questo (i tre bug sopra erano invisibili leggendo il codice):
+
+```bash
+npm i -D playwright-core && npx playwright install chromium
+sudo npx playwright install-deps chromium
+```
+
 ## Decisioni già prese
 
 Non vanno ridiscusse salvo ripensamenti espliciti.
@@ -217,9 +271,9 @@ Errori trovati testando, non in astratto.
    con curl (200 con ETag, 409, 400 con le issues) e il cablaggio DOM a
    tavolino — uno script confronta ogni `id`, `data-field`, `data-list` e
    `data-add` usato dal JavaScript con quello che c'è nel markup — ma le pagine
-   no. Vale anche per il rendering a fasce degli sponsor e per l'idratazione
-   della home: la logica è stata esercitata da Node con un DOM finto, la resa
-   visiva no. Nel devcontainer non c'è un browser headless.
+   no. Il **sito pubblico** invece è stato guardato davvero, con un browser
+   headless (vedi *Passata sul mobile*): quello che resta scoperto sono le due
+   schede nuove dell'admin.
 
 4. **Logo e hero puntano a URL esterne volatili** (CDN di LinkedIn e Unsplash).
    Sono in `img-src` nella CSP per non rompere nulla, ma il logo vero andrebbe

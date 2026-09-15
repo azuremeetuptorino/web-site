@@ -1,10 +1,27 @@
 /* =========================================
-   HERO FISSA AL 65% DELLO SCHERMO
+   HERO FISSA
+   L'altezza sta in una variabile perche la usano in due: la foto fissa e
+   il margine superiore di <main>, che devono combaciare al pixel.
    ========================================= */
+:root {
+    --hero-height: 65vh;
+}
+
+/*
+   `svh` e l'altezza della finestra con le barre del browser VISIBILI, e non
+   cambia mentre si scorre. `vh` su mobile vale la finestra a barre nascoste:
+   la foto risulterebbe piu alta dello schermo e il contenuto partirebbe sotto
+   la piega. Peggio ancora `dvh`, che si aggiorna in continuazione mentre le
+   barre entrano ed escono, facendo saltare una hero `position: fixed`.
+*/
+@supports (height: 100svh) {
+    :root { --hero-height: 65svh; }
+}
+
 #hero-background {
     position: fixed;
     top: 0; left: 0; right: 0;
-    height: 65vh; /* Regolato al 65% come richiesto */
+    height: var(--hero-height);
     z-index: 0;
     background: #000;
 }
@@ -67,6 +84,29 @@ header {
     will-change: height, box-shadow;
 }
 
+/* Bottone del menu: esiste solo su schermo stretto. */
+.nav-toggle {
+    display: none;
+    appearance: none;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--azure-dark);
+    border-radius: 8px;
+    width: 42px;
+    height: 42px;
+    font-size: 1.5rem;
+    line-height: 1;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.nav-toggle:focus-visible {
+    outline: 2px solid var(--azure-blue);
+    outline-offset: 2px;
+}
+
 nav ul { display: flex; list-style: none; gap: 1.8rem; align-items: center; }
 nav a {
     color: var(--text-dark);
@@ -85,12 +125,31 @@ nav a:hover { color: var(--azure-blue); }
 main {
     position: relative;
     z-index: 2; /* Sopra la hero fissa */
-    margin-top: 65vh; /* Il contenuto parte esattamente alla fine della Hero */
+    margin-top: var(--hero-height); /* Il contenuto parte dove finisce la hero */
     background-color: var(--bg-light);
     width: 100%;
 }
 
+/*
+   Il footer sta FUORI da <main> e senza questo finiva sotto la hero: un
+   elemento `position: fixed` con z-index 0 dipinge sopra uno statico, quindi
+   arrivati in fondo alla pagina il rettangolo nero della hero copriva la
+   prima meta del footer. Serve lo stesso contesto di impilamento di <main>.
+*/
+footer {
+    position: relative;
+    z-index: 2;
+}
+
 section { padding: 4rem 1.5rem; width: 100%; }
+
+/*
+   La testata e fissa: senza questo margine, arrivando da un link del menu la
+   sezione si ferma con il titolo nascosto sotto la barra. Il valore e
+   l'altezza della testata gia rimpicciolita dallo scorrimento, che e lo stato
+   in cui ci si trova quando il salto finisce.
+*/
+section, footer { scroll-margin-top: 80px; }
 section:nth-child(even) { background-color: var(--bg-white); }
 
 .container {
@@ -139,4 +198,85 @@ section:nth-child(even) { background-color: var(--bg-white); }
     font-size: 0.95rem;
     color: var(--text-muted);
     margin-top: 0.4rem;
+}
+
+/* =========================================
+   SCHERMO STRETTO
+   Il sito nasce a 1280 px. Sotto i 900 px i cinque link della barra non
+   stanno accanto a un logo da 84 px: uscivano dallo schermo, e
+   `overflow-x: hidden` sul body lo nascondeva invece di segnalarlo.
+   ========================================= */
+@media (max-width: 900px) {
+    :root { --hero-height: 55vh; }
+
+    .nav-container { padding: 0.8rem 1rem; }
+
+    .logo { font-size: 1rem; gap: 10px; }
+
+    .nav-toggle { display: inline-flex; }
+
+    /* Il pannello scende da sotto la testata, che e `position: fixed`. */
+    #primary-nav {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        display: none;
+        background: var(--bg-white);
+        border-top: 1px solid var(--border-color);
+        border-bottom: 1px solid var(--border-color);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.14);
+    }
+
+    #primary-nav[data-open="true"] { display: block; }
+
+    #primary-nav ul {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+    }
+
+    #primary-nav li + li { border-top: 1px solid var(--border-color); }
+
+    /* Bersagli comodi da toccare: ~48 px di altezza, tutta la riga. */
+    #primary-nav a {
+        display: block;
+        padding: 0.95rem 1.1rem;
+        font-size: 0.9rem;
+        text-shadow: none;
+    }
+
+    #primary-nav a:hover,
+    #primary-nav a:focus-visible { background: var(--azure-light); }
+
+    /*
+       A pagina non scorsa la testata e trasparente sopra la foto, e lo stile
+       lo scrive main.js inline: senza !important il pannello resterebbe
+       appeso a un'immagine, illeggibile.
+    */
+    #main-header.nav-open {
+        background-color: var(--bg-white) !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
+        border-bottom-color: var(--border-color) !important;
+    }
+
+    section { padding: 3rem 1rem; }
+
+    section, footer { scroll-margin-top: 58px; }
+
+    .container { padding: 0 8px; }
+
+    .section-header {
+        padding: 0 1rem;
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .section-title { font-size: 1.3rem; }
+}
+
+@supports (height: 100svh) {
+    @media (max-width: 900px) {
+        :root { --hero-height: 55svh; }
+    }
 }

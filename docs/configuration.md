@@ -91,6 +91,13 @@ raggiungibile per URL diretta: vengono sanificati e salvati con
 di renderizzarli. Dentro un `<img>` continuano a funzionare, perché per le
 sottorisorse quell'header è ignorato.
 
+`font-src` include `data:` per **Swiper**, che imbarca il font delle sue frecce
+come URL `data:` dentro `swiper-bundle.min.css`. Senza, il browser blocca il
+font e le frecce del carosello eventi restano vuote — cosa che è successa
+davvero dalla P0 fino a quando un browser headless non ha mostrato la
+violazione in console. Un font non esegue codice: il rischio di `data:` sta in
+`script-src` e `style-src`, non qui.
+
 `connect-src` e `img-src` elencano anche `http://127.0.0.1:10000`, che è
 Azurite. In sviluppo il sito gira su `:4280` e legge i dati dal container
 pubblico su `:10000`: è una richiesta cross-origin, e senza quella voce il

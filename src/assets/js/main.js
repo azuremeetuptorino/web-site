@@ -6,6 +6,7 @@ import { renderSite } from './render-site.js';
 import { renderEvents } from './render-events.js';
 import { initTeamSwiper, initEventsSwiper } from './swiper-init.js';
 import { MEETUP_GROUP_URL } from './config.js';
+import { initNav } from './nav.js';
 
 /* ==========================================================
    1. HERO PARALLAX & NAVBAR
@@ -15,8 +16,21 @@ const logoImg = document.getElementById('logo-img');
 const navContainer = document.getElementById('nav-container');
 const heroImg = document.getElementById('hero-img');
 
+/**
+ * Logo e imbottitura della testata si rimpiccioliscono scorrendo, e le misure
+ * dipendono dallo schermo: su un telefono un logo da 84 px prende mezza
+ * testata. Stanno qui e non nel CSS perche questa funzione scrive stili inline,
+ * che avrebbero comunque la meglio su qualunque media query.
+ */
+const compactScreen = window.matchMedia('(max-width: 900px)');
+
+const metrics = () => (compactScreen.matches
+    ? { logo: [52, 34], padY: [0.8, 0.5], padX: '1rem' }
+    : { logo: [84, 42], padY: [1.4, 0.8], padX: '2rem' });
+
 function handleScroll() {
     const scrollY = window.scrollY;
+    const { logo, padY, padX } = metrics();
 
     if (heroImg) {
         heroImg.style.transform = `translateY(${scrollY * 0.25}px)`;
@@ -32,19 +46,25 @@ function handleScroll() {
     }
 
     if (logoImg) {
-        const currentLogoH = 84 - (42 * progress);
-        logoImg.style.height = `${currentLogoH}px`;
+        logoImg.style.height = `${logo[0] - (logo[0] - logo[1]) * progress}px`;
         logoImg.style.boxShadow = `0 6px 20px rgba(0, 0, 0, ${0.16 - (progress * 0.12)})`;
     }
 
     if (navContainer) {
-        const currentPad = 1.4 - (0.6 * progress);
-        navContainer.style.padding = `${currentPad}rem 2rem`;
+        const currentPad = padY[0] - (padY[0] - padY[1]) * progress;
+        navContainer.style.padding = `${currentPad}rem ${padX}`;
     }
 }
 
 window.addEventListener('scroll', handleScroll, { passive: true });
+
+// Ruotando il telefono o cambiando fascia le misure cambiano, ma senza
+// scorrere `handleScroll` non verrebbe piu richiamata e resterebbero quelle
+// dello schermo di prima.
+compactScreen.addEventListener('change', handleScroll);
+
 handleScroll();
+initNav();
 
 /* ==========================================================
    2. COPIA RAPIDA EMAIL

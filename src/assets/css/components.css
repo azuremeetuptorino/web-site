@@ -82,6 +82,9 @@
         padding: 2rem 1.5rem;
         gap: 2rem;
     }
+    /* Il titolo centrato sta bene, il paragrafo no: su schermo stretto sono
+       dieci righe centrate, sfrangiate da tutt'e due i lati. */
+    .about-manifesto p { text-align: left; }
     .manifesto-stats {
         border-left: none;
         border-top: 1px solid rgba(255,255,255,0.18);
@@ -474,3 +477,60 @@ footer {
 /* Canali senza un colore di marca proprio (Discord, Slack, Meetup, sito web). */
 .btn-generic { background: var(--azure-accent); }
 .btn-generic:hover { background: var(--azure-dark); }
+
+/* =========================================
+   8. SCHERMO STRETTO
+   ========================================= */
+@media (max-width: 900px) {
+    /* I 45 px di margine laterale servivano alle frecce del carosello, che qui
+       non ci sono: su 375 px si mangiavano un quarto della larghezza. */
+    .swiper-container-wrapper { padding: 0 1rem; }
+
+    /* Con lo swipe le frecce sono un doppione che copre le card. */
+    .swiper-button-next-events,
+    .swiper-button-prev-events { display: none !important; }
+
+    /* La sfumatura ai lati del marquee valeva l'8% di 1280 px; sulla stessa
+       proporzione di uno schermo stretto sbiadirebbe mezza scheda. */
+    .team-carousel-container {
+        -webkit-mask-image: linear-gradient(to right, transparent, black 4%, black 96%, transparent);
+        mask-image: linear-gradient(to right, transparent, black 4%, black 96%, transparent);
+    }
+
+    /* I due bottoni Meetup e Sessionize vanno a capo sotto al titolo: che
+       occupino tutta la riga invece di restare due monconi disallineati. */
+    .event-actions { width: 100%; }
+    .btn-event-action { flex: 1 1 auto; justify-content: center; }
+
+    /* Un logo gold su un telefono non puo essere alto quanto su un monitor. */
+    .sponsor-card[data-tier="gold"] { min-height: 110px; }
+    .sponsor-card[data-tier="gold"] img,
+    .sponsor-card[data-tier="gold"] svg { height: 46px; }
+
+    /* Due per riga: con 130 px di minimo e 12 px di spazio ci stanno in 293 px
+       di larghezza utile, mentre a 140 ne sforavano sette e la griglia
+       collassava a una colonna sola, allungando la sezione a 1400 px. */
+    .sponsors-grid {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+        gap: 0.75rem;
+    }
+
+    /* I gold restano uno per riga: la prominenza e tutto il senso della fascia. */
+    .sponsor-tier[data-tier="gold"] .sponsors-grid { grid-template-columns: 1fr; }
+
+    .sponsor-tiers { gap: 1.75rem; }
+
+    /* Il footer: i bottoni a tutta larghezza si toccano senza mirare. */
+    .contact-channels { flex-direction: column; align-items: stretch; }
+    .channel-btn { justify-content: center; }
+}
+
+@media (max-width: 480px) {
+    /* Sotto i 480 px il nome accanto al logo manda a capo la testata: resta
+       il logo, che e la stessa identita. */
+    .logo span { display: none; }
+
+    .about-manifesto h3 { font-size: 1.3rem; }
+    .stat-item h4 { font-size: 1.8rem; }
+    .manifesto-logo img { width: 96px; height: 96px; }
+}

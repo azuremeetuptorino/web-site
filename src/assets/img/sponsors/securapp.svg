@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 40" width="150" height="40" role="img" aria-label="SecurApp">
   <path d="M20 5 L35 12 L35 25 C35 32 20 38 20 38 C20 38 5 32 5 25 L5 12 Z" fill="#F43F5E"/>
   <circle cx="20" cy="20" r="5" fill="#FFF"/>
-  <text x="45" y="27" font-family="Inter, 'Segoe UI', system-ui, sans-serif" font-size="20" font-weight="700" fill="#1F2937">SecurApp</text>
+  <text textLength="101" lengthAdjust="spacingAndGlyphs" x="45" y="27" font-family="Inter, 'Segoe UI', system-ui, sans-serif" font-size="20" font-weight="700" fill="#1F2937">SecurApp</text>
 </svg>
