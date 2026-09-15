@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 40" width="180" height="40" role="img" aria-label="DevOps Solutions">
+  <path d="M20 10 L10 20 L20 30" stroke="#F59E0B" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M30 10 L40 20 L30 30" stroke="#F59E0B" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <text x="50" y="26" font-family="Inter, 'Segoe UI', system-ui, sans-serif" font-size="18" font-weight="700" fill="#374151">DevOps Solutions</text>
+</svg>

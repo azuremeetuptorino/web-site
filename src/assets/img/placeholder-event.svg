@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 280" width="600" height="280" role="img" aria-label="Immagine evento non disponibile">
+  <rect width="600" height="280" fill="#EBF3FC"/>
+  <rect x="228" y="96" width="144" height="112" rx="10" fill="none" stroke="#9FC4E8" stroke-width="7"/>
+  <path d="M228 130h144" stroke="#9FC4E8" stroke-width="7"/>
+  <path d="M262 82v28M338 82v28" stroke="#9FC4E8" stroke-width="7" stroke-linecap="round"/>
+</svg>

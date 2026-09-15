@@ -1,0 +1,21 @@
+/* =========================================
+   DESIGN TOKENS
+   ========================================= */
+:root {
+    --azure-blue: #0078D4;
+    --azure-dark: #002050;
+    --azure-light: #EBF3FC;
+    --azure-accent: #106EBE;
+    --text-dark: #1F1F1F;
+    --text-muted: #605E5C;
+    --bg-light: #F8F9FA;
+    --bg-white: #FFFFFF;
+    --border-color: #EDEBE9;
+    --shadow-sm: 0 2px 6px rgba(0,0,0,0.04);
+    --shadow-md: 0 8px 20px rgba(0,0,0,0.08);
+    --transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+
+    /* Brand Colors Ufficiali Eventi */
+    --color-meetup: #F64060;
+    --color-sessionize: #1AB394;
+}

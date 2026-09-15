@@ -1,0 +1,139 @@
+{
+  "version": 1,
+  "updatedAt": "2026-09-15T00:00:00Z",
+  "updatedBy": "seed",
+  "members": [
+    {
+      "id": "elena-rossi",
+      "name": "Elena Rossi",
+      "nick": "@elena_cloud",
+      "role": "Co-Founder",
+      "roleKey": "co-founder",
+      "bio": "Cloud Solution Architect & MVP. Serverless e AI.",
+      "avatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=300",
+      "link": { "type": "linkedin", "url": "https://www.linkedin.com" },
+      "order": 10,
+      "active": true
+    },
+    {
+      "id": "marco-bianchi",
+      "name": "Marco Bianchi",
+      "nick": "@mbianchi_dev",
+      "role": "Organizer",
+      "roleKey": "organizer",
+      "bio": "Principal DevOps & Platform Engineer. IaC automation.",
+      "avatarUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=300",
+      "link": { "type": "github", "url": "https://github.com" },
+      "order": 20,
+      "active": true
+    },
+    {
+      "id": "chiara-ferrari",
+      "name": "Chiara Ferrari",
+      "nick": "@chiara_sec",
+      "role": "Organizer",
+      "roleKey": "organizer",
+      "bio": "Security Specialist su Entra ID e Zero-Trust.",
+      "avatarUrl": "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=300",
+      "link": { "type": "linkedin", "url": "https://www.linkedin.com" },
+      "order": 30,
+      "active": true
+    },
+    {
+      "id": "matteo-contessa",
+      "name": "Matteo Contessa",
+      "nick": "@mattiac",
+      "role": "Core Team",
+      "roleKey": "core-team",
+      "bio": "API Management addicted e Cloud Consultant.",
+      "avatarUrl": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=300",
+      "link": { "type": "blog", "url": "https://blog.mattiacontessa.xyz" },
+      "order": 40,
+      "active": true
+    },
+    {
+      "id": "sara-esposito",
+      "name": "Sara Esposito",
+      "nick": "@sara_data",
+      "role": "Core Team",
+      "roleKey": "core-team",
+      "bio": "Data Platform Engineer su Fabric e Synapse.",
+      "avatarUrl": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=300",
+      "link": { "type": "linkedin", "url": "https://www.linkedin.com" },
+      "order": 50,
+      "active": true
+    },
+    {
+      "id": "davide-moretti",
+      "name": "Davide Moretti",
+      "nick": "@dmoretti",
+      "role": "Core Team",
+      "roleKey": "core-team",
+      "bio": "Software Engineer & .NET lover su Kubernetes.",
+      "avatarUrl": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=300",
+      "link": { "type": "github", "url": "https://github.com" },
+      "order": 60,
+      "active": true
+    },
+    {
+      "id": "federica-galli",
+      "name": "Federica Galli",
+      "nick": "@fedegalli_ai",
+      "role": "Speaker",
+      "roleKey": "speaker",
+      "bio": "AI Research & Azure OpenAI prompt engineer.",
+      "avatarUrl": "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=300",
+      "link": { "type": "x", "url": "https://twitter.com" },
+      "order": 70,
+      "active": true
+    },
+    {
+      "id": "andrea-villa",
+      "name": "Andrea Villa",
+      "nick": "@andreavilla_ops",
+      "role": "Speaker",
+      "roleKey": "speaker",
+      "bio": "FinOps Practitioner per ottimizzazione costi.",
+      "avatarUrl": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=300",
+      "link": { "type": "linkedin", "url": "https://www.linkedin.com" },
+      "order": 80,
+      "active": true
+    },
+    {
+      "id": "giulia-rinaldi",
+      "name": "Giulia Rinaldi",
+      "nick": "@giulia_r",
+      "role": "Staff",
+      "roleKey": "staff",
+      "bio": "Community Lead, logistica e social media.",
+      "avatarUrl": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=300",
+      "link": { "type": "instagram", "url": "https://www.instagram.com" },
+      "order": 90,
+      "active": true
+    },
+    {
+      "id": "luca-de-santis",
+      "name": "Luca De Santis",
+      "nick": "@lucads",
+      "role": "Speaker",
+      "roleKey": "speaker",
+      "bio": "IoT & Edge Solutions Architect per l'industria.",
+      "avatarUrl": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=300",
+      "link": { "type": "github", "url": "https://github.com" },
+      "order": 100,
+      "active": true
+    },
+    {
+      "id": "simone-barbieri",
+      "name": "Simone Barbieri",
+      "nick": "@simone_dev",
+      "role": "Staff",
+      "roleKey": "staff",
+      "bio": "Full Stack Developer & regia streaming talk.",
+      "avatarUrl": "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&q=80&w=300",
+      "link": { "type": "youtube", "url": "https://youtube.com" },
+      "order": 110,
+      "active": true
+    }
+  ]
+}

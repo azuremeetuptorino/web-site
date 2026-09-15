@@ -1,0 +1,95 @@
+{
+  "generatedAt": "2026-09-15T00:00:00Z",
+  "source": "seed",
+  "group": {
+    "urlname": "azure-meetup-torino",
+    "name": "Azure Meetup Torino",
+    "link": "https://www.meetup.com/it-IT/azure-meetup-torino/"
+  },
+  "events": [
+    {
+      "id": "seed-ai-copilot",
+      "title": "Azure AI & Copilot: Il futuro dello sviluppo cloud",
+      "status": "upcoming",
+      "dateTime": "2026-10-14T18:30:00+02:00",
+      "endTime": "2026-10-14T21:00:00+02:00",
+      "timezone": "Europe/Rome",
+      "isOnline": false,
+      "eventUrl": null,
+      "imageUrl": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=600",
+      "excerpt": null,
+      "going": null,
+      "venue": null
+    },
+    {
+      "id": "seed-cloud-native",
+      "title": "Cloud Native in Azure: Kubernetes, Container Apps e Dintorni",
+      "status": "upcoming",
+      "dateTime": "2026-11-11T18:30:00+01:00",
+      "endTime": "2026-11-11T21:00:00+01:00",
+      "timezone": "Europe/Rome",
+      "isOnline": false,
+      "eventUrl": null,
+      "imageUrl": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=600",
+      "excerpt": null,
+      "going": null,
+      "venue": null
+    },
+    {
+      "id": "seed-serverless",
+      "title": "Serverless Architecture & Azure Functions v4 a confronto",
+      "status": "upcoming",
+      "dateTime": "2026-12-09T18:30:00+01:00",
+      "endTime": "2026-12-09T21:00:00+01:00",
+      "timezone": "Europe/Rome",
+      "isOnline": false,
+      "eventUrl": null,
+      "imageUrl": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=600",
+      "excerpt": null,
+      "going": null,
+      "venue": null
+    },
+    {
+      "id": "seed-global-azure",
+      "title": "Global Azure - Edizione Torino",
+      "status": "past",
+      "dateTime": "2026-05-13T18:30:00+02:00",
+      "endTime": "2026-05-13T21:00:00+02:00",
+      "timezone": "Europe/Rome",
+      "isOnline": false,
+      "eventUrl": null,
+      "imageUrl": "https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&q=80&w=600",
+      "excerpt": null,
+      "going": null,
+      "venue": null
+    },
+    {
+      "id": "seed-zero-trust",
+      "title": "Sicurezza e Identità in Azure: Zero Trust con Entra ID",
+      "status": "past",
+      "dateTime": "2026-04-15T18:30:00+02:00",
+      "endTime": "2026-04-15T21:00:00+02:00",
+      "timezone": "Europe/Rome",
+      "isOnline": false,
+      "eventUrl": null,
+      "imageUrl": "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&q=80&w=600",
+      "excerpt": null,
+      "going": null,
+      "venue": null
+    },
+    {
+      "id": "seed-finops",
+      "title": "Cost Optimization & FinOps su Microsoft Azure",
+      "status": "past",
+      "dateTime": "2026-03-11T18:30:00+01:00",
+      "endTime": "2026-03-11T21:00:00+01:00",
+      "timezone": "Europe/Rome",
+      "isOnline": false,
+      "eventUrl": null,
+      "imageUrl": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=600",
+      "excerpt": null,
+      "going": null,
+      "venue": null
+    }
+  ]
+}

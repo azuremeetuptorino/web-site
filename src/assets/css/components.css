@@ -1,0 +1,418 @@
+/* =========================================
+   1. CHI SIAMO (Bisezione Perfetta e Nuova Griglia)
+   ========================================= */
+#chi-siamo {
+    padding-top: 0;
+}
+
+/* Il wrapper gestisce il posizionamento esatto a metà e annulla lo spazio fantasma */
+.about-manifesto-wrapper {
+    position: relative;
+    z-index: 10;
+}
+
+@media (min-width: 901px) {
+    .about-manifesto-wrapper {
+        /* Trasla la box verso l'alto esattamente della metà della sua altezza dinamica */
+        transform: translateY(-50%);
+        /* Margine negativo compensativo (circa metà altezza della box media)
+           per far scorrere correttamente il contenuto sottostante */
+        margin-bottom: -160px;
+    }
+}
+
+@media (max-width: 900px) {
+    #chi-siamo { padding-top: 3rem; }
+    .about-manifesto-wrapper {
+        transform: none;
+        margin-bottom: 0;
+        margin-top: -60px; /* Leggera sovrapposizione su mobile */
+    }
+}
+
+.about-manifesto {
+    background: linear-gradient(135deg, #002050 0%, #004578 100%);
+    border-radius: 12px;
+    padding: 3rem 2.5rem;
+    color: white;
+    display: grid;
+    /* Nuova Griglia: Testo largo (2.2), Statistiche (1), Logo (1) */
+    grid-template-columns: 2.2fr 1fr 1fr;
+    gap: 2.5rem;
+    align-items: center;
+    box-shadow: 0 12px 30px rgba(0, 32, 80, 0.25);
+}
+
+.about-manifesto h3 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.8rem; }
+.about-manifesto p { font-size: 0.96rem; color: #E1DFDD; line-height: 1.65; }
+
+.manifesto-stats {
+    display: flex;
+    flex-direction: column; /* Impilati uno sopra l'altro */
+    gap: 2rem;
+    border-left: 1px solid rgba(255,255,255,0.18);
+    padding-left: 2.5rem;
+    justify-content: center;
+}
+
+.stat-item h4 { font-size: 2.2rem; font-weight: 800; color: #50E6FF; line-height: 1; margin-bottom: 4px; }
+.stat-item p { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #C7E0F4; }
+
+.manifesto-logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.manifesto-logo img {
+    width: 150px;
+    height: 150px;
+    object-fit: contain;
+    background: #FFFFFF;
+    padding: 8px;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+}
+
+/* Adattamento Mobile Griglia Chi Siamo */
+@media (max-width: 900px) {
+    .about-manifesto {
+        grid-template-columns: 1fr;
+        text-align: center;
+        padding: 2rem 1.5rem;
+        gap: 2rem;
+    }
+    .manifesto-stats {
+        border-left: none;
+        border-top: 1px solid rgba(255,255,255,0.18);
+        padding: 1.5rem 0 0 0;
+        flex-direction: row; /* Su mobile li mettiamo affiancati */
+        justify-content: space-around;
+        gap: 1rem;
+    }
+    .manifesto-logo img {
+        width: 120px;
+        height: 120px;
+    }
+}
+
+/* =========================================
+   2. PARTECIPANTI (Carosello limitato con Sfumatura in CSS Mask)
+   ========================================= */
+.team-carousel-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    position: relative;
+    padding: 10px 0;
+    overflow: hidden;
+
+    /* Maschera di sfumatura orizzontale */
+    -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+    mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+}
+
+.swiper-team {
+    width: 100%;
+    overflow: visible;
+}
+
+.swiper-team .swiper-wrapper {
+    transition-timing-function: linear !important;
+}
+
+.swiper-team .swiper-slide {
+    width: 230px !important;
+    height: auto;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.member-card {
+    background: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 1.25rem 1rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+    position: relative;
+    height: 100%;
+}
+
+.member-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--azure-blue);
+    box-shadow: var(--shadow-md);
+}
+
+.member-corner-link {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--bg-light);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    transition: var(--transition);
+    z-index: 2;
+}
+
+.member-card:hover .member-corner-link {
+    background: var(--azure-blue);
+    color: white;
+    border-color: var(--azure-blue);
+    transform: scale(1.1);
+}
+
+.member-avatar-wrapper { margin-bottom: 0.75rem; pointer-events: none; }
+
+.member-avatar {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--azure-light);
+    transition: var(--transition);
+}
+
+.member-card:hover .member-avatar { border-color: var(--azure-blue); }
+
+.member-role-tag {
+    font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+    padding: 2px 7px; border-radius: 20px; background: var(--azure-light); color: var(--azure-dark);
+    margin-bottom: 0.4rem;
+}
+
+.member-name { font-size: 0.98rem; font-weight: 700; color: var(--azure-dark); line-height: 1.2; margin-bottom: 2px; }
+.member-nick { font-size: 0.78rem; color: var(--azure-blue); font-weight: 500; margin-bottom: 0.45rem; }
+.member-bio { font-size: 0.8rem; color: var(--text-muted); line-height: 1.35; }
+
+/* =========================================
+   3. CALENDARIO EVENTI + TASTI UFFICIALI
+   ========================================= */
+.event-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.btn-event-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0.6rem 1.1rem;
+    border-radius: 6px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: white !important;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-meetup { background-color: var(--color-meetup); }
+.btn-meetup:hover {
+    background-color: #d92d4c;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(246, 64, 96, 0.4);
+}
+
+.btn-sessionize { background-color: var(--color-sessionize); }
+.btn-sessionize:hover {
+    background-color: #128e75;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(26, 179, 148, 0.4);
+}
+
+.swiper-container-wrapper {
+    max-width: 1280px;
+    margin: 0 auto;
+    position: relative;
+    padding: 0 45px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.swiper-events {
+    width: 100%; height: 100%; overflow: hidden; padding: 15px 0 25px 0 !important;
+}
+
+.card {
+    background: var(--bg-white); border: 1px solid var(--border-color); border-radius: 8px;
+    overflow: hidden; display: flex; flex-direction: column; height: 100%; width: 100%;
+    transition: var(--transition); box-shadow: var(--shadow-sm);
+}
+
+.card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: var(--azure-blue); }
+
+.card-img-wrapper { position: relative; height: 140px; overflow: hidden; background: #eaeaea; }
+.card-img-wrapper img { width: 100%; height: 100%; object-fit: cover; transition: var(--transition); }
+.card:hover .card-img-wrapper img { transform: scale(1.04); }
+
+.card.event-past .card-img-wrapper img { filter: grayscale(100%); opacity: 0.85; }
+.card.event-past:hover .card-img-wrapper img { filter: grayscale(30%); opacity: 1; }
+
+.badge {
+    position: absolute; top: 10px; right: 10px; padding: 4px 8px; border-radius: 4px;
+    font-size: 0.68rem; font-weight: 700; color: white; z-index: 10; text-transform: uppercase; letter-spacing: 0.04em;
+}
+.badge.upcoming { background-color: #107C10; }
+.badge.past { background-color: var(--text-muted); }
+
+.card-body { padding: 1rem; display: flex; flex-direction: column; flex-grow: 1; }
+.card-title {
+    font-size: 0.92rem; font-weight: 600; color: var(--text-dark); line-height: 1.35;
+    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+
+.swiper-button-next, .swiper-button-prev {
+    position: absolute; top: 50%; transform: translateY(-50%); z-index: 10;
+    background: none !important; border: none !important; color: #A19F9D !important;
+    width: 32px !important; height: 60px !important; margin-top: 0 !important; display: flex;
+    align-items: center; justify-content: center; transition: var(--transition);
+}
+.swiper-button-prev { left: 5px !important; }
+.swiper-button-next { right: 5px !important; }
+.swiper-button-next:hover, .swiper-button-prev:hover { color: var(--azure-blue) !important; }
+.swiper-button-next:hover { transform: translateY(-50%) translateX(3px); }
+.swiper-button-prev:hover { transform: translateY(-50%) translateX(-3px); }
+.swiper-button-next::after, .swiper-button-prev::after { font-size: 1.4rem !important; }
+.swiper-button-disabled { opacity: 0 !important; pointer-events: none; }
+
+/* =========================================
+   4. SPONSOR
+   ========================================= */
+.sponsors-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.25rem;
+    align-items: stretch;
+}
+
+.sponsor-card {
+    background: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    min-height: 100px;
+    padding: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+}
+
+.sponsor-card svg,
+.sponsor-card img {
+    max-width: 100%;
+    height: 40px;
+    object-fit: contain;
+    transition: var(--transition);
+}
+
+.sponsor-card:hover {
+    border-color: var(--azure-blue);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-3px);
+}
+
+.sponsor-card:hover svg,
+.sponsor-card:hover img {
+    transform: scale(1.05);
+}
+
+/* =========================================
+   5. CONTATTI & FOOTER
+   ========================================= */
+.contact-channels {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+    margin: 2rem 0 1.5rem 0;
+}
+
+.channel-btn {
+    display: inline-flex; align-items: center; gap: 8px; padding: 0.7rem 1.2rem; border-radius: 8px;
+    font-size: 0.88rem; font-weight: 600; color: white; transition: var(--transition);
+}
+
+.channel-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.25); }
+
+.btn-telegram { background: #229ED9; }
+.btn-telegram:hover { background: #1C87BA; }
+
+.btn-whatsapp { background: #25D366; }
+.btn-whatsapp:hover { background: #1EBE5D; }
+
+.btn-email { background: #0078D4; }
+.btn-email:hover { background: #005A9E; }
+
+.email-copy-bar {
+    background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 6px;
+    display: inline-flex; align-items: center; gap: 10px; padding: 6px 14px; font-size: 0.85rem; color: #E1DFDD;
+    margin-top: 0.5rem; cursor: pointer; transition: var(--transition);
+    /* Ora è un <button> per essere raggiungibile da tastiera: vanno ripuliti i default */
+    font-family: inherit; line-height: inherit; text-align: left;
+}
+.email-copy-bar:hover { background: rgba(255, 255, 255, 0.15); color: #FFF; }
+
+footer {
+    background-color: var(--azure-dark); color: white; padding: 3.5rem 1.5rem 2.5rem 1.5rem; text-align: center;
+}
+.footer-brand { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.3rem; }
+
+/* Sostituiscono gli attributi style= inline, vietati dalla CSP */
+.footer-intro { color: var(--azure-light); font-size: 0.9rem; }
+.footer-legal { font-size: 0.78rem; margin-top: 1.2rem; color: #A19F9D; }
+.copy-ok { color: #50E6FF; }
+
+.social-links { margin: 1.2rem 0; display: flex; justify-content: center; gap: 0.8rem; }
+.social-links a {
+    color: white; font-size: 1.1rem; background: rgba(255,255,255,0.08); width: 38px; height: 38px;
+    display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; transition: var(--transition);
+}
+.social-links a:hover { background: var(--azure-blue); transform: translateY(-3px); }
+
+/* =========================================
+   6. STATO DI ERRORE DEI DATI
+   ========================================= */
+.data-error {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 1.5rem;
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    background: var(--bg-white);
+    border: 1px dashed var(--border-color);
+    border-radius: 8px;
+}
+.data-error a { color: var(--azure-blue); font-weight: 600; }
+
+/* =========================================
+   7. RIDUZIONE DEL MOVIMENTO
+   Il marquee del team scorre in loop continuo: per chi chiede
+   meno movimento va fermato (trigger vestibolare).
+   ========================================= */
+@media (prefers-reduced-motion: reduce) {
+    .swiper-team .swiper-wrapper {
+        transition-duration: 0ms !important;
+    }
+    .card,
+    .member-card,
+    .sponsor-card,
+    .channel-btn,
+    .btn-event-action {
+        transition: none;
+    }
+}

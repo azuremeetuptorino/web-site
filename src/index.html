@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Meetup Torino | Community</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Dipendenze vendorizzate: nessun CDN di terze parti, cosi la CSP puo restare script-src 'self' -->
+    <link rel="stylesheet" href="/assets/vendor/bootstrap-icons/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/assets/vendor/swiper-bundle.min.css">
+
+    <link rel="stylesheet" href="/assets/css/tokens.css">
+    <link rel="stylesheet" href="/assets/css/base.css">
+    <link rel="stylesheet" href="/assets/css/layout.css">
+    <link rel="stylesheet" href="/assets/css/components.css">
+</head>
+<body>
+
+    <!-- HERO BACKGROUND FISSO AL 65% -->
+    <div id="hero-background">
+        <img src="https://images.unsplash.com/photo-1546938482-2ad7abfb620c?auto=format&fit=crop&q=80&w=2000" alt="Torino Skyline" id="hero-img">
+    </div>
+
+    <!-- NAVBAR FIXED -->
+    <header id="main-header">
+        <div class="nav-container" id="nav-container">
+            <a href="#" class="logo">
+                <img src="https://media.licdn.com/dms/image/v2/D4D0BAQEhN0BwKgacBQ/company-logo_200_200/B4DZYBX6NlHwAI-/0/1743779767492/azure_meetup_torino_logo?e=2147483647&v=beta&t=Cdt2pJTS6y7cAX9074JPwxQ4BSl3pd9T1k1rDMnMbBQ" alt="Azure Meetup Torino Logo" class="logo-img" id="logo-img">
+                <span>Azure Meetup Torino</span>
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="#chi-siamo">Chi Siamo</a></li>
+                    <li><a href="#partecipanti">Partecipanti</a></li>
+                    <li><a href="#eventi">Eventi</a></li>
+                    <li><a href="#sponsors">Sponsor</a></li>
+                    <li><a href="#contacts">Contatti</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main id="main-content">
+
+        <!-- =========================================
+             1. SEZIONE: CHI SIAMO (Bisezione perfetta)
+             ========================================= -->
+        <section id="chi-siamo">
+            <div class="container">
+                <div class="about-manifesto-wrapper">
+                    <div class="about-manifesto">
+
+                        <!-- Testo -->
+                        <div class="manifesto-text">
+                            <h3>Chi Siamo</h3>
+                            <p>
+                                <strong>Azure Meetup Torino</strong> è la tech community indipendente piemontese dedicata all'ecosistema Microsoft Azure, Cloud Architecture, DevOps e Intelligenza Artificiale.
+                                Uno spazio inclusivo e gratuito aperto a sviluppatori, architetti, sistemisti e curiosi per scambiare know-how, case study reali e fare networking di persona.
+                            </p>
+                        </div>
+
+                        <!-- Statistiche Impilate verticalmente -->
+                        <div class="manifesto-stats">
+                            <div class="stat-item">
+                                <h4>1.2k+</h4>
+                                <p>Membri Attivi</p>
+                            </div>
+                            <div class="stat-item">
+                                <h4>30+</h4>
+                                <p>Meetup Svolti</p>
+                            </div>
+                        </div>
+
+                        <!-- Logo riproposto (Lato destro) -->
+                        <div class="manifesto-logo">
+                            <img src="https://media.licdn.com/dms/image/v2/D4D0BAQEhN0BwKgacBQ/company-logo_200_200/B4DZYBX6NlHwAI-/0/1743779767492/azure_meetup_torino_logo?e=2147483647&v=beta&t=Cdt2pJTS6y7cAX9074JPwxQ4BSl3pd9T1k1rDMnMbBQ" alt="Logo Azure Meetup Torino">
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================
+             2. SEZIONE: PARTECIPANTI (Carosello CSS Mask)
+             Le schede sono renderizzate da /assets/js/render-team.js
+             a partire da /data/team.json.
+             ========================================= -->
+        <section id="partecipanti">
+            <div class="container">
+                <div class="section-header-centered">
+                    <h2 class="section-title">Partecipanti &amp; Team</h2>
+                    <p class="section-subtitle">I membri attivi, speaker e organizzatori che guidano e animano la community.</p>
+                </div>
+            </div>
+
+            <div class="team-carousel-container" id="team-carousel">
+                <div class="swiper swiper-team">
+                    <div class="swiper-wrapper" id="team-track"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================
+             3. SEZIONE: CALENDARIO EVENTI
+             Le card sono renderizzate da /assets/js/render-events.js
+             a partire da /data/events.json.
+             ========================================= -->
+        <section id="eventi">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">Calendario Eventi</h2>
+                    <p class="section-subtitle">Iscriviti ai prossimi incontri o rivedi le registrazioni passate</p>
+                </div>
+
+                <div class="event-actions">
+                    <a href="https://www.meetup.com/it-IT/azure-meetup-torino/" target="_blank" rel="noopener noreferrer" class="btn-event-action btn-meetup" title="Seguici su Meetup">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
+                            <path d="M22.42 8.52c-.15-1.57-1.35-2.76-3-2.76-1.5 0-2.7 1.05-3 2.55-.45-1.35-1.8-2.25-3.3-2.25-1.35 0-2.55.9-3 2.1-.3-1.05-1.2-1.8-2.4-1.8C6.37 6.36 5.32 7.26 5.02 8.46c-1.35.3-2.4 1.5-2.4 3 0 1.2.75 2.25 1.8 2.7-.15.45-.15.9-.15 1.35 0 1.95 1.5 3.6 3.45 3.6 1.8 0 3.3-1.35 3.45-3 .45 1.05 1.5 1.8 2.7 1.8 1.5 0 2.7-1.05 3-2.55.45 1.35 1.8 2.25 3.15 2.25 1.8 0 3.3-1.5 3.3-3.3 0-1.05-.45-1.95-1.2-2.55.75-.75 1.35-1.8 1.35-3 .02-1.31-.73-2.49-1.95-3.03l.9.8ZM4.42 11.16c-.9 0-1.5-.75-1.5-1.65s.6-1.65 1.5-1.65 1.65.6 1.65 1.5c0 .15 0 .15-.15.3l-1.35.45c-.3.15-.3.45-.15.6.15.15.45.15.6 0l1.2-.6c.15.6.3 1.2.3 1.8-.15 0-.15-.15-.3-.3l-.45-.45c-.15-.15-.45-.15-.6 0-.15.15-.15.45 0 .6l1.2 1.2c.15.15.15.45 0 .6l-1.2 1.2c-.15.15-.45.15-.6 0-.15-.15-.15-.45 0-.6l.45-.45c.15-.15.15-.3.3-.3 0 .45-.15 1.05-.3 1.5-.15.15-.45.15-.6 0z" />
+                        </svg>
+                        <span>Seguici su Meetup</span>
+                    </a>
+
+                    <a href="https://sessionize.com/azure-meetup-torino" target="_blank" rel="noopener noreferrer" class="btn-event-action btn-sessionize" title="Invia il tuo talk">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
+                            <path d="M3.46 3.09L21.5 11.23c1.07.48 1.1 1.95.05 2.48L3.45 20.89c-.93.47-1.95-.36-1.74-1.37l1.7-8.08c.06-.27.28-.48.56-.53l8.83-1.58c.27-.05.27-.44 0-.49l-8.83-1.58c-.28-.05-.5-.26-.56-.53l-1.7-8.08C1.5 1.6 2.53.76 3.46 3.09z"/>
+                        </svg>
+                        <span>Proponi un Talk</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="swiper-container-wrapper" id="events-carousel">
+                <div class="swiper swiper-events">
+                    <div class="swiper-wrapper" id="events-track"></div>
+                </div>
+                <div class="swiper-button-prev swiper-button-prev-events"></div>
+                <div class="swiper-button-next swiper-button-next-events"></div>
+            </div>
+        </section>
+
+        <!-- =========================================
+             4. SEZIONE: SPONSOR
+             Le card sono renderizzate da /assets/js/render-sponsors.js
+             a partire da /data/sponsors.json.
+             ========================================= -->
+        <section id="sponsors">
+            <div class="container">
+                <div class="section-header-centered">
+                    <h2 class="section-title">Sponsor &amp; Partner</h2>
+                    <p class="section-subtitle">Aziende e realtà che supportano la community offrendo location, catering e risorse formative.</p>
+                </div>
+
+                <div id="sponsors-wrapper">
+                    <div class="sponsors-grid" id="sponsors-grid"></div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- =========================================
+         5. CONTATTI & FOOTER
+         ========================================= -->
+    <footer id="contacts">
+        <div class="footer-brand">Azure Meetup Torino</div>
+        <p class="footer-intro">Entra in contatto con noi o unisciti ai nostri canali per restare aggiornato.</p>
+
+        <div class="contact-channels">
+            <a href="mailto:info@azuremeetuptorino.it?subject=[Azure%20Meetup%20Torino]%20Richiesta%20Info" class="channel-btn btn-email">
+                <i class="bi bi-envelope-fill"></i> Scrivici una Mail
+            </a>
+
+            <a href="https://t.me/AzureMeetupTorino" target="_blank" rel="noopener noreferrer" class="channel-btn btn-telegram">
+                <i class="bi bi-telegram"></i> Canale Telegram
+            </a>
+
+            <a href="https://chat.whatsapp.com" target="_blank" rel="noopener noreferrer" class="channel-btn btn-whatsapp">
+                <i class="bi bi-whatsapp"></i> Canale WhatsApp
+            </a>
+        </div>
+
+        <div>
+            <button type="button" class="email-copy-bar" id="email-copy-bar" title="Clicca per copiare l'email">
+                <i class="bi bi-copy"></i>
+                <span id="email-text">info@azuremeetuptorino.it</span>
+            </button>
+        </div>
+
+        <div class="social-links">
+            <a href="https://it.linkedin.com/company/azure-meetup-torino" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+            <a href="https://www.youtube.com/@AzureMeetupTorino" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
+            <a href="https://www.instagram.com/azuremeetuptorino" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+            <a href="https://github.com/Azure-Meetup-Torino" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><i class="bi bi-github"></i></a>
+        </div>
+
+        <p class="footer-legal">
+            &copy; 2026 Azure Meetup Torino. Community indipendente non affiliata con Microsoft Corporation.
+        </p>
+    </footer>
+
+    <script src="/assets/vendor/swiper-bundle.min.js"></script>
+    <script type="module" src="/assets/js/main.js"></script>
+</body>
+</html>
