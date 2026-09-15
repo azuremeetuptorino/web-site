@@ -57,7 +57,7 @@ test('un kind sconosciuto viene respinto e dice quali sono validi', () => {
     const result = upload({ kind: 'documento' });
     assert.equal(result.ok, false);
     assert.equal(result.status, 400);
-    assert.deepEqual(result.body.allowed, ['avatar', 'sponsor']);
+    assert.deepEqual(result.body.allowed, ['avatar', 'sponsor', 'site']);
 });
 
 test('un content-type fuori allowlist risponde 415 elencando quelli buoni', () => {
@@ -123,6 +123,12 @@ test('il logo di uno sponsor finisce in sponsors/', () => {
 
     assert.equal(result.ok, true);
     assert.match(result.asset.path, /^sponsors\/acme-cloud-[0-9a-f]{8}\.jpg$/);
+});
+
+test('le immagini della home finiscono in site/', () => {
+    const result = upload({ kind: 'site', filename: 'skyline.png' });
+    assert.equal(result.ok, true);
+    assert.match(result.asset.path, /^site\/skyline-[0-9a-f]{8}\.png$/);
 });
 
 test('l estensione viene dal tipo riconosciuto, non da quella scritta nel nome', () => {

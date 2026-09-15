@@ -40,7 +40,7 @@ export const ALLOWED_TYPES = Object.keys(ALLOWED);
 export const MAX_BYTES = 512 * 1024;
 
 /** Dove finisce il file dentro il container pubblico. */
-const FOLDERS = { avatar: 'avatars', sponsor: 'sponsors' };
+const FOLDERS = { avatar: 'avatars', sponsor: 'sponsors', site: 'site' };
 
 export const KINDS = Object.keys(FOLDERS);
 

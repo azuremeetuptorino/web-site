@@ -246,6 +246,175 @@ function validateSponsor(issues, path, value, seenIds) {
 }
 
 /* ==========================================================
+   CONTENUTI DI PAGINA
+   ========================================================== */
+
+/** Canali di contatto in evidenza. L'email non sta qui: viene da footer.email. */
+export const CHANNEL_TYPES = ['telegram', 'whatsapp', 'discord', 'slack', 'meetup', 'website'];
+
+/** Profili social nella riga di icone del footer. */
+export const SOCIAL_TYPES = [
+    'linkedin', 'youtube', 'instagram', 'github',
+    'x', 'facebook', 'mastodon', 'bluesky'
+];
+
+const MAX_STATS = 6;
+const MAX_LINKS = 8;
+
+/**
+ * Un oggetto annidato mancante non e un errore: vuol dire "lascia il testo che
+ * c'e gia nell'HTML". Il rendering pubblico tratta ogni campo come facoltativo
+ * e non tocca quello che non riceve.
+ */
+function section(value) {
+    return typeof value === 'object' && value !== null && !Array.isArray(value) ? value : {};
+}
+
+function validateBrand(issues, value) {
+    const brand = section(value);
+    return {
+        name: text(issues, 'brand.name', brand.name, { max: LIMITS.name }),
+        logoUrl: webUrl(issues, 'brand.logoUrl', brand.logoUrl),
+        heroImageUrl: webUrl(issues, 'brand.heroImageUrl', brand.heroImageUrl),
+        // Descrive la foto a chi non la vede: e testo, non decorazione.
+        heroImageAlt: text(issues, 'brand.heroImageAlt', brand.heroImageAlt, { max: 120 })
+    };
+}
+
+function validateAbout(issues, value) {
+    const about = section(value);
+    return {
+        title: text(issues, 'about.title', about.title, { max: 60 }),
+        // L'apertura in grassetto, di solito il nome della community.
+        lead: text(issues, 'about.lead', about.lead, { max: 80 }),
+        text: text(issues, 'about.text', about.text, { max: 1200 })
+    };
+}
+
+function validateStat(issues, path, value) {
+    if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+        return add(issues, path, 'deve essere un oggetto');
+    }
+    return {
+        // Il numero resta testo: "1.2k+" e "30+" non sono numeri, sono etichette.
+        value: text(issues, `${path}.value`, value.value, { required: true, max: 12 }),
+        label: text(issues, `${path}.label`, value.label, { required: true, max: 40 })
+    };
+}
+
+function validateChannel(issues, path, value) {
+    if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+        return add(issues, path, 'deve essere un oggetto');
+    }
+    return {
+        type: oneOf(issues, `${path}.type`, value.type, CHANNEL_TYPES, { required: true }),
+        label: text(issues, `${path}.label`, value.label, { required: true, max: 40 }),
+        url: webUrl(issues, `${path}.url`, value.url, { required: true })
+    };
+}
+
+function validateSocial(issues, path, value) {
+    if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+        return add(issues, path, 'deve essere un oggetto');
+    }
+    return {
+        type: oneOf(issues, `${path}.type`, value.type, SOCIAL_TYPES, { required: true }),
+        url: webUrl(issues, `${path}.url`, value.url, { required: true })
+    };
+}
+
+/** Un indirizzo email: senza, il footer non mostra il bottone ne la barra da copiare. */
+function email(issues, path, value) {
+    const raw = text(issues, path, value, { max: 120 });
+    if (raw === undefined) return undefined;
+    // Volutamente permissiva: la vera verifica di un'email e mandarci un
+    // messaggio, e una regex severa qui rifiuterebbe indirizzi legittimi.
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(raw)) {
+        return add(issues, path, 'non sembra un indirizzo email');
+    }
+    return raw;
+}
+
+function validateFooter(issues, value) {
+    const footer = section(value);
+
+    const list = (key, max, validateItem) => {
+        const input = footer[key];
+        if (input === undefined || input === null) return undefined;
+        if (!Array.isArray(input)) return add(issues, `footer.${key}`, 'deve essere una lista');
+        if (input.length > max) return add(issues, `footer.${key}`, `troppi elementi, massimo ${max}`);
+        return input.map((item, index) => validateItem(issues, `footer.${key}[${index}]`, item));
+    };
+
+    return {
+        intro: text(issues, 'footer.intro', footer.intro, { max: 200 }),
+        email: email(issues, 'footer.email', footer.email),
+        legal: text(issues, 'footer.legal', footer.legal, { max: 300 }),
+        channels: list('channels', MAX_LINKS, validateChannel),
+        social: list('social', MAX_LINKS, validateSocial)
+    };
+}
+
+/**
+ * Valida i contenuti fissi della home: foto, "Chi siamo", statistiche, footer.
+ *
+ * A differenza di team e sponsor qui non c'e una lista sola ma una manciata di
+ * sezioni, e sono TUTTE facoltative. Il motivo sta nel rendering: l'HTML tiene
+ * i testi attuali come fallback e il JavaScript sovrascrive solo quello che
+ * riceve. Un campo vuoto non svuota la pagina, la lascia com'e.
+ */
+export function validateSite(input) {
+    const issues = [];
+
+    if (typeof input !== 'object' || input === null || Array.isArray(input)) {
+        return { ok: false, issues: [{ path: '', message: 'il documento deve essere un oggetto' }] };
+    }
+    if (input.stats !== undefined && input.stats !== null && !Array.isArray(input.stats)) {
+        return { ok: false, issues: [{ path: 'stats', message: 'deve essere una lista' }] };
+    }
+    if (Array.isArray(input.stats) && input.stats.length > MAX_STATS) {
+        return { ok: false, issues: [{ path: 'stats', message: `troppe statistiche, massimo ${MAX_STATS}` }] };
+    }
+
+    const value = {
+        version: 1,
+        brand: validateBrand(issues, input.brand),
+        about: validateAbout(issues, input.about),
+        stats: Array.isArray(input.stats)
+            ? input.stats.map((stat, index) => validateStat(issues, `stats[${index}]`, stat))
+            : undefined,
+        footer: validateFooter(issues, input.footer)
+    };
+
+    if (issues.length > 0) return { ok: false, issues };
+
+    return { ok: true, value: prune(value) };
+}
+
+/**
+ * Toglie i campi vuoti, ricorsivamente.
+ *
+ * Senza, sul blob finirebbe un documento pieno di `undefined` scomparsi e di
+ * oggetti vuoti, e il rendering non saprebbe distinguere "non impostato" da
+ * "impostato a niente".
+ */
+function prune(value) {
+    if (Array.isArray(value)) return value;
+    if (typeof value !== 'object' || value === null) return value;
+
+    const output = {};
+    for (const [key, entry] of Object.entries(value)) {
+        if (entry === undefined) continue;
+        const cleaned = prune(entry);
+        if (cleaned && typeof cleaned === 'object' && !Array.isArray(cleaned) && Object.keys(cleaned).length === 0) {
+            continue;
+        }
+        output[key] = cleaned;
+    }
+    return output;
+}
+
+/* ==========================================================
    DOCUMENTI
    ========================================================== */
 

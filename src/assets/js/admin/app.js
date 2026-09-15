@@ -1,6 +1,7 @@
 import { apiGet, SessionExpiredError } from './api.js';
 import { teamEditor } from './team-editor.js';
 import { sponsorsEditor } from './sponsors-editor.js';
+import { siteEditor } from './site-editor.js';
 
 /* ==========================================================
    SESSIONE
@@ -86,17 +87,14 @@ const session = await loadSession();
 // la, non qui.
 const canWrite = session?.isAdmin !== false;
 
-// In parallelo: sono due chiamate indipendenti, e aspettare la prima per
-// iniziare la seconda raddoppierebbe l'attesa a freddo, quando le function si
-// stanno ancora svegliando.
-await Promise.allSettled([
-    teamEditor.init(canWrite),
-    sponsorsEditor.init(canWrite)
-]);
+// In parallelo: sono chiamate indipendenti, e farle in fila triplicherebbe
+// l'attesa a freddo, quando le function si stanno ancora svegliando.
+const editors = [teamEditor, sponsorsEditor, siteEditor];
+await Promise.allSettled(editors.map((editor) => editor.init(canWrite)));
 
 // Rete di sicurezza contro la chiusura distratta della scheda. Sta qui e non
 // dentro i singoli editor: il browser ne considera comunque uno solo, e la
 // domanda da porsi e "c'e qualcosa di non salvato, da qualunque parte".
 window.addEventListener('beforeunload', (event) => {
-    if (teamEditor.isDirty() || sponsorsEditor.isDirty()) event.preventDefault();
+    if (editors.some((editor) => editor.isDirty())) event.preventDefault();
 });

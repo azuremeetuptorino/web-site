@@ -22,15 +22,16 @@
 
     <!-- HERO BACKGROUND FISSO AL 65% -->
     <div id="hero-background">
-        <img src="https://images.unsplash.com/photo-1546938482-2ad7abfb620c?auto=format&fit=crop&q=80&w=2000" alt="Torino Skyline" id="hero-img">
+        <img src="https://images.unsplash.com/photo-1546938482-2ad7abfb620c?auto=format&fit=crop&q=80&w=2000" alt="Torino Skyline" id="hero-img"
+             data-site="brand.heroImageUrl" data-site-alt="brand.heroImageAlt">
     </div>
 
     <!-- NAVBAR FIXED -->
     <header id="main-header">
         <div class="nav-container" id="nav-container">
             <a href="#" class="logo">
-                <img src="https://media.licdn.com/dms/image/v2/D4D0BAQEhN0BwKgacBQ/company-logo_200_200/B4DZYBX6NlHwAI-/0/1743779767492/azure_meetup_torino_logo?e=2147483647&v=beta&t=Cdt2pJTS6y7cAX9074JPwxQ4BSl3pd9T1k1rDMnMbBQ" alt="Azure Meetup Torino Logo" class="logo-img" id="logo-img">
-                <span>Azure Meetup Torino</span>
+                <img src="https://media.licdn.com/dms/image/v2/D4D0BAQEhN0BwKgacBQ/company-logo_200_200/B4DZYBX6NlHwAI-/0/1743779767492/azure_meetup_torino_logo?e=2147483647&v=beta&t=Cdt2pJTS6y7cAX9074JPwxQ4BSl3pd9T1k1rDMnMbBQ" alt="Azure Meetup Torino Logo" class="logo-img" id="logo-img" data-site="brand.logoUrl">
+                <span data-site="brand.name">Azure Meetup Torino</span>
             </a>
             <nav>
                 <ul>
@@ -56,15 +57,17 @@
 
                         <!-- Testo -->
                         <div class="manifesto-text">
-                            <h3>Chi Siamo</h3>
+                            <h3 data-site="about.title">Chi Siamo</h3>
+                            <div data-site-about>
                             <p>
                                 <strong>Azure Meetup Torino</strong> è la tech community indipendente piemontese dedicata all'ecosistema Microsoft Azure, Cloud Architecture, DevOps e Intelligenza Artificiale.
                                 Uno spazio inclusivo e gratuito aperto a sviluppatori, architetti, sistemisti e curiosi per scambiare know-how, case study reali e fare networking di persona.
                             </p>
+                            </div>
                         </div>
 
                         <!-- Statistiche Impilate verticalmente -->
-                        <div class="manifesto-stats">
+                        <div class="manifesto-stats" data-site-list="stats">
                             <div class="stat-item">
                                 <h4>1.2k+</h4>
                                 <p>Membri Attivi</p>
@@ -77,7 +80,7 @@
 
                         <!-- Logo riproposto (Lato destro) -->
                         <div class="manifesto-logo">
-                            <img src="https://media.licdn.com/dms/image/v2/D4D0BAQEhN0BwKgacBQ/company-logo_200_200/B4DZYBX6NlHwAI-/0/1743779767492/azure_meetup_torino_logo?e=2147483647&v=beta&t=Cdt2pJTS6y7cAX9074JPwxQ4BSl3pd9T1k1rDMnMbBQ" alt="Logo Azure Meetup Torino">
+                            <img data-site="brand.logoUrl" src="https://media.licdn.com/dms/image/v2/D4D0BAQEhN0BwKgacBQ/company-logo_200_200/B4DZYBX6NlHwAI-/0/1743779767492/azure_meetup_torino_logo?e=2147483647&v=beta&t=Cdt2pJTS6y7cAX9074JPwxQ4BSl3pd9T1k1rDMnMbBQ" alt="Logo Azure Meetup Torino">
                         </div>
 
                     </div>
@@ -167,10 +170,10 @@
          5. CONTATTI & FOOTER
          ========================================= -->
     <footer id="contacts">
-        <div class="footer-brand">Azure Meetup Torino</div>
-        <p class="footer-intro">Entra in contatto con noi o unisciti ai nostri canali per restare aggiornato.</p>
+        <div class="footer-brand" data-site="brand.name">Azure Meetup Torino</div>
+        <p class="footer-intro" data-site="footer.intro">Entra in contatto con noi o unisciti ai nostri canali per restare aggiornato.</p>
 
-        <div class="contact-channels">
+        <div class="contact-channels" data-site-list="channels">
             <a href="mailto:info@azuremeetuptorino.it?subject=[Azure%20Meetup%20Torino]%20Richiesta%20Info" class="channel-btn btn-email">
                 <i class="bi bi-envelope-fill"></i> Scrivici una Mail
             </a>
@@ -187,18 +190,18 @@
         <div>
             <button type="button" class="email-copy-bar" id="email-copy-bar" title="Clicca per copiare l'email">
                 <i class="bi bi-copy"></i>
-                <span id="email-text">info@azuremeetuptorino.it</span>
+                <span id="email-text" data-site="footer.email">info@azuremeetuptorino.it</span>
             </button>
         </div>
 
-        <div class="social-links">
+        <div class="social-links" data-site-list="social">
             <a href="https://it.linkedin.com/company/azure-meetup-torino" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
             <a href="https://www.youtube.com/@AzureMeetupTorino" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
             <a href="https://www.instagram.com/azuremeetuptorino" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
             <a href="https://github.com/Azure-Meetup-Torino" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><i class="bi bi-github"></i></a>
         </div>
 
-        <p class="footer-legal">
+        <p class="footer-legal" data-site="footer.legal">
             &copy; 2026 Azure Meetup Torino. Community indipendente non affiliata con Microsoft Corporation.
         </p>
     </footer>

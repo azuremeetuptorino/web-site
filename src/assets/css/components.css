@@ -470,3 +470,7 @@ footer {
         transition: none;
     }
 }
+
+/* Canali senza un colore di marca proprio (Discord, Slack, Meetup, sito web). */
+.btn-generic { background: var(--azure-accent); }
+.btn-generic:hover { background: var(--azure-dark); }

@@ -54,6 +54,10 @@
                     data-tab="sponsor" aria-controls="panel-sponsor" aria-selected="false" tabindex="-1">
                 <i class="bi bi-award" aria-hidden="true"></i> Sponsor
             </button>
+            <button type="button" class="admin-tab" role="tab" id="tab-home"
+                    data-tab="home" aria-controls="panel-home" aria-selected="false" tabindex="-1">
+                <i class="bi bi-house" aria-hidden="true"></i> Home e footer
+            </button>
         </div>
 
         <!-- ================= TEAM ================= -->
@@ -70,7 +74,7 @@
                         <button type="button" class="editor-btn editor-btn-primary" id="team-save">
                             <i class="bi bi-cloud-arrow-up" aria-hidden="true"></i> Salva e pubblica
                         </button>
-                        <button type="button" class="editor-btn" id="team-add">
+                        <button type="button" class="editor-btn" data-add="members">
                             <i class="bi bi-person-plus" aria-hidden="true"></i> Aggiungi membro
                         </button>
                         <button type="button" class="editor-btn" id="team-reload">
@@ -82,9 +86,9 @@
 
                 <div class="editor-alert" id="team-alert" hidden></div>
 
-                <ol class="editor-list" id="team-list"></ol>
+                <ol class="editor-list" data-list="members" data-template="member-template"></ol>
 
-                <p class="editor-empty" id="team-empty" hidden>
+                <p class="editor-empty" data-empty="members" hidden>
                     Nessun membro. Usa <strong>Aggiungi membro</strong> per crearne uno.
                 </p>
 
@@ -110,7 +114,7 @@
                         <button type="button" class="editor-btn editor-btn-primary" id="sponsor-save">
                             <i class="bi bi-cloud-arrow-up" aria-hidden="true"></i> Salva e pubblica
                         </button>
-                        <button type="button" class="editor-btn" id="sponsor-add">
+                        <button type="button" class="editor-btn" data-add="sponsors">
                             <i class="bi bi-plus-square" aria-hidden="true"></i> Aggiungi sponsor
                         </button>
                         <button type="button" class="editor-btn" id="sponsor-reload">
@@ -122,9 +126,9 @@
 
                 <div class="editor-alert" id="sponsor-alert" hidden></div>
 
-                <ol class="editor-list" id="sponsor-list"></ol>
+                <ol class="editor-list" data-list="sponsors" data-template="sponsor-template"></ol>
 
-                <p class="editor-empty" id="sponsor-empty" hidden>
+                <p class="editor-empty" data-empty="sponsors" hidden>
                     Nessuno sponsor. Usa <strong>Aggiungi sponsor</strong> per crearne uno.
                 </p>
 
@@ -132,6 +136,183 @@
                     La <strong>fascia</strong> decide da sola quanto grande si vede il logo e in
                     quale gruppo finisce sul sito: non c'e altro da impostare. Dentro la stessa
                     fascia vale l'ordine delle schede.
+                </p>
+            </div>
+        </section>
+        <!-- ================= HOME E FOOTER ================= -->
+        <section class="admin-panel" id="panel-home" role="tabpanel" aria-labelledby="tab-home" tabindex="0" hidden>
+
+            <div class="admin-placeholder" id="home-loading">
+                <i class="bi bi-hourglass-split" aria-hidden="true"></i>
+                <strong>Carico i contenuti...</strong>
+            </div>
+
+            <div class="editor" id="home-editor" hidden>
+                <div class="editor-bar">
+                    <div class="editor-actions">
+                        <button type="button" class="editor-btn editor-btn-primary" id="home-save">
+                            <i class="bi bi-cloud-arrow-up" aria-hidden="true"></i> Salva e pubblica
+                        </button>
+                        <button type="button" class="editor-btn" id="home-reload">
+                            <i class="bi bi-arrow-clockwise" aria-hidden="true"></i> Ricarica
+                        </button>
+                    </div>
+                    <p class="editor-state" id="home-state" role="status" aria-live="polite"></p>
+                </div>
+
+                <div class="editor-alert" id="home-alert" hidden></div>
+
+                <!-- Immagini -->
+                <section class="editor-group">
+                    <h2 class="editor-group-title">Immagini</h2>
+
+                    <div class="editor-body">
+                        <div class="field field-wide">
+                            <label data-label-for="brand.heroImageUrl">Foto principale</label>
+                            <div class="upload-row">
+                                <input type="url" data-field="brand.heroImageUrl" autocomplete="off"
+                                       spellcheck="false" placeholder="https://...">
+                                <label class="upload-btn">
+                                    <i class="bi bi-upload" aria-hidden="true"></i>
+                                    <span data-upload-label>Carica</span>
+                                    <input type="file" hidden data-upload="site"
+                                           accept="image/png,image/jpeg,image/webp,image/svg+xml">
+                                </label>
+                            </div>
+                            <img class="site-preview site-preview-wide" data-preview="brand.heroImageUrl" alt="" hidden>
+                            <span class="field-note">
+                                E lo sfondo in cima alla pagina. Larga almeno 2000 px: viene tagliata
+                                in orizzontale e sbiadisce mentre si scorre.
+                            </span>
+                            <span class="field-error" data-error-for="brand.heroImageUrl" hidden></span>
+                        </div>
+
+                        <div class="field field-wide">
+                            <label data-label-for="brand.heroImageAlt">Descrizione della foto</label>
+                            <input type="text" data-field="brand.heroImageAlt" maxlength="120" autocomplete="off">
+                            <span class="field-note">Per chi non la vede e per i motori di ricerca.</span>
+                            <span class="field-error" data-error-for="brand.heroImageAlt" hidden></span>
+                        </div>
+
+                        <div class="field field-wide">
+                            <label data-label-for="brand.logoUrl">Logo</label>
+                            <div class="upload-row">
+                                <input type="url" data-field="brand.logoUrl" autocomplete="off"
+                                       spellcheck="false" placeholder="https://...">
+                                <label class="upload-btn">
+                                    <i class="bi bi-upload" aria-hidden="true"></i>
+                                    <span data-upload-label>Carica</span>
+                                    <input type="file" hidden data-upload="site"
+                                           accept="image/png,image/jpeg,image/webp,image/svg+xml">
+                                </label>
+                            </div>
+                            <img class="site-preview" data-preview="brand.logoUrl" alt="" hidden>
+                            <span class="field-note">Compare due volte: nella barra in alto e accanto a "Chi siamo".</span>
+                            <span class="field-error" data-error-for="brand.logoUrl" hidden></span>
+                        </div>
+
+                        <div class="field field-wide">
+                            <label data-label-for="brand.name">Nome della community</label>
+                            <input type="text" data-field="brand.name" maxlength="80" autocomplete="off">
+                            <span class="field-error" data-error-for="brand.name" hidden></span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Chi siamo -->
+                <section class="editor-group">
+                    <h2 class="editor-group-title">Chi siamo</h2>
+
+                    <div class="editor-body">
+                        <div class="field">
+                            <label data-label-for="about.title">Titolo</label>
+                            <input type="text" data-field="about.title" maxlength="60" autocomplete="off">
+                            <span class="field-error" data-error-for="about.title" hidden></span>
+                        </div>
+
+                        <div class="field">
+                            <label data-label-for="about.lead">Apertura in grassetto</label>
+                            <input type="text" data-field="about.lead" maxlength="80" autocomplete="off">
+                            <span class="field-note">Le prime parole del paragrafo, in neretto.</span>
+                            <span class="field-error" data-error-for="about.lead" hidden></span>
+                        </div>
+
+                        <div class="field field-wide">
+                            <label data-label-for="about.text">Testo</label>
+                            <textarea data-field="about.text" maxlength="1200" rows="5"></textarea>
+                            <span class="field-note">Una riga vuota separa due paragrafi. Niente HTML: viene mostrato come testo.</span>
+                            <span class="field-error" data-error-for="about.text" hidden></span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Statistiche -->
+                <section class="editor-group">
+                    <h2 class="editor-group-title">Statistiche</h2>
+                    <p class="editor-group-note">
+                        I due numeri accanto a "Chi siamo". Sono testo libero, non contatori:
+                        <code>1.2k+</code> va benissimo.
+                    </p>
+
+                    <ol class="editor-list" data-list="stats" data-template="stat-template"></ol>
+                    <p class="editor-empty" data-empty="stats" hidden>Nessuna statistica.</p>
+
+                    <button type="button" class="editor-btn" data-add="stats">
+                        <i class="bi bi-plus-lg" aria-hidden="true"></i> Aggiungi statistica
+                    </button>
+                </section>
+
+                <!-- Footer -->
+                <section class="editor-group">
+                    <h2 class="editor-group-title">Footer</h2>
+
+                    <div class="editor-body">
+                        <div class="field field-wide">
+                            <label data-label-for="footer.intro">Introduzione</label>
+                            <input type="text" data-field="footer.intro" maxlength="200" autocomplete="off">
+                            <span class="field-error" data-error-for="footer.intro" hidden></span>
+                        </div>
+
+                        <div class="field">
+                            <label data-label-for="footer.email">Email</label>
+                            <input type="email" data-field="footer.email" maxlength="120" autocomplete="off"
+                                   spellcheck="false">
+                            <span class="field-note">Genera il bottone e la barra da copiare. Vuota, spariscono entrambi.</span>
+                            <span class="field-error" data-error-for="footer.email" hidden></span>
+                        </div>
+
+                        <div class="field field-wide">
+                            <label data-label-for="footer.legal">Riga legale</label>
+                            <input type="text" data-field="footer.legal" maxlength="300" autocomplete="off">
+                            <span class="field-error" data-error-for="footer.legal" hidden></span>
+                        </div>
+                    </div>
+
+                    <h3 class="editor-group-subtitle">Canali</h3>
+                    <p class="editor-group-note">I bottoni grandi accanto a "Scrivici una Mail".</p>
+
+                    <ol class="editor-list" data-list="footer.channels" data-template="channel-template"></ol>
+                    <p class="editor-empty" data-empty="footer.channels" hidden>Nessun canale.</p>
+
+                    <button type="button" class="editor-btn" data-add="footer.channels">
+                        <i class="bi bi-plus-lg" aria-hidden="true"></i> Aggiungi canale
+                    </button>
+
+                    <h3 class="editor-group-subtitle">Profili social</h3>
+                    <p class="editor-group-note">La riga di icone tonde in fondo alla pagina.</p>
+
+                    <ol class="editor-list" data-list="footer.social" data-template="social-template"></ol>
+                    <p class="editor-empty" data-empty="footer.social" hidden>Nessun profilo.</p>
+
+                    <button type="button" class="editor-btn" data-add="footer.social">
+                        <i class="bi bi-plus-lg" aria-hidden="true"></i> Aggiungi profilo
+                    </button>
+                </section>
+
+                <p class="editor-hint">
+                    Ogni campo lasciato vuoto <strong>non svuota il sito</strong>: quella parte torna al
+                    testo scritto nell'HTML, che e anche quello che vedono i motori di ricerca e chi
+                    naviga senza JavaScript.
                 </p>
             </div>
         </section>
@@ -383,6 +564,106 @@
                     </div>
                 </div>
             </details>
+        </li>
+    </template>
+
+    <!-- Righe compatte: due campi e i comandi, senza scheda da aprire. -->
+    <template id="stat-template">
+        <li class="editor-row editor-row-inline">
+            <div class="field">
+                <label data-label-for="value">Numero</label>
+                <input type="text" data-field="value" maxlength="12" autocomplete="off" placeholder="1.2k+">
+                <span class="field-error" data-error-for="value" hidden></span>
+            </div>
+            <div class="field">
+                <label data-label-for="label">Etichetta</label>
+                <input type="text" data-field="label" maxlength="40" autocomplete="off" placeholder="Membri Attivi">
+                <span class="field-error" data-error-for="label" hidden></span>
+            </div>
+            <div class="editor-buttons">
+                <button type="button" class="icon-btn" data-action="up" title="Sposta su">
+                    <i class="bi bi-arrow-up" aria-hidden="true"></i><span class="visually-hidden">Sposta su</span>
+                </button>
+                <button type="button" class="icon-btn" data-action="down" title="Sposta giu">
+                    <i class="bi bi-arrow-down" aria-hidden="true"></i><span class="visually-hidden">Sposta giu</span>
+                </button>
+                <button type="button" class="icon-btn icon-btn-danger" data-action="remove" title="Elimina">
+                    <i class="bi bi-trash" aria-hidden="true"></i><span class="visually-hidden">Elimina</span>
+                </button>
+            </div>
+        </li>
+    </template>
+
+    <template id="channel-template">
+        <li class="editor-row editor-row-inline">
+            <div class="field">
+                <label data-label-for="type">Tipo</label>
+                <select data-field="type">
+                    <option value="telegram">Telegram</option>
+                    <option value="whatsapp">WhatsApp</option>
+                    <option value="discord">Discord</option>
+                    <option value="slack">Slack</option>
+                    <option value="meetup">Meetup</option>
+                    <option value="website">Sito web</option>
+                </select>
+                <span class="field-error" data-error-for="type" hidden></span>
+            </div>
+            <div class="field">
+                <label data-label-for="label">Etichetta</label>
+                <input type="text" data-field="label" maxlength="40" autocomplete="off" placeholder="Canale Telegram">
+                <span class="field-error" data-error-for="label" hidden></span>
+            </div>
+            <div class="field field-grow">
+                <label data-label-for="url">Indirizzo</label>
+                <input type="url" data-field="url" autocomplete="off" spellcheck="false" placeholder="https://...">
+                <span class="field-error" data-error-for="url" hidden></span>
+            </div>
+            <div class="editor-buttons">
+                <button type="button" class="icon-btn" data-action="up" title="Sposta su">
+                    <i class="bi bi-arrow-up" aria-hidden="true"></i><span class="visually-hidden">Sposta su</span>
+                </button>
+                <button type="button" class="icon-btn" data-action="down" title="Sposta giu">
+                    <i class="bi bi-arrow-down" aria-hidden="true"></i><span class="visually-hidden">Sposta giu</span>
+                </button>
+                <button type="button" class="icon-btn icon-btn-danger" data-action="remove" title="Elimina">
+                    <i class="bi bi-trash" aria-hidden="true"></i><span class="visually-hidden">Elimina</span>
+                </button>
+            </div>
+        </li>
+    </template>
+
+    <template id="social-template">
+        <li class="editor-row editor-row-inline">
+            <div class="field">
+                <label data-label-for="type">Rete</label>
+                <select data-field="type">
+                    <option value="linkedin">LinkedIn</option>
+                    <option value="youtube">YouTube</option>
+                    <option value="instagram">Instagram</option>
+                    <option value="github">GitHub</option>
+                    <option value="x">X / Twitter</option>
+                    <option value="facebook">Facebook</option>
+                    <option value="mastodon">Mastodon</option>
+                    <option value="bluesky">Bluesky</option>
+                </select>
+                <span class="field-error" data-error-for="type" hidden></span>
+            </div>
+            <div class="field field-grow">
+                <label data-label-for="url">Indirizzo</label>
+                <input type="url" data-field="url" autocomplete="off" spellcheck="false" placeholder="https://...">
+                <span class="field-error" data-error-for="url" hidden></span>
+            </div>
+            <div class="editor-buttons">
+                <button type="button" class="icon-btn" data-action="up" title="Sposta su">
+                    <i class="bi bi-arrow-up" aria-hidden="true"></i><span class="visually-hidden">Sposta su</span>
+                </button>
+                <button type="button" class="icon-btn" data-action="down" title="Sposta giu">
+                    <i class="bi bi-arrow-down" aria-hidden="true"></i><span class="visually-hidden">Sposta giu</span>
+                </button>
+                <button type="button" class="icon-btn icon-btn-danger" data-action="remove" title="Elimina">
+                    <i class="bi bi-trash" aria-hidden="true"></i><span class="visually-hidden">Elimina</span>
+                </button>
+            </div>
         </li>
     </template>
 

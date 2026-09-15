@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "updatedAt": "2026-09-15T00:00:00Z",
+  "updatedBy": "seed",
+  "brand": {
+    "name": "Azure Meetup Torino",
+    "logoUrl": "https://media.licdn.com/dms/image/v2/D4D0BAQEhN0BwKgacBQ/company-logo_200_200/B4DZYBX6NlHwAI-/0/1743779767492/azure_meetup_torino_logo?e=2147483647&v=beta&t=Cdt2pJTS6y7cAX9074JPwxQ4BSl3pd9T1k1rDMnMbBQ",
+    "heroImageUrl": "https://images.unsplash.com/photo-1546938482-2ad7abfb620c?auto=format&fit=crop&q=80&w=2000",
+    "heroImageAlt": "Torino Skyline"
+  },
+  "about": {
+    "title": "Chi Siamo",
+    "lead": "Azure Meetup Torino",
+    "text": "è la tech community indipendente piemontese dedicata all'ecosistema Microsoft Azure, Cloud Architecture, DevOps e Intelligenza Artificiale. Uno spazio inclusivo e gratuito aperto a sviluppatori, architetti, sistemisti e curiosi per scambiare know-how, case study reali e fare networking di persona."
+  },
+  "stats": [
+    { "value": "1.2k+", "label": "Membri Attivi" },
+    { "value": "30+", "label": "Meetup Svolti" }
+  ],
+  "footer": {
+    "intro": "Entra in contatto con noi o unisciti ai nostri canali per restare aggiornato.",
+    "email": "info@azuremeetuptorino.it",
+    "legal": "© 2026 Azure Meetup Torino. Community indipendente non affiliata con Microsoft Corporation.",
+    "channels": [
+      { "type": "telegram", "label": "Canale Telegram", "url": "https://t.me/AzureMeetupTorino" },
+      { "type": "whatsapp", "label": "Canale WhatsApp", "url": "https://chat.whatsapp.com" }
+    ],
+    "social": [
+      { "type": "linkedin", "url": "https://it.linkedin.com/company/azure-meetup-torino" },
+      { "type": "youtube", "url": "https://www.youtube.com/@AzureMeetupTorino" },
+      { "type": "instagram", "url": "https://www.instagram.com/azuremeetuptorino" },
+      { "type": "github", "url": "https://github.com/Azure-Meetup-Torino" }
+    ]
+  }
+}

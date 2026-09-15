@@ -2,6 +2,7 @@ import { loadCollection } from './data.js';
 import { renderDataError } from './dom.js';
 import { renderTeam } from './render-team.js';
 import { renderSponsors } from './render-sponsors.js';
+import { renderSite } from './render-site.js';
 import { renderEvents } from './render-events.js';
 import { initTeamSwiper, initEventsSwiper } from './swiper-init.js';
 import { MEETUP_GROUP_URL } from './config.js';
@@ -78,7 +79,9 @@ async function hydrate({ collection, trackId, sectionId, render, onSuccess, erro
 
     const fail = (error) => {
         if (error) console.error(`[${collection}] caricamento fallito`, error);
-        renderDataError(section, errorMessage, errorLink?.url, errorLink?.label);
+        // Senza messaggio non si tocca la pagina: e il caso di chi ha gia un
+        // contenuto di riserva nell'HTML.
+        if (errorMessage) renderDataError(section, errorMessage, errorLink?.url, errorLink?.label);
     };
 
     try {
@@ -94,6 +97,16 @@ async function hydrate({ collection, trackId, sectionId, render, onSuccess, erro
 }
 
 await Promise.allSettled([
+    // I contenuti fissi della pagina. Se non arrivano non c'e niente da
+    // segnalare: l'HTML contiene gia i testi, e restano quelli. Per questo e
+    // l'unica sezione senza messaggio di errore.
+    hydrate({
+        collection: 'site',
+        trackId: 'main-content',
+        sectionId: 'main-content',
+        render: (_, payload) => renderSite(document, payload),
+        errorMessage: null
+    }),
     hydrate({
         collection: 'team',
         trackId: 'team-track',

@@ -96,6 +96,13 @@ contiene l'impronta del contenuto, così la cache può durare un anno e cambiare
 foto cambia URL. Gli SVG vengono sanificati e serviti come allegato. Resta
 possibile incollare a mano una URL `https://` già ospitata altrove.
 
+I contenuti fissi della home — foto principale, logo, "Chi siamo", le due
+statistiche e il footer — stanno in `site.json` e si modificano dalla scheda
+**Home e footer**. Qui vale una regola diversa dalle altre sezioni: l'HTML
+conserva i testi attuali e il JavaScript **sovrascrive solo ciò che riceve**.
+La pagina ha senso anche senza JavaScript, i crawler vedono contenuto vero, e un
+campo svuotato dall'admin non svuota il sito — lo riporta al testo di partenza.
+
 Per gli sponsor, la **fascia** (`gold`, `silver`, `bronze`, `partner`, `venue`,
 `media`) è l'unico dato che governa dimensione del logo, raggruppamento e ordine
 in pagina. È deliberato: aggiungere uno sponsor non deve mai voler dire toccare
@@ -116,6 +123,7 @@ risorse Azure vedi [docs/deploy.md](docs/deploy.md).
 | P2 | `/admin` e autenticazione Entra ID | fatto |
 | P3 | CRUD team su Blob Storage | fatto (risorse Azure da creare) |
 | P4 | CRUD sponsor e upload loghi | fatto (risorse Azure da creare) |
+| P4b | Contenuti della home editabili (foto, "Chi siamo", statistiche, footer) | fatto (risorse Azure da creare) |
 | P5 | Integrazione Meetup e filtro temporale eventi | da fare |
 | P6 | Telemetria, SEO, accessibilità | da fare |
 

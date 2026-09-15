@@ -18,6 +18,7 @@ Branch **`feat/azure-static-web-apps`**, mai pushato.
 | P2 | `/admin` e autenticazione Entra ID | fatto, verificato con l'emulatore |
 | P3 | CRUD team su Blob Storage | fatto, verificato in locale contro Azurite |
 | P4 | CRUD sponsor e upload loghi | fatto, verificato in locale contro Azurite |
+| P4b | Contenuti della home editabili | fatto, verificato in locale contro Azurite |
 | P5 | Integrazione Meetup e filtro temporale eventi | da fare, è il prossimo |
 | P6 | Telemetria, SEO, accessibilità | da fare |
 
@@ -86,6 +87,35 @@ Verificato end-to-end sull'emulatore: `GET /api/sponsors` con ETag, `PUT` che
 ripubblica, secondo `PUT` con lo stesso ETag → 409 con la copia del server,
 `tier` inventato e `since: "ieri"` → 400 con quattro issues sul campo giusto.
 
+## Cosa è entrato con la P4b
+
+Anticipata mentre l'accesso a Meetup non c'era ancora. Rende editabile quello
+che restava scritto a mano dentro `index.html`: **foto principale**, logo,
+**"Chi siamo"**, le due **statistiche** e il **footer** (introduzione, email,
+riga legale, canali e profili social).
+
+- `site.json` + `GET/PUT /api/site` + `validateSite`. Tutti i campi sono
+  facoltativi, e non è una scorciatoia: vedi la regola qui sotto.
+- `src/assets/js/render-site.js` — **quello che non arriva non si tocca**.
+  L'HTML conserva i testi attuali e il JavaScript sovrascrive solo ciò che
+  riceve. Tre motivi: la pagina funziona senza JavaScript, i crawler e le
+  anteprime dei link vedono contenuto vero, e se il blob tace il sito non
+  diventa una pagina di scheletri. Il rovescio, da dire a chi la usa:
+  **svuotare un campo dall'admin non cancella il testo dal sito**, lo riporta a
+  quello dell'HTML.
+- `src/assets/js/admin/editor-core.js` — il nucleo dei tre editor. La P4 aveva
+  già messo in comune le liste; qui serviva anche un modulo con dentro tre
+  listine, quindi il nucleo è diventato generico: le liste si dichiarano col
+  nome che hanno nel documento (`data-list="footer.channels"`), così un errore
+  su `footer.channels[0].url` trova da solo la sua riga senza configurazione.
+- `POST /api/assets` accetta un terzo `kind`, `site`, per foto e logo.
+- Terza scheda **Home e footer** nell'admin, con anteprima delle due immagini.
+- 107 test.
+
+Il testo di "Chi siamo" ha l'apertura in grassetto come campo separato
+(`about.lead`). L'alternativa era accettare HTML dentro un textarea, cioè
+rinunciare a scappare l'input di un campo di testo.
+
 ## Decisioni già prese
 
 Non vanno ridiscusse salvo ripensamenti espliciti.
@@ -104,6 +134,7 @@ Non vanno ridiscusse salvo ripensamenti espliciti.
 | `order` dei membri | Non è un campo da compilare: si riordina con le frecce e si rinumera 10, 20, 30 al salvataggio |
 | Foto e loghi | Si **caricano**, non si linkano: finiscono sul nostro storage. Il campo URL resta scrivibile per chi ha già l'immagine altrove, e per questo `img-src` è `https:` |
 | Fascia sponsor | È l'unico dato che governa dimensione del logo, raggruppamento e ordine. Aggiungere uno sponsor non deve mai voler dire toccare il CSS |
+| Contenuti della home | L'HTML resta il fallback e il JavaScript sovrascrive solo ciò che riceve: la pagina deve avere senso senza JavaScript e non svuotarsi se il blob tace |
 
 ## Vincoli verificati
 
@@ -176,12 +207,14 @@ Errori trovati testando, non in astratto.
    funziona: **servono i nomi, le foto delle persone e i loghi degli sponsor**.
    Da lì in poi si fa tutto da `/admin`, senza toccare il repo.
 
-3. **L'editor sponsor non è mai stato aperto in un browser.** Quello del team
-   sì, upload compreso. Il lato server degli sponsor è verificato con curl (200
-   con ETag, 409, 400 con le issues) e il cablaggio DOM a tavolino, ma la
-   pagina no. Vale anche per il nuovo rendering a fasce sul sito pubblico: il
-   markup è stato controllato da Node, la resa visiva no. Nel devcontainer non
-   c'è un browser headless.
+3. **Gli editor sponsor e "Home e footer" non sono mai stati aperti in un
+   browser.** Quello del team sì, upload compreso. Il lato server è verificato
+   con curl (200 con ETag, 409, 400 con le issues) e il cablaggio DOM a
+   tavolino — uno script confronta ogni `id`, `data-field`, `data-list` e
+   `data-add` usato dal JavaScript con quello che c'è nel markup — ma le pagine
+   no. Vale anche per il rendering a fasce degli sponsor e per l'idratazione
+   della home: la logica è stata esercitata da Node con un DOM finto, la resa
+   visiva no. Nel devcontainer non c'è un browser headless.
 
 4. **Logo e hero puntano a URL esterne volatili** (CDN di LinkedIn e Unsplash).
    Sono in `img-src` nella CSP per non rompere nulla, ma il logo vero andrebbe
@@ -251,8 +284,6 @@ l'emulatore, perché dipende da credenziali vere. `MEETUP_MOCK=true` in
 
 - **Sessioni/talk**: fuori scope. Rientrerebbero come `sessions.json` con lo
   stesso schema di `team.json`, collegate agli eventi tramite l'id Meetup.
-- **"Chi siamo", footer e statistiche** (`1.2k+ membri`, `30+ meetup`): ancora
-  scritti a mano nell'HTML.
 - **SEO degli eventi**: spostandoli su rendering client-side sono diventati
   invisibili ai crawler senza JS e alle anteprime dei link su LinkedIn e
   WhatsApp. Recuperabile in P6 con uno snapshot statico generato dal job di

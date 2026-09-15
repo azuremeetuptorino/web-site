@@ -51,6 +51,7 @@ const force = process.argv.includes('--force');
 
 /** `master: true` = esiste anche una copia privata modificabile dall'admin. */
 const FILES = [
+    { name: 'site.json', master: true },
     { name: 'team.json', master: true },
     { name: 'sponsors.json', master: true },
     { name: 'events.json', master: false }

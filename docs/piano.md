@@ -186,6 +186,7 @@ SWA è il cancello reale (le managed functions non hanno hostname pubblico), ma 
 | Route | Metodo | Ruolo | Scopo |
 |---|---|---|---|
 | `/api/me` | GET | `authenticated` | eco del principal per l'header dell'admin |
+| `/api/site` | GET / PUT | `admin` | master `site-data/site.json`: foto, "Chi siamo", statistiche, footer |
 | `/api/team` | GET / PUT | `admin` | master `site-data/team.json` |
 | `/api/sponsors` | GET / PUT | `admin` | master `site-data/sponsors.json` |
 | `/api/assets` | POST | `admin` | upload di un logo o avatar in `public/{sponsors,avatars}/` |
@@ -381,10 +382,11 @@ export function buildAssertion({ clientKey, memberId, signingKeyId, privateKeyPe
 | **P2** | `/admin/index.html`, login Entra, auto-invito al ruolo `admin`, `/api/me`, `lib/auth.js`. Nessun dato. | Utente senza ruolo → 403 in italiano; con ruolo → pagina admin; logout funzionante. |
 | **P3** | `lib/blob.js` con ETag, `lib/validate.js`, `GET/PUT /api/team`, ripubblicazione su `public/`, editor team nell'admin con gestione del 409. Più `POST /api/assets` con `lib/image.js` e sanificazione SVG, anticipato da P4: senza, l'unico modo di dare una foto a un membro sarebbe incollare una URL esterna, e la CSP dovrebbe aprirsi lo stesso. | Modifica dall'admin visibile sul sito pubblico entro 5 minuti; due tab in conflitto → messaggio, nessuna perdita di dati; foto caricata dal disco e visibile sul sito. |
 | **P4** | `GET/PUT /api/sponsors` + editor sponsor (stesso pattern di P3, riuso diretto di `blob.js`/`validate.js`/`image.js`, che accetta già `kind: 'sponsor'`); rendering sponsor raggruppato per tier. | Sponsor creato da zero nell'admin, logo caricato dal disco, visibile sul sito con la dimensione del suo tier. |
+| **P4b** | `GET/PUT /api/site` + editor "Home e footer": foto principale, logo, "Chi siamo", statistiche, canali e social del footer. Anticipato mentre l'accesso a Meetup non c'era ancora. L'HTML resta il fallback e il rendering sovrascrive solo ciò che riceve. | Una parola cambiata dall'admin si vede sul sito; svuotando un campo la pagina torna al testo dell'HTML invece di restare vuota. |
 | **P5** | `meetup/{jwt,token,query,map}.js` (query verificata nel playground); `/api/refresh-events` + secret + cron + bottone admin; `public/events.json`; stale-on-error. Poi il nuovo rendering eventi e il filtro temporale di §Filtro. | Eventi reali dal gruppo Meetup; staccando Meetup il sito continua a mostrare l'ultimo stato buono. |
 | **P6** | Application Insights, runbook rotazione chiavi in `docs/`, `robots.txt`/`sitemap.xml`/OG tags, passata Lighthouse + axe. Opzionale: il job di refresh scrive anche uno snapshot statico `eventi.html` per recuperare SEO e anteprime LinkedIn/WhatsApp. | — |
 
-**Fuori scope** (restano hardcoded): sessioni/talk, sezione "Chi siamo", footer. Le sessioni sono facilmente aggiungibili in seguito come `sessions.json` con lo stesso pattern di `team.json`, collegate agli eventi tramite l'id Meetup.
+**Fuori scope** (restano hardcoded): sessioni/talk. "Chi siamo", footer e statistiche sono passati editabili con la P4b. Le sessioni sono facilmente aggiungibili in seguito come `sessions.json` con lo stesso pattern di `team.json`, collegate agli eventi tramite l'id Meetup.
 
 **Regressione nota accettata**: spostando gli eventi da HTML a rendering client-side, diventano invisibili ai crawler senza JS e alle anteprime dei link social. Recuperabile in P6 con lo snapshot statico.
 

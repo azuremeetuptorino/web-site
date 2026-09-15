@@ -2,43 +2,41 @@ import { apiGet, apiPut, ApiError, SessionExpiredError } from './api.js';
 import { uploadImage } from './upload.js';
 
 /**
- * La macchina dietro gli editor dell'admin.
+ * Il nucleo degli editor dell'admin.
  *
- * Team e sponsor sono la stessa cosa con campi diversi: una lista di schede
- * riordinabili, salvata tutta insieme con l'ETag. Tenerne due copie vorrebbe
- * dire correggere ogni bug due volte e, prima o poi, correggerlo in una sola —
- * ed e la gestione del conflitto quella che si perderebbe per prima.
+ * Tre documenti — team, sponsor, contenuti della home — e un solo modo di
+ * gestirli: leggi con l'ETag, modifica, risalva tutto insieme. Cambia solo
+ * quali campi ci sono dentro.
  *
- * Quattro cose che guidano il disegno:
+ * QUATTRO REGOLE CHE VALGONO PER TUTTI
  *
- * 1. NIENTE HTML CONCATENATO CON I DATI. Le schede si clonano da un <template>
- *    e si riempiono via .value / .textContent. Senza escaping manuale non c'e
+ * 1. Niente HTML concatenato con i dati. Le righe si clonano da un <template> e
+ *    si riempiono via .value / .textContent: senza escaping manuale non c'e
  *    escaping dimenticato.
  *
- * 2. L'ORDINE E LA POSIZIONE. `order` non e un campo da compilare: si riordina
- *    con le frecce e al salvataggio si rinumera 10, 20, 30. Un campo numerico
- *    libero sarebbe una seconda fonte di verita in disaccordo con quello che
- *    l'admin vede.
- *
- * 3. NON SI PERDE NIENTE SENZA UN CLICK. Il 409 (qualcun altro ha salvato) non
+ * 2. Non si perde niente senza un click. Il 409 (qualcun altro ha salvato) non
  *    ricarica e non sovrascrive da solo: tiene le modifiche locali nel form e
- *    chiede cosa fare. Stessa regola a sessione scaduta, dove un reload
- *    automatico butterebbe via il lavoro appena fatto.
+ *    chiede cosa fare. Stessa regola a sessione scaduta.
  *
- * 4. GLI ERRORI VANNO ACCANTO AL CAMPO. Il server risponde con dei path tipo
- *    `members[3].link.url`: qui si traducono in "questa scheda, questo campo".
+ * 3. Gli errori vanno accanto al campo. Il server risponde con path come
+ *    `members[3].link.url` o `about.text`, e qui diventano "questa riga, questo
+ *    campo" o "questo campo".
  *
- * Cosa deve fornire chi la usa: gli id degli elementi in pagina, l'endpoint, la
- * chiave della collezione e tre funzioni che sanno di quali campi si tratta —
- * `fill`, `collect`, `preview`. Tutto il resto e qui.
+ * 4. `order` non e un campo da compilare: dove serve si riordina con le frecce
+ *    e si rinumera al salvataggio.
  *
- * Due convenzioni sono date per buone perche valgono per entrambi i documenti:
- * ogni elemento ha un campo `id` (slug) e un campo `name` (etichetta umana).
+ * CONVENZIONI NEL MARKUP, tutte generiche:
+ *   [data-field="percorso"]     un campo; il percorso e quello dell'issue
+ *   [data-error-for="percorso"] dove finisce il messaggio d'errore
+ *   [data-list="nome"]          contenitore di righe, con data-template="idTpl"
+ *   [data-empty="nome"]         mostrato quando quella lista e vuota
+ *   [data-add="nome"]           bottone che aggiunge una riga a quella lista
+ *   [data-action=up|down|remove] dentro una riga
+ *   input[type=file][data-upload="avatar|sponsor"]
+ *                               carica e scrive nel [data-field] dello stesso .field
  */
 
-const FIELD = (name) => `[data-field="${name}"]`;
-
-export function createCollectionEditor(shape) {
+export function createEditorCore(shape) {
     const el = Object.fromEntries(
         Object.entries(shape.ids).map(([key, id]) => [key, document.getElementById(id)])
     );
@@ -48,6 +46,8 @@ export function createCollectionEditor(shape) {
     let dirty = false;
     let lastSavedAt = null;
     let busy = false;
+
+    const lists = shape.lists ?? {};
 
     /* ==========================================================
        STATO E AVVISI
@@ -59,6 +59,8 @@ export function createCollectionEditor(shape) {
             ? null
             : date.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
     };
+
+    const addButtons = () => [...el.editor.querySelectorAll('[data-add]')];
 
     function refreshState() {
         if (busy) {
@@ -80,7 +82,7 @@ export function createCollectionEditor(shape) {
 
     function setBusy(value) {
         busy = value;
-        for (const button of [el.save, el.add, el.reload]) button.disabled = value;
+        for (const button of [el.save, el.reload, ...addButtons()]) button.disabled = value;
         refreshState();
     }
 
@@ -127,13 +129,12 @@ export function createCollectionEditor(shape) {
     }
 
     /* ==========================================================
-       SCHEDE
+       CAMPI
        ========================================================== */
 
-    const rows = () => [...el.list.querySelectorAll('.editor-row')];
-    const field = (row, name) => row.querySelector(FIELD(name));
-    const preview = (row, name) => row.querySelector(`[data-preview="${name}"]`);
-    const value = (row, name) => field(row, name).value.trim();
+    const field = (scope, name) => scope.querySelector(`[data-field="${name}"]`);
+    const preview = (scope, name) => scope.querySelector(`[data-preview="${name}"]`);
+    const value = (scope, name) => field(scope, name)?.value.trim() ?? '';
 
     /**
      * Un valore che il <select> non conosce verrebbe silenziosamente sostituito
@@ -156,18 +157,26 @@ export function createCollectionEditor(shape) {
             .slice(0, 49);
     }
 
-    /** Passato alle funzioni della forma, cosi non ripetono le query. */
-    const tools = { field, preview, value, setSelect };
+    /* ==========================================================
+       LISTE
+       ========================================================== */
 
-    function refreshPreview(row) {
-        shape.preview(row, tools);
+    const container = (name) => el.editor.querySelector(`[data-list="${name}"]`);
+    const rows = (name) => [...container(name).querySelectorAll('.editor-row')];
+    const listNameOf = (row) => row.closest('[data-list]').dataset.list;
+
+    function refreshEmpty(name) {
+        const slot = el.editor.querySelector(`[data-empty="${name}"]`);
+        if (slot) slot.hidden = rows(name).length > 0;
     }
 
-    function buildRow(item = {}, { isNew = false } = {}) {
-        const row = el.template.content.firstElementChild.cloneNode(true);
+    function buildRow(name, item = {}, { isNew = false } = {}) {
+        const box = container(name);
+        const template = document.getElementById(box.dataset.template);
+        const row = template.content.firstElementChild.cloneNode(true);
         row.dataset.new = String(isNew);
 
-        shape.fill(row, item, tools);
+        lists[name].fill(row, item, tools);
 
         // Un'immagine irraggiungibile non deve lasciare un'icona rotta in lista.
         for (const thumb of row.querySelectorAll('[data-preview-fallback]')) {
@@ -176,47 +185,61 @@ export function createCollectionEditor(shape) {
             });
         }
 
-        refreshPreview(row);
-        if (isNew) row.querySelector('.editor-details').open = true;
+        lists[name].preview?.(row, tools);
+        if (isNew) {
+            const details = row.querySelector('.editor-details');
+            if (details) details.open = true;
+        }
 
         return row;
     }
 
-    function render(items) {
-        el.list.replaceChildren(...items.map((item) => buildRow(item)));
-        el.empty.hidden = items.length > 0;
+    function setList(name, items) {
+        container(name).replaceChildren(...(items ?? []).map((item) => buildRow(name, item)));
+        refreshEmpty(name);
     }
 
-    /**
-     * Le schede nell'ordine in cui si vedono diventano order 10, 20, 30...
-     * I campi vuoti si mandano cosi come sono: e il server a decidere quali
-     * sono opzionali, qui non si indovina.
-     */
-    function collect() {
-        return rows().map((row, index) => ({
-            ...shape.collect(row, tools),
-            order: (index + 1) * 10
-        }));
+    function readList(name) {
+        return rows(name).map((row, index) => lists[name].collect(row, index, tools));
     }
+
+    const tools = { field, preview, value, setSelect, setList, readList, rows, form: () => el.editor };
 
     /* ==========================================================
        ERRORI DI VALIDAZIONE
        ========================================================== */
 
     function clearFieldErrors() {
-        for (const slot of el.list.querySelectorAll('.field-error')) {
+        for (const slot of el.editor.querySelectorAll('.field-error')) {
             slot.hidden = true;
             slot.textContent = '';
         }
-        for (const input of el.list.querySelectorAll('[aria-invalid]')) {
+        for (const input of el.editor.querySelectorAll('[aria-invalid]')) {
             input.removeAttribute('aria-invalid');
         }
     }
 
-    /** `members[3].link.url` -> { index: 3, name: 'link.url' } */
-    function parseIssuePath(path) {
-        const match = new RegExp(`^${shape.key}\\[(\\d+)\\]\\.(.+)$`).exec(path ?? '');
-        return match ? { index: Number(match[1]), name: match[2] } : null;
+    /**
+     * Traduce il path di una issue nel campo che l'ha causata.
+     *
+     * `stats[1].value`     -> riga 1 della lista `stats`, campo `value`
+     * `about.text`         -> campo `about.text` nel form
+     *
+     * Il primo caso vale anche per `footer.channels[0].url`: conta l'ultima
+     * parentesi quadra, perche e li che finisce il nome della lista.
+     */
+    function locate(path) {
+        const match = /^(.+)\[(\d+)\]\.(.+)$/.exec(path ?? '');
+
+        if (match) {
+            const [, listName, index, name] = match;
+            const box = el.editor.querySelector(`[data-list="${listName}"]`);
+            const row = box ? [...box.querySelectorAll('.editor-row')][Number(index)] : null;
+            if (row) return { scope: row, name };
+            return null;
+        }
+
+        return field(el.editor, path) ? { scope: el.editor, name: path } : null;
     }
 
     function showIssues(issues) {
@@ -224,12 +247,10 @@ export function createCollectionEditor(shape) {
 
         const orphans = [];
         let first = null;
-        const all = rows();
 
         for (const issue of issues) {
-            const parsed = parseIssuePath(issue.path);
-            const row = parsed ? all[parsed.index] : null;
-            const slot = row?.querySelector(`[data-error-for="${parsed.name}"]`);
+            const found = locate(issue.path);
+            const slot = found?.scope.querySelector(`[data-error-for="${found.name}"]`);
 
             if (!slot) {
                 orphans.push(issue.path ? `${issue.path}: ${issue.message}` : issue.message);
@@ -238,9 +259,9 @@ export function createCollectionEditor(shape) {
 
             slot.textContent = issue.message;
             slot.hidden = false;
-            field(row, parsed.name)?.setAttribute('aria-invalid', 'true');
+            field(found.scope, found.name)?.setAttribute('aria-invalid', 'true');
 
-            if (!first) first = { row, input: field(row, parsed.name) };
+            if (!first) first = found;
         }
 
         setAlert(
@@ -252,8 +273,8 @@ export function createCollectionEditor(shape) {
         );
 
         if (first) {
-            first.row.querySelector('.editor-details').open = true;
-            first.input?.focus();
+            first.scope.querySelector('.editor-details')?.setAttribute('open', '');
+            field(first.scope, first.name)?.focus();
         }
     }
 
@@ -264,7 +285,7 @@ export function createCollectionEditor(shape) {
     async function load() {
         const { payload } = await apiGet(shape.endpoint);
         etag = payload.etag;
-        render(payload.data?.[shape.key] ?? []);
+        shape.fill(payload.data ?? {}, tools);
         dirty = false;
         lastSavedAt = null;
         clearAlert();
@@ -278,8 +299,7 @@ export function createCollectionEditor(shape) {
         setBusy(true);
 
         try {
-            const body = { data: { version: 1, [shape.key]: collect() } };
-            const { payload } = await apiPut(shape.endpoint, body, etag);
+            const { payload } = await apiPut(shape.endpoint, { data: shape.collect(tools) }, etag);
             etag = payload.etag;
             dirty = false;
             lastSavedAt = new Date();
@@ -291,13 +311,13 @@ export function createCollectionEditor(shape) {
                 );
             }
         } catch (error) {
-            handleSaveError(error);
+            handleError(error);
         } finally {
             setBusy(false);
         }
     }
 
-    function handleSaveError(error) {
+    function handleError(error) {
         if (error instanceof SessionExpiredError) {
             // Niente reload automatico: le modifiche sono ancora solo nel form.
             setAlert(
@@ -309,7 +329,7 @@ export function createCollectionEditor(shape) {
         }
 
         if (!(error instanceof ApiError)) {
-            console.error(`[admin] salvataggio di ${shape.endpoint} fallito`, error);
+            console.error(`[admin] ${shape.endpoint} fallito`, error);
             setAlert('error', 'Non sono riuscito a salvare. Controlla la connessione e riprova.');
             return;
         }
@@ -327,7 +347,7 @@ export function createCollectionEditor(shape) {
             return;
         }
 
-        console.error(`[admin] salvataggio di ${shape.endpoint} fallito`, error);
+        console.error(`[admin] ${shape.endpoint} fallito`, error);
         setAlert('error', `Il server ha rifiutato il salvataggio (${error.status}). Riprova tra poco.`);
     }
 
@@ -360,7 +380,7 @@ export function createCollectionEditor(shape) {
                         label: 'Scarta le mie e riparti dal server',
                         run: () => {
                             etag = payload.etag;
-                            render(payload.data?.[shape.key] ?? []);
+                            shape.fill(payload.data ?? {}, tools);
                             dirty = false;
                             clearAlert();
                             refreshState();
@@ -376,20 +396,23 @@ export function createCollectionEditor(shape) {
        ========================================================== */
 
     /**
-     * Carica il file scelto e ne scrive la URL nel campo indicato da
-     * `data-upload-target`.
+     * Carica il file scelto e ne scrive la URL nel campo che gli sta accanto.
+     *
+     * Il bersaglio e il `[data-field]` dello stesso blocco `.field`: e sempre
+     * vero per costruzione, e risparmia un attributo da tenere allineato.
      *
      * L'elemento NON viene salvato: il file e sul blob, ma nessun JSON lo cita
      * finche non si preme Salva. Se si cambia idea e si chiude la pagina resta
      * un blob orfano da qualche frazione di centesimo — molto meglio di un
      * salvataggio non richiesto del resto della scheda.
      */
-    async function uploadInto(row, input) {
+    async function uploadInto(input) {
         const file = input.files?.[0];
         if (!file) return;
 
-        const target = input.dataset.uploadTarget;
-        const slot = row.querySelector(`[data-error-for="${target}"]`);
+        const group = input.closest('.field');
+        const target = group.querySelector('[data-field]');
+        const slot = group.querySelector('.field-error');
         const label = input.closest('.upload-btn');
         const text = label.querySelector('[data-upload-label]');
         const original = text.textContent;
@@ -399,12 +422,14 @@ export function createCollectionEditor(shape) {
         text.textContent = 'Carico...';
 
         try {
-            field(row, target).value = await uploadImage(file, input.dataset.upload);
-            refreshPreview(row);
+            target.value = await uploadImage(file, input.dataset.upload);
+            const row = input.closest('.editor-row');
+            if (row) lists[listNameOf(row)].preview?.(row, tools);
+            shape.onUpload?.(target, tools);
             markDirty();
         } catch (error) {
             if (error instanceof SessionExpiredError) {
-                handleSaveError(error);
+                handleError(error);
             } else if (slot) {
                 slot.textContent = error.message;
                 slot.hidden = false;
@@ -425,8 +450,8 @@ export function createCollectionEditor(shape) {
        ========================================================== */
 
     function move(row, step) {
-        const all = rows();
-        const target = all[all.indexOf(row) + step];
+        const siblings = rows(listNameOf(row));
+        const target = siblings[siblings.indexOf(row) + step];
         if (!target) return;
 
         if (step < 0) target.before(row);
@@ -436,37 +461,54 @@ export function createCollectionEditor(shape) {
         markDirty();
     }
 
-    el.list.addEventListener('input', (event) => {
+    function afterEdit(event) {
         const row = event.target.closest('.editor-row');
-        if (!row) return;
 
-        // L'identificativo si genera dal nome finche l'elemento e nuovo e
-        // nessuno l'ha toccato a mano: su uno gia salvato cambiarlo da solo
-        // sarebbe una modifica non richiesta.
-        if (event.target.dataset.field === 'name' && row.dataset.new === 'true') {
-            const id = field(row, 'id');
-            if (id.dataset.touched !== 'true') id.value = slugify(event.target.value);
+        if (row) {
+            const name = listNameOf(row);
+
+            // L'identificativo si genera dal nome finche la riga e nuova e
+            // nessuno l'ha toccato a mano: su una gia salvata cambiarlo da solo
+            // sarebbe una modifica non richiesta.
+            if (lists[name].autoSlug && event.target.dataset.field === 'name' && row.dataset.new === 'true') {
+                const id = field(row, 'id');
+                if (id && id.dataset.touched !== 'true') id.value = slugify(event.target.value);
+            }
+            if (event.target.dataset.field === 'id') event.target.dataset.touched = 'true';
+
+            lists[name].preview?.(row, tools);
         }
-        if (event.target.dataset.field === 'id') event.target.dataset.touched = 'true';
 
-        refreshPreview(row);
+        shape.onEdit?.(event.target, tools);
         markDirty();
+    }
+
+    el.editor.addEventListener('input', (event) => {
+        if (!event.target.matches('[data-field]')) return;
+        afterEdit(event);
     });
 
-    el.list.addEventListener('change', (event) => {
-        const row = event.target.closest('.editor-row');
-        if (!row) return;
-
+    el.editor.addEventListener('change', (event) => {
         if (event.target.dataset.upload) {
-            uploadInto(row, event.target);
+            uploadInto(event.target);
+            return;
+        }
+        if (!event.target.matches('[data-field]')) return;
+        afterEdit(event);
+    });
+
+    el.editor.addEventListener('click', (event) => {
+        const adder = event.target.closest('[data-add]');
+        if (adder) {
+            const name = adder.dataset.add;
+            const row = buildRow(name, lists[name].blank?.() ?? {}, { isNew: true });
+            container(name).append(row);
+            refreshEmpty(name);
+            row.querySelector('[data-field]')?.focus();
+            markDirty();
             return;
         }
 
-        refreshPreview(row);
-        markDirty();
-    });
-
-    el.list.addEventListener('click', (event) => {
         const button = event.target.closest('[data-action]');
         if (!button) return;
 
@@ -476,20 +518,13 @@ export function createCollectionEditor(shape) {
         if (action === 'up') move(row, -1);
         if (action === 'down') move(row, 1);
         if (action === 'remove') {
-            const name = value(row, 'name') || `questo ${shape.label}`;
-            if (!confirm(`Elimino ${name}?\n\nSparisce dal sito al prossimo salvataggio.`)) return;
+            const name = listNameOf(row);
+            const what = value(row, 'name') || value(row, 'label') || `questo ${lists[name].label}`;
+            if (!confirm(`Elimino ${what}?\n\nSparisce dal sito al prossimo salvataggio.`)) return;
             row.remove();
-            el.empty.hidden = rows().length > 0;
+            refreshEmpty(name);
             markDirty();
         }
-    });
-
-    el.add.addEventListener('click', () => {
-        const row = buildRow(shape.blank(), { isNew: true });
-        el.list.append(row);
-        el.empty.hidden = true;
-        field(row, 'name').focus();
-        markDirty();
     });
 
     el.save.addEventListener('click', () => save());

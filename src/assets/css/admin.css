@@ -574,3 +574,94 @@
 @media (prefers-reduced-motion: reduce) {
     .editor-btn, .icon-btn, .editor-chevron, .upload-btn { transition: none; }
 }
+
+/* ---------- Gruppi del modulo contenuti ---------- */
+.editor-group {
+    border-top: 1px solid var(--border-color);
+    padding-top: 1.25rem;
+    margin-top: 1.5rem;
+}
+
+.editor-group:first-of-type {
+    border-top: none;
+    padding-top: 0;
+    margin-top: 0;
+}
+
+.editor-group-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--azure-dark);
+    margin-bottom: 0.9rem;
+}
+
+.editor-group-subtitle {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--azure-dark);
+    margin: 1.4rem 0 0.3rem 0;
+}
+
+.editor-group-note {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 0.8rem;
+}
+
+.editor-group-note code {
+    background: var(--bg-light);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-size: 0.92em;
+}
+
+.editor-group .editor-list { margin-bottom: 0.8rem; }
+
+.editor-group .editor-btn { margin-bottom: 0.4rem; }
+
+/* Anteprima delle immagini della home, sotto al campo che le imposta. */
+.site-preview {
+    margin-top: 0.5rem;
+    max-height: 90px;
+    max-width: 100%;
+    align-self: flex-start;
+    object-fit: contain;
+    background: var(--bg-light);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 4px;
+}
+
+.site-preview-wide {
+    width: 100%;
+    max-height: 130px;
+    object-fit: cover;
+}
+
+/* ---------- Righe compatte (statistiche, canali, social) ---------- */
+.editor-row-inline {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--bg-white);
+    padding: 0.7rem 0.9rem;
+}
+
+.editor-row-inline .field { flex: 0 1 150px; }
+
+.editor-row-inline .field-grow { flex: 1 1 240px; }
+
+/* I comandi restano in fondo alla riga, allineati ai campi. */
+.editor-row-inline .editor-buttons { margin-left: auto; }
+
+@media (max-width: 640px) {
+    .editor-row-inline { flex-direction: column; align-items: stretch; }
+    .editor-row-inline .editor-buttons { margin-left: 0; justify-content: flex-end; }
+}
