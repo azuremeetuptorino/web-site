@@ -1,11 +1,7 @@
 {
   "name": "Azure Meetup Torino",
 
-  // Node 20: e la stessa major che gira sulle managed functions di Static Web
-  // Apps. Non alzarla senza motivo: Azure Functions Core Tools v4 non supporta
-  // le versioni piu recenti di Node, ed e esattamente il muro contro cui si
-  // sbatte provando a sviluppare sull'host con Node 22+.
-  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-20-bookworm",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-22-bookworm",
 
   "features": {
     // Serve a scripts/provision-azure.ps1 e a leggere/scrivere le app settings.
@@ -13,7 +9,8 @@
     // Per i secret del repo e le PR.
     "ghcr.io/devcontainers/features/github-cli:1": {},
     // provision-azure.ps1 e uno script PowerShell.
-    "ghcr.io/devcontainers/features/powershell:1": {}
+    "ghcr.io/devcontainers/features/powershell:1": {},
+    "ghcr.io/nkaaf/devcontainer-features/azure-functions": { "version": "latest" }
   },
 
   "forwardPorts": [4280, 7071, 10000, 10001, 10002],
@@ -26,7 +23,7 @@
   },
 
   "postCreateCommand": "bash .devcontainer/post-create.sh",
-  "postStartCommand": "bash .devcontainer/post-start.sh",
+  // "postStartCommand": "bash .devcontainer/post-start.sh",
 
   "customizations": {
     "vscode": {
@@ -35,7 +32,8 @@
         "ms-azuretools.vscode-azurefunctions",
         "ms-azuretools.vscode-azurestorage",
         "Azurite.azurite",
-        "editorconfig.editorconfig"
+        "editorconfig.editorconfig",
+        "anthropic.claude-code"
       ],
       "settings": {
         "files.eol": "\n",
