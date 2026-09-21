@@ -320,6 +320,12 @@
     color: #8A2B34;
 }
 
+.editor-alert-success {
+    background: #DFF6DD;
+    border: 1px solid #9FD89F;
+    color: #0B5A0B;
+}
+
 .editor-alert ul {
     margin: 0.5rem 0 0 1.1rem;
     padding: 0;
@@ -417,6 +423,19 @@
     border-radius: 999px;
     padding: 2px 8px;
     flex-shrink: 0;
+}
+
+/* Etichetta neutra: informa, non avverte. */
+.editor-flag-muted {
+    color: var(--text-muted);
+    background: var(--bg-light);
+    border-color: var(--border-color);
+}
+
+/* Le copertine degli eventi sono orizzontali: la miniatura le segue. */
+.editor-thumb-wide {
+    width: 54px;
+    object-fit: cover;
 }
 
 .editor-chevron {
@@ -573,6 +592,41 @@
 
 @media (prefers-reduced-motion: reduce) {
     .editor-btn, .icon-btn, .editor-chevron, .upload-btn { transition: none; }
+}
+
+/* ---------- Importazione dal link (eventi) ---------- */
+.editor-import {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.9rem 1rem 1rem;
+    margin-bottom: 1.1rem;
+    border: 1px dashed #9CC5E5;
+    border-radius: 8px;
+    background: #F3F9FD;
+}
+
+.editor-import-label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--azure-dark);
+}
+
+.editor-import-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: stretch;
+}
+
+.editor-import-row .field { flex: 1; }
+
+.editor-import.is-busy .editor-import-row { opacity: 0.6; }
+
+@media (max-width: 640px) {
+    .editor-import-row { flex-direction: column; }
 }
 
 /* ---------- Gruppi del modulo contenuti ---------- */

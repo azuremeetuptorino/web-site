@@ -518,3 +518,133 @@ export function validateSponsors(input) {
         validateItem: validateSponsor
     });
 }
+
+/* ==========================================================
+   EVENTI
+   ========================================================== */
+
+/**
+ * Gli eventi si creano dall'admin, di solito importandoli dal link pubblico di
+ * Luma o Meetup, e l'archivio cresce di uno al mese: il tetto e piu alto di
+ * quello di team e sponsor.
+ */
+const MAX_EVENTS = 500;
+
+const EVENT_LIMITS = {
+    title: 120,
+    excerpt: 300,
+    venue: 120,
+    timezone: 64
+};
+
+/** Fuso di riferimento se non ne arriva uno: la community e a Torino. */
+export const DEFAULT_TIMEZONE = 'Europe/Rome';
+
+/**
+ * Un istante nel tempo, riscritto in ISO 8601 UTC.
+ *
+ * Luma e Meetup lo scrivono con l'offset locale (`+02:00`), l'editor lo manda
+ * gia in UTC: normalizzare qui fa si che sul blob ci sia sempre la stessa forma
+ * e che il confronto inizio/fine non dipenda da come e stato scritto.
+ */
+function instant(issues, path, value, { required = false } = {}) {
+    const raw = text(issues, path, value, { required, max: 40 });
+    if (raw === undefined) return undefined;
+
+    const parsed = Date.parse(raw);
+    if (Number.isNaN(parsed)) return add(issues, path, 'non e una data valida');
+
+    const year = new Date(parsed).getUTCFullYear();
+    if (year < 2000 || year > 2100) return add(issues, path, 'la data deve stare tra il 2000 e il 2100');
+
+    return new Date(parsed).toISOString();
+}
+
+/**
+ * Un fuso IANA (`Europe/Rome`). Lo si verifica chiedendo a Intl se lo conosce:
+ * e lo stesso motore che lo usera poi il browser per scrivere l'orario.
+ */
+function timezone(issues, path, value) {
+    const raw = text(issues, path, value, { max: EVENT_LIMITS.timezone });
+    if (raw === undefined) return DEFAULT_TIMEZONE;
+
+    try {
+        new Intl.DateTimeFormat('it-IT', { timeZone: raw });
+    } catch {
+        return add(issues, path, 'fuso orario sconosciuto, per esempio Europe/Rome');
+    }
+    return raw;
+}
+
+function validateVenue(issues, path, value) {
+    if (value === undefined || value === null) return undefined;
+    if (typeof value !== 'object' || Array.isArray(value)) {
+        return add(issues, path, 'deve essere un oggetto con nome, indirizzo e citta');
+    }
+
+    const venue = {
+        name: text(issues, `${path}.name`, value.name, { max: EVENT_LIMITS.venue }),
+        address: text(issues, `${path}.address`, value.address, { max: EVENT_LIMITS.venue }),
+        city: text(issues, `${path}.city`, value.city, { max: EVENT_LIMITS.venue })
+    };
+
+    for (const [key, entry] of Object.entries(venue)) {
+        if (entry === undefined) delete venue[key];
+    }
+    // Tre campi vuoti nell'editor significano "nessun luogo", non un luogo vuoto.
+    return Object.keys(venue).length > 0 ? venue : undefined;
+}
+
+function validateEvent(issues, path, value, seenIds) {
+    if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+        return add(issues, path, 'deve essere un oggetto');
+    }
+
+    const id = text(issues, `${path}.id`, value.id, { required: true, max: 49 });
+    if (id !== undefined) {
+        if (!ID_PATTERN.test(id)) {
+            add(issues, `${path}.id`, 'ammessi solo minuscole, cifre e trattini, da 2 a 49 caratteri');
+        } else if (seenIds.has(id)) {
+            add(issues, `${path}.id`, `gia usato da un altro evento: ${id}`);
+        } else {
+            seenIds.add(id);
+        }
+    }
+
+    const dateTime = instant(issues, `${path}.dateTime`, value.dateTime, { required: true });
+    const endTime = instant(issues, `${path}.endTime`, value.endTime);
+    if (dateTime && endTime && endTime < dateTime) {
+        add(issues, `${path}.endTime`, 'deve venire dopo l’inizio');
+    }
+
+    const event = {
+        id,
+        title: text(issues, `${path}.title`, value.title, { required: true, max: EVENT_LIMITS.title }),
+        dateTime,
+        endTime,
+        timezone: timezone(issues, `${path}.timezone`, value.timezone),
+        isOnline: flag(issues, `${path}.isOnline`, value.isOnline, false),
+        // La pagina dell'evento su Luma o Meetup: e dove ci si iscrive. Senza,
+        // la card non e un link, ed e legittimo per un evento passato.
+        eventUrl: webUrl(issues, `${path}.eventUrl`, value.eventUrl),
+        imageUrl: webUrl(issues, `${path}.imageUrl`, value.imageUrl),
+        excerpt: text(issues, `${path}.excerpt`, value.excerpt, { max: EVENT_LIMITS.excerpt }),
+        venue: validateVenue(issues, `${path}.venue`, value.venue),
+        active: flag(issues, `${path}.active`, value.active)
+    };
+
+    for (const [key, entry] of Object.entries(event)) {
+        if (entry === undefined) delete event[key];
+    }
+    return event;
+}
+
+/** @returns {{ok: true, value: object} | {ok: false, issues: {path: string, message: string}[]}} */
+export function validateEvents(input) {
+    return validateCollection(input, {
+        key: 'events',
+        label: 'eventi',
+        max: MAX_EVENTS,
+        validateItem: validateEvent
+    });
+}

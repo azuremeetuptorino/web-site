@@ -294,11 +294,23 @@
 .badge.upcoming { background-color: #107C10; }
 .badge.past { background-color: var(--text-muted); }
 
-.card-body { padding: 1rem; display: flex; flex-direction: column; flex-grow: 1; }
+.card-body { padding: 1rem; display: flex; flex-direction: column; flex-grow: 1; gap: 0.4rem; }
 .card-title {
     font-size: 0.92rem; font-weight: 600; color: var(--text-dark); line-height: 1.35;
     display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
 }
+
+/* Data e luogo dell'evento. Il luogo sta in fondo alla card, qualunque sia la
+   lunghezza del titolo, cosi le card di una stessa riga si allineano. */
+.card-meta {
+    display: flex; align-items: center; gap: 6px; margin: 0;
+    font-size: 0.76rem; font-weight: 500; color: var(--text-muted); line-height: 1.3;
+}
+.card-meta i { font-size: 0.85rem; flex-shrink: 0; color: var(--azure-blue); }
+.card-meta time { text-transform: capitalize; }
+.card-place { margin-top: auto; padding-top: 0.35rem; }
+.card-place span, .card-place { min-width: 0; }
+.card.event-past .card-meta i { color: var(--text-muted); }
 
 .swiper-button-next, .swiper-button-prev {
     position: absolute; top: 50%; transform: translateY(-50%); z-index: 10;

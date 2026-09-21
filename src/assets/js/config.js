@@ -35,7 +35,7 @@ export const PUBLIC_DATA_BASE = IS_LOCAL
 export const LOCAL_DATA_BASE = '/data';
 
 /** Link esterni usati negli stati di errore e nelle CTA. */
-export const MEETUP_GROUP_URL = 'https://www.meetup.com/it-IT/azure-meetup-torino/';
+export const MEETUP_GROUP_URL = 'https://www.meetup.com/it-IT/meetup-microsoft-azure-torino/';
 export const SESSIONIZE_URL = 'https://sessionize.com/azure-meetup-torino';
 
 /** Immagini di riserva quando un record non ha la sua. */

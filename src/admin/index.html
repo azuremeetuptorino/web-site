@@ -39,8 +39,8 @@
     <main class="admin-main">
         <h1 class="admin-title">Gestione contenuti</h1>
         <p class="admin-subtitle">
-            Da qui si modificano il team e gli sponsor mostrati sul sito pubblico.
-            Gli eventi arrivano da Meetup e non si modificano a mano.
+            Da qui si modificano team, sponsor, eventi e contenuti della home mostrati sul sito pubblico.
+            Gli eventi si importano dal link della loro pagina su Luma o Meetup.
         </p>
 
         <div id="admin-notice" class="admin-notice" hidden></div>
@@ -53,6 +53,10 @@
             <button type="button" class="admin-tab" role="tab" id="tab-sponsor"
                     data-tab="sponsor" aria-controls="panel-sponsor" aria-selected="false" tabindex="-1">
                 <i class="bi bi-award" aria-hidden="true"></i> Sponsor
+            </button>
+            <button type="button" class="admin-tab" role="tab" id="tab-eventi"
+                    data-tab="eventi" aria-controls="panel-eventi" aria-selected="false" tabindex="-1">
+                <i class="bi bi-calendar-event" aria-hidden="true"></i> Eventi
             </button>
             <button type="button" class="admin-tab" role="tab" id="tab-home"
                     data-tab="home" aria-controls="panel-home" aria-selected="false" tabindex="-1">
@@ -139,6 +143,70 @@
                 </p>
             </div>
         </section>
+
+        <!-- ================= EVENTI ================= -->
+        <section class="admin-panel" id="panel-eventi" role="tabpanel" aria-labelledby="tab-eventi" tabindex="0" hidden>
+
+            <div class="admin-placeholder" id="event-loading">
+                <i class="bi bi-hourglass-split" aria-hidden="true"></i>
+                <strong>Carico gli eventi...</strong>
+            </div>
+
+            <div class="editor" id="event-editor" hidden>
+                <div class="editor-bar">
+                    <div class="editor-actions">
+                        <button type="button" class="editor-btn editor-btn-primary" id="event-save">
+                            <i class="bi bi-cloud-arrow-up" aria-hidden="true"></i> Salva e pubblica
+                        </button>
+                        <button type="button" class="editor-btn" data-add="events">
+                            <i class="bi bi-plus-square" aria-hidden="true"></i> Aggiungi a mano
+                        </button>
+                        <button type="button" class="editor-btn" id="event-reload">
+                            <i class="bi bi-arrow-clockwise" aria-hidden="true"></i> Ricarica
+                        </button>
+                    </div>
+                    <p class="editor-state" id="event-state" role="status" aria-live="polite"></p>
+                </div>
+
+                <div class="editor-alert" id="event-alert" hidden></div>
+
+                <!-- La strada normale per creare un evento: il link della sua pagina. -->
+                <div class="editor-import" id="event-import">
+                    <label class="editor-import-label" for="event-import-url">
+                        <i class="bi bi-link-45deg" aria-hidden="true"></i> Importa dal link dell'evento
+                    </label>
+                    <div class="editor-import-row">
+                        <div class="field">
+                            <input type="url" id="event-import-url" autocomplete="off" spellcheck="false"
+                                   placeholder="https://luma.com/... oppure https://www.meetup.com/.../events/...">
+                        </div>
+                        <button type="button" class="editor-btn editor-btn-primary" id="event-import-btn">
+                            <i class="bi bi-download" aria-hidden="true"></i> <span data-import-label>Importa</span>
+                        </button>
+                    </div>
+                    <p class="field-note">
+                        Incolla il link pubblico della pagina su <strong>Luma</strong> o <strong>Meetup</strong>:
+                        titolo, data, luogo, immagine e descrizione si compilano da soli. Poi controlla la
+                        scheda e premi <strong>Salva e pubblica</strong>. Reimportando lo stesso link la scheda
+                        esistente si aggiorna, senza doppioni.
+                    </p>
+                    <p class="field-error" id="event-import-error" hidden></p>
+                </div>
+
+                <ol class="editor-list" data-list="events" data-template="event-template"></ol>
+
+                <p class="editor-empty" data-empty="events" hidden>
+                    Nessun evento. Importa dal link qui sopra, oppure usa <strong>Aggiungi a mano</strong>.
+                </p>
+
+                <p class="editor-hint">
+                    Sul sito i prossimi eventi vengono prima, in ordine di data; i passati seguono dal piu
+                    recente. Qui in lista sono dal piu recente al piu vecchio. Dopo il salvataggio la
+                    pagina pubblica si aggiorna entro 5 minuti, il tempo della cache.
+                </p>
+            </div>
+        </section>
+
         <!-- ================= HOME E FOOTER ================= -->
         <section class="admin-panel" id="panel-home" role="tabpanel" aria-labelledby="tab-home" tabindex="0" hidden>
 
@@ -585,6 +653,138 @@
                             <button type="button" class="icon-btn" data-action="down" title="Sposta giu">
                                 <i class="bi bi-arrow-down" aria-hidden="true"></i><span class="visually-hidden">Sposta giu</span>
                             </button>
+                            <button type="button" class="icon-btn icon-btn-danger" data-action="remove" title="Elimina">
+                                <i class="bi bi-trash" aria-hidden="true"></i><span class="visually-hidden">Elimina</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </details>
+        </li>
+    </template>
+
+    <template id="event-template">
+        <li class="editor-row">
+            <details class="editor-details">
+                <summary class="editor-summary">
+                    <img class="editor-thumb editor-thumb-wide" alt="" data-preview="image"
+                         src="/assets/img/placeholder-event.svg"
+                         data-preview-fallback="/assets/img/placeholder-event.svg">
+                    <span class="editor-heading">
+                        <strong data-preview="title">Nuovo evento</strong>
+                        <span data-preview="when"></span>
+                    </span>
+                    <span class="editor-flag editor-flag-muted" data-preview="past" hidden>passato</span>
+                    <span class="editor-flag" data-preview="hidden" hidden>non mostrato</span>
+                    <i class="bi bi-chevron-down editor-chevron" aria-hidden="true"></i>
+                </summary>
+
+                <div class="editor-body">
+                    <div class="field field-wide">
+                        <label data-label-for="title">Titolo</label>
+                        <input type="text" data-field="title" maxlength="120" autocomplete="off">
+                        <span class="field-error" data-error-for="title" hidden></span>
+                    </div>
+
+                    <div class="field">
+                        <label data-label-for="dateTime">Inizio</label>
+                        <input type="datetime-local" data-field="dateTime" autocomplete="off">
+                        <span class="field-note">Nell'ora del tuo computer.</span>
+                        <span class="field-error" data-error-for="dateTime" hidden></span>
+                    </div>
+
+                    <div class="field">
+                        <label data-label-for="endTime">Fine</label>
+                        <input type="datetime-local" data-field="endTime" autocomplete="off">
+                        <span class="field-note">Facoltativa.</span>
+                        <span class="field-error" data-error-for="endTime" hidden></span>
+                    </div>
+
+                    <div class="field field-wide">
+                        <label data-label-for="eventUrl">Pagina dell'evento</label>
+                        <input type="url" data-field="eventUrl" autocomplete="off" spellcheck="false"
+                               placeholder="https://...">
+                        <span class="field-note">Dove ci si iscrive: la card sul sito porta qui. Senza, non e cliccabile.</span>
+                        <span class="field-error" data-error-for="eventUrl" hidden></span>
+                    </div>
+
+                    <div class="field field-wide">
+                        <label data-label-for="imageUrl">Immagine</label>
+                        <div class="upload-row">
+                            <input type="url" data-field="imageUrl" autocomplete="off" spellcheck="false"
+                                   placeholder="https://...">
+                            <label class="upload-btn">
+                                <i class="bi bi-upload" aria-hidden="true"></i>
+                                <span data-upload-label>Carica</span>
+                                <input type="file" hidden data-upload="event" data-upload-target="imageUrl"
+                                       accept="image/png,image/jpeg,image/webp,image/svg+xml">
+                            </label>
+                        </div>
+                        <span class="field-note">
+                            L'importazione usa la copertina della piattaforma. Per un'immagine nostra:
+                            PNG, JPEG o WebP orizzontale, max 512 KB.
+                        </span>
+                        <span class="field-error" data-error-for="imageUrl" hidden></span>
+                    </div>
+
+                    <div class="field field-wide">
+                        <label data-label-for="excerpt">Descrizione breve</label>
+                        <textarea data-field="excerpt" maxlength="300" rows="3"></textarea>
+                        <span class="field-note">Due o tre righe, massimo 300 caratteri.</span>
+                        <span class="field-error" data-error-for="excerpt" hidden></span>
+                    </div>
+
+                    <div class="field field-wide">
+                        <label class="field-check">
+                            <input type="checkbox" data-field="isOnline">
+                            Evento online
+                        </label>
+                        <span class="field-error" data-error-for="isOnline" hidden></span>
+                    </div>
+
+                    <div class="field">
+                        <label data-label-for="venue.name">Luogo</label>
+                        <input type="text" data-field="venue.name" maxlength="120" autocomplete="off"
+                               placeholder="Aula 10 dell'ITS ICT Piemonte">
+                        <span class="field-error" data-error-for="venue.name" hidden></span>
+                    </div>
+
+                    <div class="field">
+                        <label data-label-for="venue.city">Citta</label>
+                        <input type="text" data-field="venue.city" maxlength="120" autocomplete="off"
+                               placeholder="Torino">
+                        <span class="field-error" data-error-for="venue.city" hidden></span>
+                    </div>
+
+                    <div class="field">
+                        <label data-label-for="venue.address">Indirizzo</label>
+                        <input type="text" data-field="venue.address" maxlength="120" autocomplete="off"
+                               placeholder="Via Jacopo Durandi, 10">
+                        <span class="field-error" data-error-for="venue.address" hidden></span>
+                    </div>
+
+                    <div class="field">
+                        <label data-label-for="id">Identificativo</label>
+                        <input type="text" data-field="id" maxlength="49" autocomplete="off" spellcheck="false">
+                        <span class="field-note">Dall'importazione e <code>luma-...</code> o <code>meetup-...</code>. A mano si compila dal titolo.</span>
+                        <span class="field-error" data-error-for="id" hidden></span>
+                    </div>
+
+                    <div class="field">
+                        <label data-label-for="timezone">Fuso orario</label>
+                        <input type="text" data-field="timezone" maxlength="64" autocomplete="off" spellcheck="false"
+                               placeholder="Europe/Rome">
+                        <span class="field-note">Serve a scrivere l'orario in ora italiana a chi guarda il sito da altrove.</span>
+                        <span class="field-error" data-error-for="timezone" hidden></span>
+                    </div>
+
+                    <div class="field field-wide editor-controls">
+                        <label class="field-check">
+                            <input type="checkbox" data-field="active">
+                            Mostrato sul sito
+                        </label>
+
+                        <div class="editor-buttons">
                             <button type="button" class="icon-btn icon-btn-danger" data-action="remove" title="Elimina">
                                 <i class="bi bi-trash" aria-hidden="true"></i><span class="visually-hidden">Elimina</span>
                             </button>

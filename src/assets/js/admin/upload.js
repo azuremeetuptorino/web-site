@@ -69,7 +69,7 @@ function messageFor(error) {
 
 /**
  * @param {File} file
- * @param {'avatar' | 'sponsor'} kind
+ * @param {'avatar' | 'sponsor' | 'site' | 'event'} kind
  * @returns {Promise<string>} la URL pubblica da scrivere nel campo
  * @throws {UploadError | SessionExpiredError}
  */

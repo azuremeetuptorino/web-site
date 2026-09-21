@@ -1,6 +1,6 @@
 # Stato dei lavori
 
-Aggiornato al **15 settembre 2026**. Documento di ripresa: serve a ricominciare
+Aggiornato al **21 settembre 2026**. Documento di ripresa: serve a ricominciare
 da dove si è lasciato senza rileggere tutto.
 
 Piano completo: [docs/piano.md](piano.md).
@@ -19,7 +19,8 @@ Branch **`feat/azure-static-web-apps`**, mai pushato.
 | P3 | CRUD team su Blob Storage | fatto, verificato in locale contro Azurite |
 | P4 | CRUD sponsor e upload loghi | fatto, verificato in locale contro Azurite |
 | P4b | Contenuti della home editabili | fatto, verificato in locale contro Azurite |
-| P5 | Integrazione Meetup e filtro temporale eventi | da fare, è il prossimo |
+| P5 | Eventi dall'admin, importazione dal link Luma/Meetup | fatto, API verificate contro Azurite e le pagine vere |
+| P5b | Filtro temporale eventi `Prossimi \| Passati` | da fare, è il prossimo |
 | P6 | Telemetria, SEO, accessibilità | da fare |
 
 ## Cosa è entrato con la P3
@@ -132,6 +133,67 @@ sezione; il rendering pubblico, se uno passa lo stesso, lo degrada a testo.
 Limite noto: un link dentro il grassetto funziona, il grassetto dentro il testo
 di un link no.
 
+## Cosa è entrato con la P5
+
+**Cambio di rotta rispetto al piano.** La P5 doveva tirare giù gli eventi
+dall'API GraphQL di Meetup con un cron. Due fatti l'hanno resa inutile: la
+**chiave API Meetup non c'è**, e la community pubblica gli eventi **anche su
+Luma**. Gli eventi sono quindi diventati un documento come team e sponsor, con
+una scorciatoia che rende il lavoro a mano quasi nullo.
+
+- `GET/PUT /api/events` — `createDocumentResource` su `events.json` con
+  `validateEvents`: trenta righe, come `sponsors.js`. Il seed è passato a
+  `master: true`, quindi `npm run seed` crea anche `site-data/events.json`.
+- `api/src/lib/event-import.js` + `POST /api/events/import` — dal **link
+  pubblico** dell'evento alla scheda compilata. Entrambe le piattaforme
+  incorporano un blocco **JSON-LD `schema.org/Event`** (titolo, `startDate`,
+  `endDate`, `location`, `image`, `description`, `url`): lo si legge da lì,
+  senza API né chiavi, con un parser unico. Poi due integrazioni
+  opportunistiche dal `__NEXT_DATA__`: da Meetup la descrizione completa (il
+  JSON-LD la tronca a 150 caratteri) e il venue pulito; da Luma il fuso e il
+  **nome della sala** (`geo_address_info.description`, "Aula 10 dell'ITS ICT
+  Piemonte"), che nel JSON-LD non c'è. Se quel formato cambia si perde il
+  dettaglio e resta il JSON-LD.
+- **Difese della function**: si contattano solo `luma.com`, `lu.ma` e
+  `meetup.com`, **redirect compresi** (seguiti a mano con `redirect: 'manual'`),
+  timeout di 10 s, lettura fino a 3 MB. Senza, `/api/events/import` sarebbe un
+  proxy verso qualunque indirizzo, inclusi quelli interni alla rete di Azure.
+  Ogni errore ha il suo codice (`host-not-allowed`, `no-event-found`,
+  `upstream-timeout`, …) e l'editor lo traduce in italiano.
+- L'`id` viene dalla piattaforma: `luma-2ffi3qjx`, `meetup-316647090`.
+  Reimportando lo stesso link (o lo stesso `eventUrl`) l'editor **aggiorna la
+  scheda esistente** invece di creare un doppione, conservando l'id salvato.
+- Schema: `id`, `title`, `dateTime` e `endTime` **in UTC** sul blob, `timezone`
+  (default `Europe/Rome`) per scrivere l'ora italiana a chi guarda da altrove,
+  `isOnline`, `eventUrl`, `imageUrl`, `excerpt` (max 300), `venue
+  {name,address,city}`, `active`. Via `status`, `going`, `group`, `source`.
+- `editor-core.js` ora **espone** `add`, `refill`, `rows`, `value`, `setAlert`,
+  `clearAlert`, `markDirty`, `handleError`: servono alla barra di importazione,
+  che vive accanto alla lista ma fuori dalle sue convenzioni. `autoSlug`
+  accetta il nome del campo sorgente (`'title'`), non più solo `name`.
+- Quarta scheda **Eventi** nell'admin. L'ordine in lista è dal più recente;
+  le date si modificano con `datetime-local` nell'ora del computer di chi
+  modifica. `POST /api/assets` accetta `kind: 'event'` per una copertina nostra.
+- Il rendering pubblico mostra **data e luogo** sulla card (`<time datetime>`,
+  ora nel fuso dell'evento) e salta gli eventi con `active: false`. Il carosello
+  resta: cambiarlo è la P5b.
+- **Trovato per strada:** il link "Seguici su Meetup" del sito, `MEETUP_GROUP_URL`
+  e il testo di "Chi siamo" puntavano a `azure-meetup-torino`, che oggi apre la
+  pagina di **un altro gruppo**. Il gruppo vero è
+  `meetup-microsoft-azure-torino`. Corretti tutti e tre.
+- Via da `local.settings` le chiavi `MEETUP_*` e `REFRESH_TOKEN`: non le legge
+  più nessuno.
+- 167 test. Le fixture di `event-import.test.js` sono le **pagine vere** di Luma
+  e Meetup ridotte ai soli dati strutturati (5 KB invece di 130): se una
+  piattaforma cambia qualcosa che conta, il test fallisce; se cambia un banner,
+  no.
+
+Verificato contro le pagine vere (`luma.com/2ffi3qjx` e l'evento Meetup
+`316647090`, che sono lo stesso evento): stessa data e ora, stesso indirizzo,
+`id` stabile, l'estratto Meetup senza `\|` e grassetti. Sull'emulatore: `GET`
+con ETag, `PUT` che ripubblica, import reale da Luma → 200 con la scheda, host
+esterno → 400 con la lista degli host ammessi.
+
 ## Passata sul mobile
 
 `layout.css` non aveva **nessuna** media query: il sito era disegnato a 1280 px
@@ -195,8 +257,9 @@ Non vanno ridiscusse salvo ripensamenti espliciti.
 | Hosting | Azure Static Web Apps, piano **Free** |
 | Dati | File JSON su **Azure Blob Storage**, nessun database |
 | Admin | Protetta dall'autenticazione integrata di SWA, provider Entra ID preconfigurato, ruolo `admin` per invito |
-| Cosa si gestisce da `/admin` | **Team e sponsor**. Non le sessioni. |
-| Eventi | Da **Meetup GraphQL** — l'account **Meetup Pro c'è**, quindi si usa il flusso JWT server-to-server |
+| Cosa si gestisce da `/admin` | **Team, sponsor, eventi e contenuti della home**. Non le sessioni. |
+| Eventi | **Dall'admin**, come team e sponsor, importandoli dal **link pubblico** Luma o Meetup (JSON-LD). Niente API Meetup: la chiave non c'è e gli eventi stanno anche su Luma. Il cron di refresh non esiste più |
+| Piattaforme importabili | Solo gli host in `ALLOWED_HOSTS` (`luma.com`, `lu.ma`, `meetup.com`). Aggiungerne una è una riga, purché la pagina esponga JSON-LD `Event` |
 | Sessionize | **Fuori scope** per ora |
 | Frontend | Vanilla, **nessun build step**: `src/` va su Azure verbatim |
 | Ambiente di sviluppo | **Devcontainer**, non tooling sull'host |
@@ -222,11 +285,16 @@ Sono stati controllati sulla documentazione o sul campo, non sono supposizioni.
   `AZUREBLOBSTORAGE_`, `WEBSITE_`, `FUNCTIONS_`, `AzureWeb` sono riservati).
 - Le managed functions sono **solo HTTP**: niente timer trigger, il refresh di
   Meetup lo schedula un cron di GitHub Actions.
-- Meetup: endpoint `https://api.meetup.com/gql-ext`, 500 punti/60 s.
-  `Group.pastEvents` e `upcomingEvents` sono stati **rimossi** dopo febbraio
-  2025. Con l'account Pro si usa
-  `proNetwork(urlname).eventsSearch(input:{filter:{status:…}})`.
-  **La query va provata nel playground prima di scriverne il codice.**
+- Le pagine pubbliche di **Luma e Meetup incorporano JSON-LD
+  `schema.org/Event`** (verificato il 21/09/2026 su `luma.com/2ffi3qjx` e
+  sull'evento Meetup `316647090`). Meetup tronca `description` a 150 caratteri
+  nel JSON-LD; quella completa sta in `__NEXT_DATA__ → __APOLLO_STATE__ →
+  Event:<id>`. Luma mette fuso e nome della sala in `__NEXT_DATA__ →
+  props.pageProps.initialData.data.event`. Meetup serve la pagina completa solo
+  a uno `User-Agent` da browser.
+- (Storico, non più usato) Meetup GraphQL: endpoint
+  `https://api.meetup.com/gql-ext`, `Group.pastEvents`/`upcomingEvents` rimossi
+  dopo febbraio 2025, con l'account Pro si passa da `proNetwork(urlname)`.
 
 ## Trappole già pagate
 
@@ -277,8 +345,11 @@ Errori trovati testando, non in astratto.
    funziona: **servono i nomi, le foto delle persone e i loghi degli sponsor**.
    Da lì in poi si fa tutto da `/admin`, senza toccare il repo.
 
-3. **Gli editor sponsor e "Home e footer" non sono mai stati aperti in un
-   browser.** Quello del team sì, upload compreso. Il lato server è verificato
+3. **Gli editor sponsor, "Home e footer" ed Eventi non sono mai stati aperti in
+   un browser.** Quello del team sì, upload compreso. Per Eventi il cablaggio
+   DOM è stato controllato con lo stesso script (ogni `data-field` e
+   `data-preview` usato dal JavaScript esiste nel template e viceversa) e le
+   API con curl, ma la barra di importazione e le `datetime-local` vanno viste. Il lato server è verificato
    con curl (200 con ETag, 409, 400 con le issues) e il cablaggio DOM a
    tavolino — uno script confronta ogni `id`, `data-field`, `data-list` e
    `data-add` usato dal JavaScript con quello che c'è nel markup — ma le pagine
@@ -321,39 +392,30 @@ username qualsiasi e nel campo dei ruoli scrivi `admin`, uno per riga.
 > L'emulatore rilegge `staticwebapp.config.json` **solo all'avvio**: dopo averlo
 > modificato riavvia `npm start`, altrimenti stai testando la vecchia config.
 
-## Prossimo passo: P5
+## Prossimo passo: P5b
 
-Eventi da Meetup. È la fase con più incognite esterne di tutte.
+Il nuovo rendering degli eventi, disegnato in [docs/piano.md](piano.md), sezione
+*Filtro temporale*: segmentato `Prossimi | Passati`, griglia per l'archivio con
+le chip per anno, via il carosello (con due eventi futuri mostra una track
+mezza vuota e frecce morte). I dati ci sono già tutti: `dateTime`, `venue`,
+`isOnline`, `eventUrl`, `excerpt`. Prima, però, **aprire la scheda Eventi in un
+browser** (bloccante 3): importare il link Luma vero, controllare le date nella
+`datetime-local`, salvare, vedere la card sul sito.
 
-- **Prima di scrivere codice: provare la query nel playground.**
-  `Group.pastEvents` e `upcomingEvents` sono stati rimossi dopo febbraio 2025;
-  con l'account Pro si passa da
-  `proNetwork(urlname).eventsSearch(input:{filter:{status:…}})`. Finché la query
-  non torna dati veri, tutto il resto è congettura.
-- `meetup/jwt.js` + `token.js`: il JWT si firma con `node:crypto`, senza
-  librerie. Il token va in cache su `site-data/_cache/meetup-token.json` e si
-  riusa finché mancano più di 300 s alla scadenza.
-- `meetup/query.js` + `map.js`: la query sta in un modulo solo, e `map.js`
-  traduce la risposta nello schema di `public/events.json`. `id` è una **stringa
-  opaca**: gli id Meetup sembrano numeri ma non vanno parsati come tali.
-- `POST /api/refresh-events`: accetta **o** un principal `admin` **o** l'header
-  `x-refresh-token` confrontato con `crypto.timingSafeEqual`. No-op dentro il
-  TTL di un'ora, forzabile con `?force=1`. **Su qualsiasi errore Meetup si serve
-  l'ultimo `public/events.json` buono e si risponde 200**: un breaking change
-  dello schema Meetup non deve mai svuotare il sito.
-- `.github/workflows/refresh-events.yml`: cron ogni 6 ore. Serve perché le
-  managed functions sono **solo HTTP**, dentro SWA non esiste timer trigger.
-- Poi il nuovo rendering eventi e il filtro `Prossimi | Passati` con le chip per
-  anno, disegnato in [docs/piano.md](piano.md), sezione *Filtro temporale*.
-
-Attenzione: questa è la prima fase che **non** si può verificare davvero con
-l'emulatore, perché dipende da credenziali vere. `MEETUP_MOCK=true` in
-`api/local.settings.json` serve a sviluppare il resto senza chiamare Meetup.
+Da tenere a mente per la P5b: `render-events.js` esporta già `isPast`,
+`sortEvents`, `formatWhen` e `formatWhere`, pensati per essere riusati dal
+nuovo layout.
 
 ## Cose lasciate indietro di proposito
 
 - **Sessioni/talk**: fuori scope. Rientrerebbero come `sessions.json` con lo
-  stesso schema di `team.json`, collegate agli eventi tramite l'id Meetup.
+  stesso schema di `team.json`, collegate agli eventi tramite il loro `id`.
+- **Altre piattaforme (Eventbrite, …)**: basta l'host in `ALLOWED_HOSTS`, se la
+  pagina espone JSON-LD `Event`. Non fatto perché oggi non serve.
+- **Scaricare la copertina sul nostro storage**: oggi `imageUrl` punta al CDN di
+  Luma o Meetup (`img-src https:` lo ammette). Se una piattaforma cambiasse le
+  URL, la card ripiega sul segnaposto; il bottone **Carica** c'è già per
+  metterci un file nostro.
 - **SEO degli eventi**: spostandoli su rendering client-side sono diventati
   invisibili ai crawler senza JS e alle anteprime dei link su LinkedIn e
   WhatsApp. Recuperabile in P6 con uno snapshot statico generato dal job di

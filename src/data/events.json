@@ -1,95 +1,77 @@
 {
-  "generatedAt": "2026-09-15T00:00:00Z",
-  "source": "seed",
-  "group": {
-    "urlname": "azure-meetup-torino",
-    "name": "Azure Meetup Torino",
-    "link": "https://www.meetup.com/it-IT/azure-meetup-torino/"
-  },
+  "version": 1,
   "events": [
     {
-      "id": "seed-ai-copilot",
-      "title": "Azure AI & Copilot: Il futuro dello sviluppo cloud",
-      "status": "upcoming",
-      "dateTime": "2026-10-14T18:30:00+02:00",
-      "endTime": "2026-10-14T21:00:00+02:00",
+      "id": "luma-2ffi3qjx",
+      "title": "GitHub Dev Days — tappa di Torino",
+      "dateTime": "2026-10-16T13:00:00.000Z",
+      "endTime": "2026-10-16T16:00:00.000Z",
       "timezone": "Europe/Rome",
       "isOnline": false,
-      "eventUrl": null,
-      "imageUrl": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=600",
-      "excerpt": null,
-      "going": null,
-      "venue": null
+      "eventUrl": "https://luma.com/2ffi3qjx",
+      "imageUrl": "https://images.lumacdn.com/cdn-cgi/image/format=auto,fit=cover,dpr=1,anim=false,background=white,quality=75,width=800,height=420/event-social/fc/c5f38b47-875e-40ec-a731-419c09b3603d.png",
+      "excerpt": "Dopo il successo del Microsoft Build //localhost, Azure Meetup Torino porta a Torino una tappa dei GitHub Dev Days: un pomeriggio pratico su GitHub Copilot, nell'app e nella CLI, aperto a tutti gli sviluppatori.",
+      "venue": {
+        "name": "Aula 10 dell'ITS ICT Piemonte",
+        "address": "Via Jacopo Durandi, 10",
+        "city": "Torino"
+      },
+      "active": true
     },
     {
       "id": "seed-cloud-native",
       "title": "Cloud Native in Azure: Kubernetes, Container Apps e Dintorni",
-      "status": "upcoming",
-      "dateTime": "2026-11-11T18:30:00+01:00",
-      "endTime": "2026-11-11T21:00:00+01:00",
+      "dateTime": "2026-11-11T17:30:00.000Z",
+      "endTime": "2026-11-11T20:00:00.000Z",
       "timezone": "Europe/Rome",
       "isOnline": false,
-      "eventUrl": null,
       "imageUrl": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=600",
-      "excerpt": null,
-      "going": null,
-      "venue": null
+      "venue": { "city": "Torino" },
+      "active": true
     },
     {
       "id": "seed-serverless",
       "title": "Serverless Architecture & Azure Functions v4 a confronto",
-      "status": "upcoming",
-      "dateTime": "2026-12-09T18:30:00+01:00",
-      "endTime": "2026-12-09T21:00:00+01:00",
+      "dateTime": "2026-12-09T17:30:00.000Z",
+      "endTime": "2026-12-09T20:00:00.000Z",
       "timezone": "Europe/Rome",
       "isOnline": false,
-      "eventUrl": null,
       "imageUrl": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=600",
-      "excerpt": null,
-      "going": null,
-      "venue": null
+      "venue": { "city": "Torino" },
+      "active": true
     },
     {
       "id": "seed-global-azure",
       "title": "Global Azure - Edizione Torino",
-      "status": "past",
-      "dateTime": "2026-05-13T18:30:00+02:00",
-      "endTime": "2026-05-13T21:00:00+02:00",
+      "dateTime": "2026-05-13T16:30:00.000Z",
+      "endTime": "2026-05-13T19:00:00.000Z",
       "timezone": "Europe/Rome",
       "isOnline": false,
-      "eventUrl": null,
       "imageUrl": "https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&q=80&w=600",
-      "excerpt": null,
-      "going": null,
-      "venue": null
+      "venue": { "city": "Torino" },
+      "active": true
     },
     {
       "id": "seed-zero-trust",
       "title": "Sicurezza e Identità in Azure: Zero Trust con Entra ID",
-      "status": "past",
-      "dateTime": "2026-04-15T18:30:00+02:00",
-      "endTime": "2026-04-15T21:00:00+02:00",
+      "dateTime": "2026-04-15T16:30:00.000Z",
+      "endTime": "2026-04-15T19:00:00.000Z",
       "timezone": "Europe/Rome",
       "isOnline": false,
-      "eventUrl": null,
       "imageUrl": "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&q=80&w=600",
-      "excerpt": null,
-      "going": null,
-      "venue": null
+      "venue": { "city": "Torino" },
+      "active": true
     },
     {
       "id": "seed-finops",
       "title": "Cost Optimization & FinOps su Microsoft Azure",
-      "status": "past",
-      "dateTime": "2026-03-11T18:30:00+01:00",
-      "endTime": "2026-03-11T21:00:00+01:00",
+      "dateTime": "2026-03-11T17:30:00.000Z",
+      "endTime": "2026-03-11T20:00:00.000Z",
       "timezone": "Europe/Rome",
       "isOnline": false,
-      "eventUrl": null,
       "imageUrl": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=600",
-      "excerpt": null,
-      "going": null,
-      "venue": null
+      "venue": { "city": "Torino" },
+      "active": true
     }
   ]
 }

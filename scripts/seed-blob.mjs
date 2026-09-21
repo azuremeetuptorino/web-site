@@ -54,7 +54,7 @@ const FILES = [
     { name: 'site.json', master: true },
     { name: 'team.json', master: true },
     { name: 'sponsors.json', master: true },
-    { name: 'events.json', master: false }
+    { name: 'events.json', master: true }
 ];
 
 async function seed({ name, master }) {

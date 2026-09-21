@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { validateTeam, validateSponsors, ROLE_KEYS, LINK_TYPES, TIERS } from '../src/lib/validate.js';
+import { validateTeam, validateSponsors, validateEvents, ROLE_KEYS, LINK_TYPES, TIERS } from '../src/lib/validate.js';
 
 /** Un membro minimo ma valido, da cui partire per i casi singoli. */
 const member = (overrides = {}) => ({
@@ -294,4 +294,83 @@ test('gli schemi pericolosi restano fuori da qualunque campo URL', () => {
     for (const logoUrl of ['javascript:alert(1)', 'data:image/svg+xml;base64,PHN2Zz4=', 'vbscript:x']) {
         assert.equal(validateSponsors(sponsorDoc(sponsor({ logoUrl }))).ok, false, logoUrl);
     }
+});
+
+/* ==========================================================
+   EVENTI
+   ========================================================== */
+
+const event = (overrides = {}) => ({
+    id: 'luma-2ffi3qjx',
+    title: 'Dev Days | Turin, Italy',
+    dateTime: '2026-10-16T15:00:00+02:00',
+    ...overrides
+});
+
+const eventDoc = (...events) => ({ version: 1, events });
+
+test('eventi: il documento seed del repo e valido cosi com e', async () => {
+    const { readFileSync } = await import('node:fs');
+    const seed = JSON.parse(readFileSync(new URL('../../src/data/events.json', import.meta.url), 'utf8'));
+    const result = validateEvents(seed);
+    assert.equal(result.ok, true, JSON.stringify(result.issues));
+    assert.ok(result.value.events.length > 0);
+});
+
+test('eventi: un evento completo passa e le date tornano in UTC', () => {
+    const result = validateEvents(eventDoc(event({
+        endTime: '2026-10-16T18:00:00+02:00',
+        timezone: 'Europe/Rome',
+        isOnline: false,
+        eventUrl: 'https://luma.com/2ffi3qjx',
+        imageUrl: 'https://images.lumacdn.com/x.png',
+        excerpt: '  Una serata su Copilot.  ',
+        venue: { name: 'Aula 10', address: 'Via Durandi 10', city: 'Torino' },
+        active: true,
+        going: 42
+    })));
+
+    assert.equal(result.ok, true, JSON.stringify(result.issues));
+    const saved = result.value.events[0];
+    assert.equal(saved.dateTime, '2026-10-16T13:00:00.000Z');
+    assert.equal(saved.endTime, '2026-10-16T16:00:00.000Z');
+    assert.equal(saved.excerpt, 'Una serata su Copilot.');
+    assert.equal('going' in saved, false, 'i campi sconosciuti non finiscono sul blob');
+});
+
+test('eventi: titolo e data di inizio sono obbligatori', () => {
+    const result = validateEvents(eventDoc({ id: 'x1' }));
+    assert.equal(result.ok, false);
+    assert.deepEqual(paths(result), ['events[0].dateTime', 'events[0].title']);
+});
+
+test('eventi: una data che non si legge viene segnalata sul campo giusto', () => {
+    const result = validateEvents(eventDoc(event({ dateTime: 'giovedi prossimo' })));
+    assert.deepEqual(paths(result), ['events[0].dateTime']);
+});
+
+test('eventi: la fine non puo precedere l inizio', () => {
+    const result = validateEvents(eventDoc(event({ endTime: '2026-10-16T14:00:00+02:00' })));
+    assert.deepEqual(paths(result), ['events[0].endTime']);
+});
+
+test('eventi: il fuso orario mancante diventa Europe/Rome, uno inventato e rifiutato', () => {
+    assert.equal(validateEvents(eventDoc(event())).value.events[0].timezone, 'Europe/Rome');
+    assert.deepEqual(paths(validateEvents(eventDoc(event({ timezone: 'Marte/Olympus' })))), ['events[0].timezone']);
+    assert.equal(validateEvents(eventDoc(event({ timezone: 'America/New_York' }))).ok, true);
+});
+
+test('eventi: un luogo con tutti i campi vuoti sparisce, uno con la sola citta resta', () => {
+    assert.equal('venue' in validateEvents(eventDoc(event({ venue: { name: '', address: '', city: '' } }))).value.events[0], false);
+    assert.deepEqual(validateEvents(eventDoc(event({ venue: { city: 'Torino' } }))).value.events[0].venue, { city: 'Torino' });
+});
+
+test('eventi: due id uguali si scontrano', () => {
+    const result = validateEvents(eventDoc(event(), event({ title: 'Doppione' })));
+    assert.deepEqual(paths(result), ['events[1].id']);
+});
+
+test('eventi: eventUrl e imageUrl seguono le stesse regole delle altre URL', () => {
+    const result = validateEvents(eventDoc(event({ eventUrl: 'javascript:alert(1)', imageUrl: '//cdn.evil/x.png' })));
+    assert.deepEqual(paths(result), ['events[0].eventUrl', 'events[0].imageUrl']);
 });

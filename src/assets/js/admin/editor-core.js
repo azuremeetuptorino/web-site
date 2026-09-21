@@ -4,9 +4,9 @@ import { uploadImage } from './upload.js';
 /**
  * Il nucleo degli editor dell'admin.
  *
- * Tre documenti — team, sponsor, contenuti della home — e un solo modo di
- * gestirli: leggi con l'ETag, modifica, risalva tutto insieme. Cambia solo
- * quali campi ci sono dentro.
+ * Quattro documenti — team, sponsor, eventi, contenuti della home — e un solo
+ * modo di gestirli: leggi con l'ETag, modifica, risalva tutto insieme. Cambia
+ * solo quali campi ci sono dentro.
  *
  * QUATTRO REGOLE CHE VALGONO PER TUTTI
  *
@@ -32,7 +32,7 @@ import { uploadImage } from './upload.js';
  *   [data-empty="nome"]         mostrato quando quella lista e vuota
  *   [data-add="nome"]           bottone che aggiunge una riga a quella lista
  *   [data-action=up|down|remove] dentro una riga
- *   input[type=file][data-upload="avatar|sponsor"]
+ *   input[type=file][data-upload="avatar|sponsor|site|event"]
  *                               carica e scrive nel [data-field] dello stesso .field
  */
 
@@ -469,8 +469,10 @@ export function createEditorCore(shape) {
 
             // L'identificativo si genera dal nome finche la riga e nuova e
             // nessuno l'ha toccato a mano: su una gia salvata cambiarlo da solo
-            // sarebbe una modifica non richiesta.
-            if (lists[name].autoSlug && event.target.dataset.field === 'name' && row.dataset.new === 'true') {
+            // sarebbe una modifica non richiesta. `autoSlug: true` legge dal
+            // campo `name`; una stringa indica un altro campo (`title`).
+            const slugSource = lists[name].autoSlug === true ? 'name' : lists[name].autoSlug;
+            if (slugSource && event.target.dataset.field === slugSource && row.dataset.new === 'true') {
                 const id = field(row, 'id');
                 if (id && id.dataset.touched !== 'true') id.value = slugify(event.target.value);
             }
@@ -570,5 +572,42 @@ export function createEditorCore(shape) {
         }
     }
 
-    return { init, isDirty: () => dirty };
+    /* ==========================================================
+       COMANDI PER CHI STA FUORI
+       Servono a un pezzo di interfaccia che vive accanto all'editor ma non
+       dentro le sue convenzioni — l'importazione di un evento dal link — per
+       inserire una riga e segnalare l'esito con gli stessi strumenti.
+       ========================================================== */
+
+    /** Aggiunge una riga nuova in fondo alla lista e la apre. */
+    function add(name, item) {
+        const row = buildRow(name, item, { isNew: true });
+        container(name).append(row);
+        refreshEmpty(name);
+        markDirty();
+        return row;
+    }
+
+    /** Riscrive i campi di una riga esistente e la apre. */
+    function refill(row, item) {
+        const name = listNameOf(row);
+        lists[name].fill(row, item, tools);
+        lists[name].preview?.(row, tools);
+        row.querySelector('.editor-details')?.setAttribute('open', '');
+        markDirty();
+        return row;
+    }
+
+    return {
+        init,
+        isDirty: () => dirty,
+        add,
+        refill,
+        rows,
+        value,
+        setAlert,
+        clearAlert,
+        markDirty,
+        handleError
+    };
 }

@@ -57,7 +57,7 @@ test('un kind sconosciuto viene respinto e dice quali sono validi', () => {
     const result = upload({ kind: 'documento' });
     assert.equal(result.ok, false);
     assert.equal(result.status, 400);
-    assert.deepEqual(result.body.allowed, ['avatar', 'sponsor', 'site']);
+    assert.deepEqual(result.body.allowed, ['avatar', 'sponsor', 'site', 'event']);
 });
 
 test('un content-type fuori allowlist risponde 415 elencando quelli buoni', () => {

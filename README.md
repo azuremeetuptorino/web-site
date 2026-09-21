@@ -4,9 +4,10 @@ Sito di [Azure Meetup Torino](https://www.meetup.com/it-IT/azure-meetup-torino/)
 community tech indipendente piemontese dedicata a Microsoft Azure, cloud
 architecture, DevOps e AI.
 
-Ospitato su **Azure Static Web Apps** (piano Free). Gli eventi arrivano da
-Meetup; team e sponsor si modificano da una pagina `/admin` protetta
-dall'autenticazione integrata di SWA. I dati sono file JSON, niente database.
+Ospitato su **Azure Static Web Apps** (piano Free). Team, sponsor, eventi e
+contenuti della home si modificano da una pagina `/admin` protetta
+dall'autenticazione integrata di SWA. Gli eventi si **importano dal link** della
+loro pagina pubblica su Luma o Meetup. I dati sono file JSON, niente database.
 
 ## Stack
 
@@ -27,7 +28,7 @@ src/                      quello che finisce su Azure, verbatim
   403.html  404.html
   staticwebapp.config.json    route, header di sicurezza, ruoli
   assets/css   assets/js   assets/img   assets/vendor
-  data/                    team.json, sponsors.json, events.json
+  data/                    site.json, team.json, sponsors.json, events.json
 api/                      managed functions (dalla P2)
 scripts/                  provisioning Azure
 docs/                     deploy, runbook
@@ -77,7 +78,7 @@ In sviluppo il container pubblico è quello di Azurite. In produzione, finché l
 costante `STORAGE_ACCOUNT` di `src/assets/js/config.js` è vuota, si leggono i
 file del deploy: è lo stato corretto prima che le risorse Azure esistano.
 
-Il giro di una modifica, uguale per team e sponsor:
+Il giro di una modifica, uguale per team, sponsor, eventi e contenuti della home:
 
 ```
 /admin  ──PUT /api/team──►  site-data/team.json   (master, scrittura con ETag)
@@ -95,6 +96,35 @@ max 512 KB, tipo verificato sui byte e non sul nome del file. Il nome del blob
 contiene l'impronta del contenuto, così la cache può durare un anno e cambiare
 foto cambia URL. Gli SVG vengono sanificati e serviti come allegato. Resta
 possibile incollare a mano una URL `https://` già ospitata altrove.
+
+### Eventi
+
+Gli eventi si pubblicano su **Luma** e su **Meetup**, e non abbiamo una chiave
+API per nessuno dei due. Non serve: dalla scheda **Eventi** dell'admin si incolla
+il link della pagina pubblica dell'evento e `POST /api/events/import` la
+scarica, ne legge il blocco **JSON-LD `schema.org/Event`** (quello che Google usa
+per i risultati arricchiti) e restituisce la scheda compilata: titolo, inizio e
+fine, luogo, immagine, descrizione breve e link per iscriversi. Dove il JSON-LD
+e tirchio si integra con i dati che la pagina lascia in `__NEXT_DATA__` (Meetup
+tronca la descrizione a 150 caratteri, Luma non scrive il nome della sala). La
+scheda si controlla, si corregge e si salva con **Salva e pubblica** come
+qualunque altra: l'importazione non scrive niente da sola.
+
+L'identificativo viene dalla piattaforma (`luma-2ffi3qjx`, `meetup-316647090`):
+reimportando lo stesso link la scheda esistente si **aggiorna** invece di
+duplicarsi, che e quello che serve quando cambia l'orario.
+
+La function scarica **solo** da `luma.com`, `lu.ma` e `meetup.com`, redirect
+compresi, con timeout e tetto ai byte letti: una function che scarica una URL
+scelta dall'utente e altrimenti un proxy verso qualunque indirizzo. Per
+aggiungere una piattaforma basta il suo host in `ALLOWED_HOSTS` di
+`api/src/lib/event-import.js`, purche la pagina esponga JSON-LD `Event`.
+
+Le date stanno sul blob in **UTC** e ogni evento porta il suo fuso (`timezone`,
+di default `Europe/Rome`): il sito scrive l'orario in ora italiana a chiunque lo
+guardi. Sul sito i prossimi eventi vengono prima in ordine di data, poi i
+passati dal piu recente; `active: false` toglie un evento dalla pagina senza
+cancellarlo.
 
 Il testo di "Chi siamo" ammette `**grassetto**` e `[link](https://...)` — un
 sottoinsieme minimo, utile per esempio a segnalare l'iscrizione al prossimo
@@ -130,7 +160,8 @@ risorse Azure vedi [docs/deploy.md](docs/deploy.md).
 | P3 | CRUD team su Blob Storage | fatto (risorse Azure da creare) |
 | P4 | CRUD sponsor e upload loghi | fatto (risorse Azure da creare) |
 | P4b | Contenuti della home editabili (foto, "Chi siamo", statistiche, footer) | fatto (risorse Azure da creare) |
-| P5 | Integrazione Meetup e filtro temporale eventi | da fare |
+| P5 | Eventi gestiti dall'admin, importazione dal link Luma/Meetup | fatto (risorse Azure da creare) |
+| P5b | Filtro temporale eventi `Prossimi \| Passati` | da fare |
 | P6 | Telemetria, SEO, accessibilità | da fare |
 
 ## Riprendere il lavoro
