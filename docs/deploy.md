@@ -3,6 +3,27 @@
 Guida operativa per pubblicare il sito. Da eseguire una volta sola; dopo, ogni
 push su `main` fa il deploy da solo.
 
+## Le risorse
+
+Tutto vive in `rg-lrizzi-meetup` (italynorth), subscription *Sponsorship 14k*.
+
+| Risorsa | Regione | Ruolo |
+|---|---|---|
+| `swa-meetup` | West Europe | Static Web App Free: hosting, managed functions, auth |
+| `stazuremeetuptorino2` | italynorth | Dati del sito: container `public` e `site-data` |
+
+La SWA sta in West Europe perche in italynorth non esiste: le regioni valide
+sono West Europe, Central US, East US 2, West US 2 ed East Asia. Lo storage
+invece resta vicino a chi legge.
+
+> Nella stessa resource group ci sono `stazuremeetuptorino` (**senza** il 2),
+> `afd-meetup` e il dominio `torino.azuremeetup.it`. Sono il sito **vecchio**:
+> Front Door davanti al container `$web` di quell'account, che ha shared key e
+> accesso anonimo disabilitati di proposito. Questa soluzione non li tocca e non
+> deve usarli. Spostare `torino.azuremeetup.it` su `swa-meetup` e un intervento
+> a se, da fare sapendo che SWA gestisce gia il proprio dominio custom e che
+> l'auth Entra ID passa per `/.auth/*`.
+
 ## Cosa costa
 
 | Risorsa | Piano | Costo |
@@ -39,19 +60,26 @@ az account set --subscription "<nome o id della subscription>"
 Lo script è idempotente: rilanciarlo non rompe nulla. Prima una prova a vuoto:
 
 ```bash
-pwsh -File ./scripts/provision-azure.ps1 -StorageAccountName azmeetuptorino -WhatIf
-pwsh -File ./scripts/provision-azure.ps1 -StorageAccountName azmeetuptorino
+pwsh -File ./scripts/provision-azure.ps1 -StorageAccountName stazuremeetuptorino2 -StorageLocation italynorth -WhatIf
+pwsh -File ./scripts/provision-azure.ps1 -StorageAccountName stazuremeetuptorino2 -StorageLocation italynorth
 ```
 
 `-StorageAccountName` deve essere **globalmente univoco**, 3-24 caratteri, solo
-minuscole e cifre.
+minuscole e cifre. `-StorageLocation` separa la regione dello storage da quella
+della SWA: senza, lo storage finirebbe in West Europe con la Static Web App.
 
 > **Punto di non ritorno.** Lo script crea lo storage account con
-> `--allow-blob-public-access true`. Se la subscription ha la Azure Policy
-> *"Storage accounts should prevent anonymous access"*, il comando fallisce.
-> Non aggirarla: fermati e dimmelo, perché cambia l'architettura di lettura
-> (il sito dovrebbe leggere i dati da `/api`, pagando un cold start di 1-3 s
-> sulla prima visita invece di leggerli direttamente dal blob con ETag).
+> `--allow-blob-public-access true` e `--allow-shared-key-access true`. Se la
+> subscription ha la Azure Policy *"Storage accounts should prevent anonymous
+> access"*, il comando fallisce. Non aggirarla: fermati e dimmelo, perché cambia
+> l'architettura di lettura (il sito dovrebbe leggere i dati da `/api`, pagando
+> un cold start di 1-3 s sulla prima visita invece di leggerli direttamente dal
+> blob con ETag).
+>
+> Anche la shared key non e negoziabile: le managed functions di SWA non
+> supportano né Managed Identity né i riferimenti a Key Vault, quindi l'unico
+> modo che hanno di scrivere sul blob e la chiave dell'account. Disabilitarla
+> sull'account significa rinunciare all'admin.
 
 ## 3. Collegare il repo
 
@@ -79,9 +107,9 @@ negoziabile — i prefissi `AZUREBLOBSTORAGE_`, `WEBSITE_`, `FUNCTIONS_` e
 
 ```bash
 CONN=$(az storage account show-connection-string \
-  -n azmeetuptorino -g rg-azure-meetup-torino --query connectionString -o tsv)
+  -n stazuremeetuptorino2 -g rg-lrizzi-meetup --query connectionString -o tsv)
 
-az staticwebapp appsettings set -n swa-azure-meetup-torino \
+az staticwebapp appsettings set -n swa-meetup -g rg-lrizzi-meetup \
   --setting-names DATA_STORAGE_CONNECTION="$CONN"
 ```
 
@@ -105,7 +133,7 @@ cancellerebbe il suo lavoro. Per forzare serve `npm run seed -- --force`.
 ## 5. Verifica
 
 ```bash
-SITE=$(az staticwebapp show -n swa-azure-meetup-torino -g rg-azure-meetup-torino --query defaultHostname -o tsv)
+SITE=$(az staticwebapp show -n swa-meetup -g rg-lrizzi-meetup --query defaultHostname -o tsv)
 
 curl -I "https://$SITE/"                # 200 + header di sicurezza
 curl -I "https://$SITE/data/team.json"  # 200, Cache-Control 300s
@@ -113,11 +141,29 @@ curl -o /dev/null -w '%{http_code}\n' "https://$SITE/pagina-inesistente"   # 404
 curl -o /dev/null -w '%{http_code}\n' "https://$SITE/admin/"               # 302 verso il login
 
 # Il blob pubblico, da anonimo: 200, ETag e Cache-Control di 300 s
-curl -I "https://azmeetuptorino.blob.core.windows.net/public/team.json"
+curl -I "https://stazuremeetuptorino2.blob.core.windows.net/public/team.json"
+
+# Il container privato non deve rispondere da anonimo (404, non 403: Azure non
+# conferma nemmeno che il blob esista)
+curl -o /dev/null -w '%{http_code}\n' \
+  "https://stazuremeetuptorino2.blob.core.windows.net/site-data/team.json"
+
+# Il preflight CORS deve dare 200 con Access-Control-Allow-Origin: senza, ogni
+# fetch dal sito fallisce e si ripiega in silenzio sui dati del deploy
+curl -X OPTIONS -H "Origin: https://$SITE" -H "Access-Control-Request-Method: GET" \
+  -D - -o /dev/null "https://stazuremeetuptorino2.blob.core.windows.net/public/team.json"
 ```
 
 In PowerShell non chiamare la variabile `$host`: è una variabile automatica
 riservata e l'assegnazione fallisce.
+
+Sempre in PowerShell, su Linux, un `*` passato a un comando nativo **da una
+variabile o da un array** viene espanso contro i file della directory corrente:
+la regola CORS diventa una allowlist con dentro i nomi dei file del repo, `az`
+la accetta senza lamentarsi e il preflight risponde 403 a ogni fetch. Per questo
+lo step `[6/7]` di `provision-azure.ps1` e l'unico che non passa da `Invoke-Az`
+ma scrive gli asterischi inline. Ne il backtick ne
+`$PSNativeCommandArgumentPassing` cambiano le cose (verificato su 7.6).
 
 Nel browser, DevTools aperto: nessuna violazione CSP in console, carosello team
 in movimento, eventi e sponsor renderizzati.
@@ -144,20 +190,24 @@ persona, che accettandolo si lega il ruolo all'account.
 Conseguenza da tenere a mente: uno sconosciuto che arriva su `/admin` vede
 prima un login Microsoft e poi la nostra pagina 403. È voluto.
 
-## Configurazione da aggiornare dopo il provisioning
+## Configurazione legata al nome dello storage
 
-Il nome dello storage account non si conosce finché non esiste, quindi due
-punti vanno allineati a mano e committati:
+Il nome dello storage account compare in due punti del codice, già allineati a
+`stazuremeetuptorino2`. Se un giorno cambia, vanno cambiati **entrambi**:
 
-1. `src/assets/js/config.js` → la costante `STORAGE_ACCOUNT`, oggi stringa
-   vuota. Finché resta vuota il sito legge i JSON del deploy invece del blob:
-   è lo stato corretto prima del provisioning, ma dopo va riempita.
-2. `src/staticwebapp.config.json` → l'host del blob dentro `img-src` e
-   `connect-src` nella `Content-Security-Policy`.
+1. `src/assets/js/config.js` → la costante `STORAGE_ACCOUNT`.
+2. `src/staticwebapp.config.json` → l'host del blob dentro `connect-src` (e
+   `img-src`, che oggi passa per il generico `https:`) nella
+   `Content-Security-Policy`.
 
-Vanno cambiati **insieme**: con `STORAGE_ACCOUNT` riempito e la CSP ferma, il
-browser blocca la lettura del blob e il sito ripiega in silenzio sui dati del
-deploy — sembra funzionare, ma l'admin non cambia più niente di visibile.
+Con `STORAGE_ACCOUNT` giusto e la CSP ferma sul nome vecchio il browser blocca
+la lettura del blob e il sito ripiega in silenzio sui dati del deploy — sembra
+funzionare, ma l'admin non cambia più niente di visibile. Svuotare
+`STORAGE_ACCOUNT` è il modo pulito per tornare a leggere i JSON del deploy.
+
+Attenzione a `staticwebapp.config.json`: una chiave inattesa al primo livello fa
+scartare **tutto** il file, `allowedRoles` compresi, lasciando `/admin` aperto.
+Vedi [configuration.md](configuration.md).
 
 ## Rollback
 

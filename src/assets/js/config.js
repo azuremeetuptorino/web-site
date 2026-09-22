@@ -14,14 +14,17 @@ const LOCAL_HOSTS = ['localhost', '127.0.0.1', '[::1]'];
 export const IS_LOCAL = LOCAL_HOSTS.includes(location.hostname);
 
 /**
- * Nome dell'account di storage, da riempire dopo provision-azure.ps1.
+ * Nome dell'account di storage che serve i dati pubblici.
  *
- * Finche e vuoto il sito legge i JSON del deploy: e lo stato corretto prima che
- * le risorse Azure esistano, meglio di una fetch che fallisce a ogni visita.
- * Cambiandolo va aggiunto lo stesso host a img-src e connect-src nella CSP di
+ * Svuotandolo il sito ripiega sui JSON del deploy: e lo stato corretto finche le
+ * risorse Azure non esistono, meglio di una fetch che fallisce a ogni visita.
+ * Cambiandolo va aggiornato lo stesso host in img-src e connect-src nella CSP di
  * staticwebapp.config.json, altrimenti il browser blocca la lettura.
+ *
+ * Da non confondere con `stazuremeetuptorino` (senza 2), nella stessa resource
+ * group: quello serve il sito vecchio da `$web` dietro Front Door.
  */
-const STORAGE_ACCOUNT = '';
+const STORAGE_ACCOUNT = 'stazuremeetuptorino2';
 
 /** In locale il container pubblico e quello di Azurite. */
 const AZURITE_PUBLIC = 'http://127.0.0.1:10000/devstoreaccount1/public';

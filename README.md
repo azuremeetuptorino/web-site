@@ -156,20 +156,25 @@ il CSS.
 ## Deploy
 
 Ogni push su `main` fa il deploy tramite
-`.github/workflows/azure-static-web-apps.yml`. Per il primo setup delle
-risorse Azure vedi [docs/deploy.md](docs/deploy.md).
+`.github/workflows/azure-static-web-apps.yml`.
+
+Le risorse stanno in `rg-lrizzi-meetup`: la Static Web App `swa-meetup` (West
+Europe) e lo storage `stazuremeetuptorino2` (italynorth). Nella stessa resource
+group vivono anche `stazuremeetuptorino` e `afd-meetup`, che servono il sito
+**vecchio** su `torino.azuremeetup.it` e non c'entrano con questa soluzione.
+Dettagli e runbook in [docs/deploy.md](docs/deploy.md).
 
 ## Stato
 
 | Fase | Contenuto | Stato |
 |---|---|---|
 | P0 | Refactor statico, contenuti su JSON | fatto |
-| P1 | Configurazione SWA, pagine di errore, CI/CD | fatto (risorse Azure da creare) |
+| P1 | Configurazione SWA, pagine di errore, CI/CD | fatto |
 | P2 | `/admin` e autenticazione Entra ID | fatto |
-| P3 | CRUD team su Blob Storage | fatto (risorse Azure da creare) |
-| P4 | CRUD sponsor e upload loghi | fatto (risorse Azure da creare) |
-| P4b | Contenuti della home editabili (foto, "Chi siamo", statistiche, footer) | fatto (risorse Azure da creare) |
-| P5 | Eventi gestiti dall'admin, importazione dal link Luma/Meetup | fatto (risorse Azure da creare) |
+| P3 | CRUD team su Blob Storage | fatto |
+| P4 | CRUD sponsor e upload loghi | fatto |
+| P4b | Contenuti della home editabili (foto, "Chi siamo", statistiche, footer) | fatto |
+| P5 | Eventi gestiti dall'admin, importazione dal link Luma/Meetup | fatto |
 | P5b | Cinque eventi in home e archivio filtrabile su `/eventi/` | fatto |
 | P6 | Telemetria, SEO, accessibilità | da fare |
 

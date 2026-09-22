@@ -91,7 +91,7 @@
     "Referrer-Policy": "strict-origin-when-cross-origin",
     "Permissions-Policy": "geolocation=(), microphone=(), camera=()",
     "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
-    "Content-Security-Policy": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https: http://127.0.0.1:10000; connect-src 'self' http://127.0.0.1:10000; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+    "Content-Security-Policy": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https: http://127.0.0.1:10000; connect-src 'self' https://stazuremeetuptorino2.blob.core.windows.net http://127.0.0.1:10000; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
   },
   "mimeTypes": {
     ".json": "application/json",
