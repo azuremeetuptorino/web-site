@@ -31,7 +31,7 @@ src/                      quello che finisce su Azure, verbatim
   assets/css   assets/js   assets/img   assets/vendor
   data/                    site.json, team.json, sponsors.json, events.json
 api/                      managed functions (dalla P2)
-scripts/                  provisioning Azure
+scripts/                  provisioning Azure, seed, import dell'archivio Meetup
 docs/                     deploy, runbook
 ```
 
@@ -48,6 +48,9 @@ da solo a ogni avvio.
 npm start            # emulatore SWA su http://localhost:4280
 npm test             # test delle managed functions
 npm run seed         # ricarica src/data/*.json sul blob (Azurite)
+
+# una tantum: carica l'archivio degli eventi passati da Meetup
+node scripts/import-meetup-past.mjs --dry-run
 ```
 
 > **Node 20 non è un capriccio.** È la major che gira sulle managed functions
@@ -114,6 +117,14 @@ qualunque altra: l'importazione non scrive niente da sola.
 L'identificativo viene dalla piattaforma (`luma-2ffi3qjx`, `meetup-316647090`):
 reimportando lo stesso link la scheda esistente si **aggiorna** invece di
 duplicarsi, che e quello che serve quando cambia l'orario.
+
+L'archivio storico — i **27 incontri dal 2018 a oggi** — è stato caricato una
+volta sola con `scripts/import-meetup-past.mjs`. Quello non poteva passare dal
+JSON-LD: l'elenco degli eventi passati di un gruppo lo dà solo `www.meetup.com/gql2`,
+l'endpoint GraphQL interno del sito, che risponde senza autenticazione ma non è
+documentato. Sta in uno script e non in una function apposta: se Meetup lo cambia
+si rompe uno script che ha già fatto il suo lavoro, non la `/admin`. Da qui in
+avanti gli eventi entrano uno alla volta dal link.
 
 In **home** ne compaiono **cinque**: i prossimi in ordine di data e, se il
 futuro non ne riempie cinque, gli ultimi fatti. Sotto c'e un bottone *Vedi tutti

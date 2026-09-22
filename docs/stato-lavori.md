@@ -400,10 +400,15 @@ Errori trovati testando, non in astratto.
    404 sulla pagina inesistente, e la fetch del blob dall'origin del sito
    risponde 200 con `Access-Control-Allow-Origin` ed ETag.
 
-2. **I contenuti veri non ci sono.** Gli 11 membri del team e i 6 sponsor sono
-   inventati, foto e loghi compresi. Gli editor ci sono e il caricamento
-   funziona: **servono i nomi, le foto delle persone e i loghi degli sponsor**.
-   Da lì in poi si fa tutto da `/admin`, senza toccare il repo.
+2. **I contenuti veri non ci sono**, tranne gli eventi. Gli 11 membri del team e
+   i 6 sponsor sono inventati, foto e loghi compresi. Gli editor ci sono e il
+   caricamento funziona: **servono i nomi, le foto delle persone e i loghi degli
+   sponsor**. Da lì in poi si fa tutto da `/admin`, senza toccare il repo.
+
+   Gli eventi invece sono veri: i 5 segnaposto `seed-*` sono stati sostituiti
+   dai 27 incontri passati importati da Meetup con
+   `scripts/import-meetup-past.mjs`, più il GitHub Dev Days da Luma. Sono 28,
+   dal 5 aprile 2018 a oggi, con descrizione, luogo e copertina.
 
 3. **Della `/admin` resta da guardare la barra di importazione.** Il log
    dell'emulatore mostra la pagina aperta in un browser con tutti e quattro gli

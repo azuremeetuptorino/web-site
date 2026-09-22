@@ -1,77 +1,467 @@
 {
-  "version": 1,
-  "events": [
-    {
-      "id": "luma-2ffi3qjx",
-      "title": "GitHub Dev Days — tappa di Torino",
-      "dateTime": "2026-10-16T13:00:00.000Z",
-      "endTime": "2026-10-16T16:00:00.000Z",
-      "timezone": "Europe/Rome",
-      "isOnline": false,
-      "eventUrl": "https://luma.com/2ffi3qjx",
-      "imageUrl": "https://images.lumacdn.com/cdn-cgi/image/format=auto,fit=cover,dpr=1,anim=false,background=white,quality=75,width=800,height=420/event-social/fc/c5f38b47-875e-40ec-a731-419c09b3603d.png",
-      "excerpt": "Dopo il successo del Microsoft Build //localhost, Azure Meetup Torino porta a Torino una tappa dei GitHub Dev Days: un pomeriggio pratico su GitHub Copilot, nell'app e nella CLI, aperto a tutti gli sviluppatori.",
-      "venue": {
-        "name": "Aula 10 dell'ITS ICT Piemonte",
-        "address": "Via Jacopo Durandi, 10",
-        "city": "Torino"
-      },
-      "active": true
-    },
-    {
-      "id": "seed-cloud-native",
-      "title": "Cloud Native in Azure: Kubernetes, Container Apps e Dintorni",
-      "dateTime": "2026-11-11T17:30:00.000Z",
-      "endTime": "2026-11-11T20:00:00.000Z",
-      "timezone": "Europe/Rome",
-      "isOnline": false,
-      "imageUrl": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=600",
-      "venue": { "city": "Torino" },
-      "active": true
-    },
-    {
-      "id": "seed-serverless",
-      "title": "Serverless Architecture & Azure Functions v4 a confronto",
-      "dateTime": "2026-12-09T17:30:00.000Z",
-      "endTime": "2026-12-09T20:00:00.000Z",
-      "timezone": "Europe/Rome",
-      "isOnline": false,
-      "imageUrl": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=600",
-      "venue": { "city": "Torino" },
-      "active": true
-    },
-    {
-      "id": "seed-global-azure",
-      "title": "Global Azure - Edizione Torino",
-      "dateTime": "2026-05-13T16:30:00.000Z",
-      "endTime": "2026-05-13T19:00:00.000Z",
-      "timezone": "Europe/Rome",
-      "isOnline": false,
-      "imageUrl": "https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&q=80&w=600",
-      "venue": { "city": "Torino" },
-      "active": true
-    },
-    {
-      "id": "seed-zero-trust",
-      "title": "Sicurezza e Identità in Azure: Zero Trust con Entra ID",
-      "dateTime": "2026-04-15T16:30:00.000Z",
-      "endTime": "2026-04-15T19:00:00.000Z",
-      "timezone": "Europe/Rome",
-      "isOnline": false,
-      "imageUrl": "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&q=80&w=600",
-      "venue": { "city": "Torino" },
-      "active": true
-    },
-    {
-      "id": "seed-finops",
-      "title": "Cost Optimization & FinOps su Microsoft Azure",
-      "dateTime": "2026-03-11T17:30:00.000Z",
-      "endTime": "2026-03-11T20:00:00.000Z",
-      "timezone": "Europe/Rome",
-      "isOnline": false,
-      "imageUrl": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=600",
-      "venue": { "city": "Torino" },
-      "active": true
-    }
-  ]
+    "version": 1,
+    "events": [
+        {
+            "id": "luma-2ffi3qjx",
+            "title": "GitHub Dev Days — tappa di Torino",
+            "dateTime": "2026-10-16T13:00:00.000Z",
+            "endTime": "2026-10-16T16:00:00.000Z",
+            "timezone": "Europe/Rome",
+            "isOnline": false,
+            "eventUrl": "https://luma.com/2ffi3qjx",
+            "imageUrl": "https://images.lumacdn.com/cdn-cgi/image/format=auto,fit=cover,dpr=1,anim=false,background=white,quality=75,width=800,height=420/event-social/fc/c5f38b47-875e-40ec-a731-419c09b3603d.png",
+            "excerpt": "Dopo il successo del Microsoft Build //localhost, Azure Meetup Torino porta a Torino una tappa dei GitHub Dev Days: un pomeriggio pratico su GitHub Copilot, nell'app e nella CLI, aperto a tutti gli sviluppatori.",
+            "venue": {
+                "name": "Aula 10 dell'ITS ICT Piemonte",
+                "address": "Via Jacopo Durandi, 10",
+                "city": "Torino"
+            },
+            "active": true
+        },
+        {
+            "id": "meetup-315104959",
+            "title": "Microsoft Build //localhost:torino",
+            "dateTime": "2026-06-16T14:00:00.000Z",
+            "endTime": "2026-06-16T18:00:00.000Z",
+            "timezone": "Europe/Rome",
+            "isOnline": false,
+            "eventUrl": "https://www.meetup.com/it-IT/meetup-microsoft-azure-torino/events/315104959/",
+            "imageUrl": "https://secure.meetupstatic.com/photos/event/7/6/e/d/600_534570445.jpeg",
+            "excerpt": "🚀 Microsoft Build //localhost Torino Per la prima volta, l’evento globale Microsoft Build arriva in presenza a Torino, ospitato presso ITS ICT Piemonte e organizzato dalle community Azure Meetup Torino e .NET Torino. IMPORTANTE: per registrarsi, cliccare sul link a fondo descrizione! non basta…",
+            "venue": {
+                "name": "Fondazione ITS ICT - Regione Piemonte",
+                "address": "Via Jacopo Durandi 10",
+                "city": "Turin"
+            },
+            "active": true
+        },
+        {
+            "id": "meetup-314627263",
+            "title": "Blockchain as a service? Con Azure Confidential Ledger è realtà",
+            "dateTime": "2026-05-19T16:30:00.000Z",
+            "endTime": "2026-05-19T17:30:00.000Z",
+            "timezone": "Europe/Rome",
+            "isOnline": false,
+            "eventUrl": "https://www.meetup.com/it-IT/meetup-microsoft-azure-torino/events/314627263/",
+            "imageUrl": "https://secure.meetupstatic.com/photos/event/c/6/e/600_534063182.jpeg",
+            "excerpt": "Siamo entusiasti di annunciare il nostro prossimo evento: \"Blockchain as a service? Con Azure Confidential Ledger è realtà\". Per questa occasione speciale, abbiamo il grande piacere di dare un caloroso benvenuto a Mattia Contessa, che sarà il nostro speaker della serata. Mattia ci guiderà…",
+            "venue": {
+                "name": "PA Expertise s.r.l.",
+                "address": "Via Gioberti 18",
+                "city": "Torino"
+            },
+            "active": true
+        },
+        {
+            "id": "meetup-313385524",
+            "title": "Global Azure Torino 2026",
+            "dateTime": "2026-04-18T07:00:00.000Z",
+            "endTime": "2026-04-18T17:00:00.000Z",
+            "timezone": "Europe/Rome",
+            "isOnline": false,
+            "eventUrl": "https://www.meetup.com/it-IT/meetup-microsoft-azure-torino/events/313385524/",
+            "imageUrl": "https://secure.meetupstatic.com/photos/event/8/3/b/e/600_532773726.jpeg",
+            "excerpt": "L’appuntamento Cloud dell'anno torna a Torino 🚀🚀🚀 ATTENZIONE: per partecipare è obbligatoria la registrazione su Eventbrite Preparatevi per l’appuntamento tecnologico più atteso dell’anno. Torino torna a essere protagonista della scena cloud internazionale con il GlobalAzure 2026, l'evento dove…",
+            "venue": {
+                "name": "Fondazione ITS per l'ICT Piemonte",
+                "address": "Via Jacopo Durandi, 10",
+                "city": "Torino"
+            },
+            "active": true
+        },
+        {
+            "id": "meetup-312062373",
+            "title": "Zero to Hero: Settings, Configurations & Feature Flags su .NET",
+            "dateTime": "2025-12-16T17:30:00.000Z",
+            "endTime": "2025-12-16T19:30:00.000Z",
+            "timezone": "Europe/Rome",
+            "isOnline": false,
+            "eventUrl": "https://www.meetup.com/it-IT/meetup-microsoft-azure-torino/events/312062373/",
+            "imageUrl": "https://secure.meetupstatic.com/photos/event/3/0/7/6/600_531372406.jpeg",
+            "excerpt": "Siamo entusiasti di annunciare il nostro prossimo incontro, dedicato a chi vuole portare la gestione delle configurazioni al livello successivo. 🎤 𝗦𝗽𝗲𝗮𝗸𝗲𝗿: Davide Bellone – Principal Backend Developer, Microsoft MVP 🗓 𝗗𝗮𝘁𝗮: Martedì 16 dicembre alle 18:30 📍Sede di PA Expertise - Alveo…",
+            "venue": {
+                "name": "PA Expertise s.r.l.",
+                "address": "Via Gioberti 18",
+                "city": "Torino"
+            },
+            "active": true
+        },
+        {
+            "id": "meetup-311795154",
+            "title": "Latest News on AI",
+            "dateTime": "2025-11-13T17:30:00.000Z",
+            "endTime": "2025-11-13T19:30:00.000Z",
+            "timezone": "Europe/Rome",
+            "isOnline": false,
+            "eventUrl": "https://www.meetup.com/it-IT/meetup-microsoft-azure-torino/events/311795154/",
+            "imageUrl": "https://secure.meetupstatic.com/photos/event/7/c/7/a/600_531031866.jpeg",
+            "excerpt": "🎉 Nuovo appuntamento con Azure Meetup Torino! Ci ritroviamo ancora una volta nella sede di PA Expertise - Alveo Group, in Via Gioberti 18, per una serata all’insegna del cloud e dell’innovazione. 📍 Quando? Giovedì 13 novembre alle 18:30 🎙️ Chi ci sarà? Guenda Sciancalepore e Roberta Bruno di…",
+            "venue": {
+                "name": "PA Expertise s.r.l.",
+                "address": "Via Gioberti 18",
+                "city": "Torino"
+            },
+            "active": true
+        },
+        {
+            "id": "meetup-310984857",
+            "title": "Optimizing MCP Workflow with APIM",
+            "dateTime": "2025-09-23T17:00:00.000Z",
+            "endTime": "2025-09-23T19:00:00.000Z",
+            "timezone": "Europe/Rome",
+            "isOnline": false,
+            "eventUrl": "https://www.meetup.com/it-IT/meetup-microsoft-azure-torino/events/310984857/",
+            "imageUrl": "https://secure.meetupstatic.com/photos/event/7/1/8/7/600_530129063.jpeg",
+            "excerpt": "Ritornano gli Azure Meetup Torino sempre nella sede di PA Expertise (già Welol!) Appuntamento imperdibile con Mattia Contessa che ci parlerà di Optimizing MCP Workflow with APIM. In questa sessione introdurremo il concetto di Model Context Protocol (MCP), un approccio innovativo per la gestione…",
+            "venue": {
+                "name": "PA Expertise s.r.l.",
+                "address": "Via Gioberti 18",
+                "city": "Torino"
+            },
+            "active": true
+        },
+        {
+            "id": "meetup-305493202",
+            "title": "Azure Meetup feb 2025 - Sonata per device: dirige il maestro Microsoft Intune",
+            "dateTime": "2025-02-18T17:00:00.000Z",
+            "endTime": "2025-02-18T19:00:00.000Z",
+            "timezone": "Europe/Rome",
+            "isOnline": false,
+            "eventUrl": "https://www.meetup.com/it-IT/meetup-microsoft-azure-torino/events/305493202/",
+            "imageUrl": "https://secure.meetupstatic.com/photos/event/1/7/a/9/600_526206057.jpeg",
+            "excerpt": "Ritornano gli Azure Meetup Torino sempre nella sede di PA Expertise (già Welol!) Road2GlobalAzure Torino. Cominciano i meetup in preparazione al prossimo globalazure Torino che si terrà il 10 maggio 2025. Appuntamento imperdibile con Riccardo Corna per scoprire tutte le nuove funzionalità di…",
+            "venue": {
+                "name": "PA Expertise s.r.l.",
+                "address": "Via Gioberti 18",
+                "city": "Torino"
+            },
+            "active": true
+        },
+        {
+            "id": "meetup-302039343",
+            "title": "Azure WebApp con un “caching” da professionista usando FusionCache",
+            "dateTime": "2024-07-16T16:45:00.000Z",
+            "endTime": "2024-07-16T18:45:00.000Z",
+            "timezone": "Europe/Rome",
+            "isOnline": false,
+            "eventUrl": "https://www.meetup.com/it-IT/meetup-microsoft-azure-torino/events/302039343/",
+            "imageUrl": "https://secure.meetupstatic.com/photos/event/6/5/d/d/600_522206077.jpeg",
+            "excerpt": "Ritornano gli Azure Meetup Torino sempre nella sede di PA Expertise (già Welol!) Sarà con noi Enrico Sabbadin per parlarci di FusionCache. Martedì 16 luglio ore 18.45. Il “caching” è una tecnica spesso implementata in un secondo momento dopo il rilascio di una applicazione per risolvere problemi…",
+            "venue": {
+                "name": "PA Expertise s.r.l.",
+                "address": "Via Gioberti 18",
+                "city": "Torino"
+            },
+            "active": true
+        },
+        {
+            "id": "meetup-301641626",
+            "title": "Azure Meetup Torino - Analytics in the era of AI",
+            "dateTime": "2024-06-18T16:00:00.000Z",
+            "endTime": "2024-06-18T17:30:00.000Z",
+            "timezone": "Europe/Rome",
+            "isOnline": false,
+            "eventUrl": "https://www.meetup.com/it-IT/meetup-microsoft-azure-torino/events/301641626/",
+            "imageUrl": "https://secure.meetupstatic.com/photos/event/6/9/b/a/600_521727066.jpeg",
+            "excerpt": "Ritornano gli Azure Meetup Torino sempre nella sede di PA Expertise (già Welol!) Sarà con noi Andrea Benedetti per parlarci di si @analytics nell'era del AI. Martedì 18 giugno 2024 - ore 18:00 Vi aspettiamo con la solita accoglienza riservata a tutti gli amici che vengono a trovarci in sede per…",
+            "venue": {
+                "name": "Welol Next",
+                "address": "Via Vincenzo Gioberti, 18, Citofono: Welol Next",
+                "city": "Torino"
+            },
+            "active": true
+        },
+        {
+            "id": "meetup-294200901",
+            "title": "Azure Meetup - Migrare SQL server su Azure",
+            "dateTime": "2023-06-21T17:30:00.000Z",
+            "endTime": "2023-06-21T19:30:00.000Z",
+            "timezone": "Europe/Rome",
+            "isOnline": false,
+            "eventUrl": "https://www.meetup.com/it-IT/meetup-microsoft-azure-torino/events/294200901/",
+            "imageUrl": "https://secure.meetupstatic.com/photos/event/6/5/e/e/600_513686094.jpeg",
+            "excerpt": "Ritornano gli Azure Meetup Torino sempre nella sede di Welol! Sarà con noi Marco Obinu per parlarci di come migrare sqlserver su azure. Mercoledì 21 giugno 19:30 ... Vi aspettiamo con la solita accoglienza riservata a tutti gli amici che vengono a trovarci in Welol per cenare insieme dopo…",
+            "venue": {
+                "name": "Welol Next",
+                "address": "Via Vincenzo Gioberti, 18, Citofono: Welol Next",
+                "city": "Torino"
+            },
+            "active": true
+        },
+        {
+            "id": "meetup-293590459",
+            "title": "Microsoft Build watch party 2023",
+            "dateTime": "2023-05-23T16:00:00.000Z",
+            "endTime": "2023-05-23T19:00:00.000Z",
+            "timezone": "Europe/Rome",
+            "isOnline": false,
+            "eventUrl": "https://www.meetup.com/it-IT/meetup-microsoft-azure-torino/events/293590459/",
+            "imageUrl": "https://secure.meetupstatic.com/photos/event/c/c/8/e/600_512932366.jpeg",
+            "excerpt": "Torna Microsoft Build 2023, il momento dei grandi annunci. A mio avviso, questa sarà una conferenza che si ricorderà grazie a sessioni incredibili! Online: 23–24 Maggio, 2023 PDT FREE: https://lnkd.in/dX3Kz7v4 Ci vediamo per assistere insieme al keynote e alle prime session. Welol, Via Gioberti 18…",
+            "venue": {
+                "address": "Via Vincenzo Gioberti",
+                "city": "Torino"
+            },
+            "active": true
+        },
+        {
+            "id": "meetup-292530973",
+            "title": "Global Azure Torino 2023",
+            "dateTime": "2023-05-13T07:30:00.000Z",
+            "endTime": "2023-05-13T16:00:00.000Z",
+            "timezone": "Europe/Rome",
+            "isOnline": false,
+            "eventUrl": "https://www.meetup.com/it-IT/meetup-microsoft-azure-torino/events/292530973/",
+            "imageUrl": "https://secure.meetupstatic.com/photos/event/b/f/6/5/600_511668997.jpeg",
+            "excerpt": "Torna anche quest'anno il Global Azure Torino 2023 - IN PRESENZA , l'evento mondiale dedicato a tutti gli utenti che desiderano conoscere o approfondire la conoscenza di Azure per lo sviluppo e l'amministrazione di soluzioni applicative nel mondo Cloud! Quest'anno avremo tre percorsi paralleli…",
+            "venue": {
+                "name": "Fondazione ITS per l'ICT Piemonte",
+                "address": "Via Jacopo Durandi, 10",
+                "city": "Torino"
+            },
+            "active": true
+        },
+        {
+            "id": "meetup-284672283",
+            "title": "Global Azure Torino 2022",
+            "dateTime": "2022-05-07T07:30:00.000Z",
+            "endTime": "2022-05-07T16:00:00.000Z",
+            "timezone": "Europe/Rome",
+            "isOnline": false,
+            "eventUrl": "https://www.meetup.com/it-IT/meetup-microsoft-azure-torino/events/284672283/",
+            "imageUrl": "https://secure.meetupstatic.com/photos/event/d/1/5/1/600_502733585.jpeg",
+            "excerpt": "Torna anche quest'anno il Global Azure Torino 2022 - IN PRESENZA , l'evento mondiale dedicato a tutti gli utenti che desiderano conoscere o approfondire la conoscenza di Azure per lo sviluppo e l'amministrazione di soluzioni applicative nel mondo Cloud! Quest'anno avremo tre percorsi paralleli…",
+            "venue": {
+                "name": "Fondazione ITS per l'ICT Piemonte",
+                "address": "Via Jacopo Durandi, 10",
+                "city": "Torino"
+            },
+            "active": true
+        },
+        {
+            "id": "meetup-281968680",
+            "title": "Azure Synapse Analytics",
+            "dateTime": "2021-11-19T17:30:00.000Z",
+            "endTime": "2021-11-19T19:00:00.000Z",
+            "timezone": "Europe/Rome",
+            "isOnline": false,
+            "eventUrl": "https://www.meetup.com/it-IT/meetup-microsoft-azure-torino/events/281968680/",
+            "imageUrl": "https://secure.meetupstatic.com/photos/event/1/a/7/6/600_500106774.jpeg",
+            "excerpt": "Non abbiamo un titolo cool per questa serata, ma siamo sicuri che insieme ci tireremo fuori qualcosa di buono, parlando di strategia e governance sui dati, per poi approdare su qualche tecnologia in continua evoluzione come Azure Data Lake Storage, Synapse, Data Factory e discutere insieme di come…",
+            "venue": {
+                "address": "Via Jacopo Durandi, 10",
+                "city": "Torino"
+            },
+            "active": true
+        },
+        {
+            "id": "meetup-276870663",
+            "title": "It's not Global Azure ... but I like it - 2021 Edition!",
+            "dateTime": "2021-04-15T07:30:00.000Z",
+            "endTime": "2021-04-15T16:30:00.000Z",
+            "timezone": "Europe/Rome",
+            "isOnline": true,
+            "eventUrl": "https://www.meetup.com/it-IT/meetup-microsoft-azure-torino/events/276870663/",
+            "imageUrl": "https://secure.meetupstatic.com/photos/event/4/4/1/7/600_495137431.jpeg",
+            "excerpt": "\"It's not Global Azure ... but I like it - 2021 Edition!\" Carissimi, rieccoci qua dopo un'annata veramente complessa. Non potevamo lasciar passare il nostro ormai consueto appuntamento senza far sentire la nostra presenza e l'affetto di tutta la community Stiamo quindi organizzando, anche se…",
+            "active": true
+        },
+        {
+            "id": "meetup-270063113",
+            "title": "It's not Global Azure ... but I like it!",
+            "dateTime": "2020-04-23T12:30:00.000Z",
+            "endTime": "2020-04-23T16:30:00.000Z",
+            "timezone": "Europe/Rome",
+            "isOnline": true,
+            "eventUrl": "https://www.meetup.com/it-IT/meetup-microsoft-azure-torino/events/270063113/",
+            "imageUrl": "https://secure.meetupstatic.com/photos/event/d/0/1/d/600_490133277.jpeg",
+            "excerpt": "\"It's not Global Azure ... but I like it!\" Si avvicina il weekend che avrebbe dovuto ospitare il Global Azure 2020 ma, come ben sapete, speriamo di poterlo ospitare in autunno, dal vivo: un evento che molti di voi aspettano e apprezzano. Ma non potevamo lasciar passare queste giornate senza far…",
+            "active": true
+        },
+        {
+            "id": "meetup-266943694",
+            "title": "Notification Hubs - One Hub to notify them all",
+            "dateTime": "2020-01-21T18:00:00.000Z",
+            "endTime": "2020-01-21T20:00:00.000Z",
+            "timezone": "Europe/Rome",
+            "isOnline": false,
+            "eventUrl": "https://www.meetup.com/it-IT/meetup-microsoft-azure-torino/events/266943694/",
+            "imageUrl": "https://secure.meetupstatic.com/photos/event/e/0/c/c/600_487137548.jpeg",
+            "excerpt": "Ecco, puntuale, l'incontro mensile del nostro Azure Meetup torinese! Parleremo di come di inviare le notifiche push a più applicativi su piattaforme diverse. Nel contesto attuale abbiamo la necessità di doverci interfacciare con diversi PNS (Platform Notification Service) mentre, come vedremo, il…",
+            "venue": {
+                "name": "Welol Next",
+                "address": "Via Vincenzo Gioberti, 18",
+                "city": "Torino"
+            },
+            "active": true
+        },
+        {
+            "id": "meetup-264984964",
+            "title": "Azure SignalR: High-Frequency + Real-Time + Azure",
+            "dateTime": "2019-11-19T18:00:00.000Z",
+            "endTime": "2019-11-19T19:30:00.000Z",
+            "timezone": "Europe/Rome",
+            "isOnline": false,
+            "eventUrl": "https://www.meetup.com/it-IT/meetup-microsoft-azure-torino/events/264984964/",
+            "imageUrl": "https://secure.meetupstatic.com/photos/event/9/8/1/e/600_485018942.jpeg",
+            "excerpt": "Nella sessione parleremo di SignalR, tecnologia creata da David Fowler che fa parte del panorama di applicazioni per le comunicazioni real-time server/client (come Socket.IO di Node.js per intenderci). Vedremo come, fin da ASP.NET, SignalR ha consentito di creare applicazioni in real-time con un…",
+            "venue": {
+                "name": "Welol Next",
+                "address": "Via Vincenzo Gioberti, 18",
+                "city": "Torino"
+            },
+            "active": true
+        },
+        {
+            "id": "meetup-265086856",
+            "title": "Azure DevOps: consegna spesso, consegna meglio",
+            "dateTime": "2019-10-15T17:00:00.000Z",
+            "endTime": "2019-10-15T18:30:00.000Z",
+            "timezone": "Europe/Rome",
+            "isOnline": false,
+            "eventUrl": "https://www.meetup.com/it-IT/meetup-microsoft-azure-torino/events/265086856/",
+            "imageUrl": "https://secure.meetupstatic.com/photos/event/b/6/8/6/600_485146726.jpeg",
+            "excerpt": "Nella sessione parleremo di Azure DevOps, la piattaforma di Microsoft che permette di avere un insieme di tool per la gestione dei progetti, con particolare attenzione alla metodologia Agile. Non solo repository e boards, ma anche pipeline di CI/CD: esploreremo il mondo della Continuous…",
+            "venue": {
+                "address": "Via Vincenzo Gioberti, 18",
+                "city": "Torino"
+            },
+            "active": true
+        },
+        {
+            "id": "meetup-264365245",
+            "title": ".NET Core Performance & Security",
+            "dateTime": "2019-09-17T17:00:00.000Z",
+            "endTime": "2019-09-17T18:30:00.000Z",
+            "timezone": "Europe/Rome",
+            "isOnline": false,
+            "eventUrl": "https://www.meetup.com/it-IT/meetup-microsoft-azure-torino/events/264365245/",
+            "imageUrl": "https://secure.meetupstatic.com/photos/event/8/a/2/9/600_484415369.jpeg",
+            "excerpt": "Come progettare applicazioni .NET Core performanti e sicure e vivere felici? Vieni a scoprirlo al meetup AzureTorino il 17 settembre. Scoprirai come implementare soluzioni affidabili by design grazie a AspNetCore EFCore Azure ...",
+            "venue": {
+                "name": "Welol Next",
+                "address": "Via Vincenzo Gioberti, 18",
+                "city": "Torino"
+            },
+            "active": true
+        },
+        {
+            "id": "meetup-261350682",
+            "title": "Progettare sistemi serverless tramite Azure senza piangere (troppo)",
+            "dateTime": "2019-05-28T17:00:00.000Z",
+            "endTime": "2019-05-28T19:00:00.000Z",
+            "timezone": "Europe/Rome",
+            "isOnline": false,
+            "eventUrl": "https://www.meetup.com/it-IT/meetup-microsoft-azure-torino/events/261350682/",
+            "imageUrl": "https://secure.meetupstatic.com/photos/event/d/2/8/1/600_481193889.jpeg",
+            "excerpt": "Il mondo delle applicazioni serverless è affascinante, ma può anche essere ricco di insidie. Avere una architettura efficiente è spesso il risultato di molte prove, errori e lezioni imparate sul campo. Conoscere alcune di queste insidie può aiutarci a costruire applicazioni più solide, scalabili e…",
+            "venue": {
+                "address": "Via Vincenzo Gioberti, 18",
+                "city": "Torino"
+            },
+            "active": true
+        },
+        {
+            "id": "meetup-260664316",
+            "title": "Global Azure Bootcamp 2019 Torino",
+            "dateTime": "2019-04-27T07:30:00.000Z",
+            "endTime": "2019-04-27T16:00:00.000Z",
+            "timezone": "Europe/Rome",
+            "isOnline": false,
+            "eventUrl": "https://www.meetup.com/it-IT/meetup-microsoft-azure-torino/events/260664316/",
+            "imageUrl": "https://secure.meetupstatic.com/photos/event/c/7/8/600_480483192.jpeg",
+            "excerpt": "Torna anche quest'anno il Global Azure Bootcamp 2019, l'evento mondiale dedicato a tutti gli utenti che desiderano conoscere o approfondire la conoscenza di Azure per lo sviluppo e l'amministrazione di soluzioni applicative nel Cloud! Quest'anno stiamo cercando di organizzare tre percorsi…",
+            "venue": {
+                "name": "Fondazione ITS per l'ICT Piemonte",
+                "address": "Via Jacopo Durandi, 10",
+                "city": "Torino"
+            },
+            "active": true
+        },
+        {
+            "id": "meetup-258897350",
+            "title": "An evening with: AZURE Kubernetes Service",
+            "dateTime": "2019-02-27T18:00:00.000Z",
+            "endTime": "2019-02-27T19:30:00.000Z",
+            "timezone": "Europe/Rome",
+            "isOnline": false,
+            "eventUrl": "https://www.meetup.com/it-IT/meetup-microsoft-azure-torino/events/258897350/",
+            "imageUrl": "https://secure.meetupstatic.com/photos/event/b/d/b/d/600_478668573.jpeg",
+            "excerpt": "L'obiettivo di questa sessione è l'approfondimento, nell'ambito della containerizzazione su piattaforma cloud Azure, di Kubernetes, uno strumento open source di orchestrazione e gestione di container. Speaker per l'occasione Alessandro Surra, Cloud Architect. Perchè usare Kubernetes? - Gestire…",
+            "venue": {
+                "name": "Welol Next",
+                "address": "Via Vincenzo Gioberti, 18",
+                "city": "Torino"
+            },
+            "active": true
+        },
+        {
+            "id": "meetup-257991719",
+            "title": "An evening with: AZURE Cognitive Service on Container",
+            "dateTime": "2019-01-29T17:15:00.000Z",
+            "endTime": "2019-01-29T18:45:00.000Z",
+            "timezone": "Europe/Rome",
+            "isOnline": false,
+            "eventUrl": "https://www.meetup.com/it-IT/meetup-microsoft-azure-torino/events/257991719/",
+            "imageUrl": "https://secure.meetupstatic.com/photos/event/4/3/9/4/600_477737300.jpeg",
+            "excerpt": "Buon 2019 a tutti! Per ripartire alla grande, continuiamo la stagione degli incontri sul mondo Azure con una serata dedicata a Azure Cognitive Service on Container, con un presentatore d'eccezione, l'Azure MVP Andrea Tosato. L'obiettivo di questa sessione è l'approfondimento dello strumento per…",
+            "venue": {
+                "name": "LINKS Foundation",
+                "address": "Via Pier Carlo Boggio, 61",
+                "city": "Torino"
+            },
+            "active": true
+        },
+        {
+            "id": "meetup-256837805",
+            "title": "An evening with AZURE Machine Learning Studio",
+            "dateTime": "2018-12-13T18:00:00.000Z",
+            "endTime": "2018-12-13T20:00:00.000Z",
+            "timezone": "Europe/Rome",
+            "isOnline": false,
+            "eventUrl": "https://www.meetup.com/it-IT/meetup-microsoft-azure-torino/events/256837805/",
+            "imageUrl": "https://secure.meetupstatic.com/photos/event/5/6/1/3/600_476722035.jpeg",
+            "excerpt": "Bentornati a tutti! Iniziamo la stagione degli incontri sul mondo Azure con una serata di approfondimento su Azure Machine Learning Studio, tra un aperitivo e la presentazione dal vivo del Data Scientist Ariel Cedola. L'obiettivo di questa sessione è la divulgazione su uno dei tanti strumenti a…",
+            "venue": {
+                "name": "Welol Next",
+                "address": "Via Vincenzo Gioberti, 18, Citofono: Welol Next",
+                "city": "Torino"
+            },
+            "active": true
+        },
+        {
+            "id": "meetup-248661986",
+            "title": "Azure Bootcamp Torino 2018",
+            "dateTime": "2018-04-21T07:30:00.000Z",
+            "endTime": "2018-04-21T16:00:00.000Z",
+            "timezone": "Europe/Rome",
+            "isOnline": false,
+            "eventUrl": "https://www.meetup.com/it-IT/meetup-microsoft-azure-torino/events/248661986/",
+            "imageUrl": "https://secure.meetupstatic.com/photos/event/e/7/8/f/600_469199279.jpeg",
+            "excerpt": "Torna il Global Azure Bootcamp 2018 nel formato più interessante di sempre. L’evento si svolgerà il prossimo 21 aprile 2018 in oltre 200 località nel mondo. Are you ready? http://azurebootcamptorino.welol.it/ Iscriviti al più presto: i posti sono limitati…",
+            "venue": {
+                "name": "Fondazione ITS ICT - Regione Piemonte",
+                "address": "Via Jacopo Durandi 10",
+                "city": "Turin"
+            },
+            "active": true
+        },
+        {
+            "id": "meetup-248662133",
+            "title": "Presentazione Azure Bootcamp 2018",
+            "dateTime": "2018-04-05T17:00:00.000Z",
+            "endTime": "2018-04-05T18:30:00.000Z",
+            "timezone": "Europe/Rome",
+            "isOnline": false,
+            "eventUrl": "https://www.meetup.com/it-IT/meetup-microsoft-azure-torino/events/248662133/",
+            "imageUrl": "https://secure.meetupstatic.com/photos/event/e/7/f/d/600_469199389.jpeg",
+            "excerpt": "Buongiorno a tutti. In vista dell'evento del prossimo 21 aprile 2018 (Azure Bootcamp Torino 2018), abbiamo pensato di incontrarci nella location scelta per l'occasione in modo da presentare a tutti questa iniziativa e raccogliere contributi di chiunque voglia partecipare attivamente a questa…",
+            "venue": {
+                "name": "Piazza dei mestieri",
+                "address": "Via Durandi 10",
+                "city": "Torino"
+            },
+            "active": true
+        }
+    ]
 }
