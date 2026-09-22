@@ -120,6 +120,39 @@ nav a {
 nav a:hover { color: var(--azure-blue); }
 
 /* =========================================
+   PAGINE INTERNE (senza foto in cima)
+   La home accoglie con una foto alta il 65% dello schermo; /eventi/ no: ci si
+   arriva per cercare qualcosa, e mezzo schermo di decorazione sarebbe da
+   scavalcare ogni volta. Qui la testata e opaca dall'inizio, e le misure sono
+   quelle che in home scrive main.js scorrendo — li stanno in JavaScript perche
+   cambiano, qui sono ferme.
+   ========================================= */
+.page-inner #main-header {
+    background-color: var(--bg-white);
+    border-bottom-color: var(--border-color);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.page-inner .nav-container { padding: 0.7rem 2rem; }
+
+.page-inner .logo-img {
+    height: 48px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.page-inner .logo,
+.page-inner nav a { text-shadow: none; }
+
+/* La voce di menu della pagina in cui si e gia. */
+nav a[aria-current="page"] { color: var(--azure-blue); }
+
+/* Niente hero da scavalcare: solo lo spazio della testata fissa. */
+.page-inner main {
+    margin-top: 0;
+    padding-top: 5.5rem;
+}
+
+/* =========================================
    MAIN CONTENT
    ========================================= */
 main {
@@ -259,6 +292,10 @@ section:nth-child(even) { background-color: var(--bg-white); }
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
         border-bottom-color: var(--border-color) !important;
     }
+
+    .page-inner .nav-container { padding: 0.6rem 1rem; }
+    .page-inner .logo-img { height: 40px; }
+    .page-inner main { padding-top: 4.2rem; }
 
     section { padding: 3rem 1rem; }
 

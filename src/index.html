@@ -129,7 +129,7 @@
             <div class="section-header">
                 <div>
                     <h2 class="section-title">Calendario Eventi</h2>
-                    <p class="section-subtitle">Iscriviti ai prossimi incontri o rivedi le registrazioni passate</p>
+                    <p class="section-subtitle">I prossimi incontri e gli ultimi appuntamenti della community.</p>
                 </div>
 
                 <div class="event-actions">
@@ -156,6 +156,19 @@
                 <div class="swiper-button-prev swiper-button-prev-events"></div>
                 <div class="swiper-button-next swiper-button-next-events"></div>
             </div>
+
+            <!--
+                In home si vedono i cinque eventi piu rilevanti; l'archivio
+                completo, con il filtro per anno, sta in /eventi/. Il link e
+                scritto qui e non aggiunto dal JavaScript: e una pagina vera,
+                deve esistere anche per i crawler e per chi naviga senza script.
+            -->
+            <p class="events-all">
+                <a href="/eventi/" class="btn-all-events">
+                    Vedi tutti gli eventi <span class="events-total" data-events-total hidden></span>
+                    <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                </a>
+            </p>
         </section>
 
         <!-- =========================================

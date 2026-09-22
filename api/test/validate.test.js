@@ -206,7 +206,7 @@ test('sponsor: il documento seed del repo e valido cosi com e', async () => {
 
     const result = validateSponsors(seed);
     assert.equal(result.ok, true, JSON.stringify(result.issues));
-    assert.equal(result.value.sponsors.length, 6);
+    assert.equal(result.value.sponsors.length, seed.sponsors.length);
 });
 
 test('sponsor: uno sponsor completo passa e torna ripulito', () => {
@@ -231,7 +231,7 @@ test('sponsor: il logo e obbligatorio, senza la card sarebbe vuota', () => {
 });
 
 test('sponsor: il tier deve stare nell enum', () => {
-    const rifiutato = validateSponsors(sponsorDoc(sponsor({ tier: 'platinum' })));
+    const rifiutato = validateSponsors(sponsorDoc(sponsor({ tier: 'titanium' })));
     assert.equal(rifiutato.ok, false);
     assert.deepEqual(paths(rifiutato), ['sponsors[0].tier']);
 

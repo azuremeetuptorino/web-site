@@ -25,6 +25,7 @@ Nessun build step. `src/` viene caricato su Azure così com'è.
 ```
 src/                      quello che finisce su Azure, verbatim
   index.html
+  eventi/index.html            l'archivio completo degli eventi
   403.html  404.html
   staticwebapp.config.json    route, header di sicurezza, ruoli
   assets/css   assets/js   assets/img   assets/vendor
@@ -114,6 +115,14 @@ L'identificativo viene dalla piattaforma (`luma-2ffi3qjx`, `meetup-316647090`):
 reimportando lo stesso link la scheda esistente si **aggiorna** invece di
 duplicarsi, che e quello che serve quando cambia l'orario.
 
+In **home** ne compaiono **cinque**: i prossimi in ordine di data e, se il
+futuro non ne riempie cinque, gli ultimi fatti. Sotto c'e un bottone *Vedi tutti
+gli eventi* che porta a **`/eventi/`**, l'archivio completo: griglia, segmentato
+`Prossimi | Passati` e chip per anno generate dai dati, con lo stato nella query
+string (`/eventi/?stato=passati&anno=2025`) perche un anno dell'archivio si
+possa mandare a qualcuno. Il calendario di una community che dura cresce di un
+evento al mese, e un carosello lungo cinquanta card non si guarda: si trascina.
+
 La function scarica **solo** da `luma.com`, `lu.ma` e `meetup.com`, redirect
 compresi, con timeout e tetto ai byte letti: una function che scarica una URL
 scelta dall'utente e altrimenti un proxy verso qualunque indirizzo. Per
@@ -139,8 +148,8 @@ conserva i testi attuali e il JavaScript **sovrascrive solo ciò che riceve**.
 La pagina ha senso anche senza JavaScript, i crawler vedono contenuto vero, e un
 campo svuotato dall'admin non svuota il sito — lo riporta al testo di partenza.
 
-Per gli sponsor, la **fascia** (`gold`, `silver`, `bronze`, `partner`, `venue`,
-`media`) è l'unico dato che governa dimensione del logo, raggruppamento e ordine
+Per gli sponsor, la **fascia** (`diamond`, `platinum`, `gold`, `silver`,
+`bronze`, `partner`) è l'unico dato che governa dimensione del logo, raggruppamento e ordine
 in pagina. È deliberato: aggiungere uno sponsor non deve mai voler dire toccare
 il CSS.
 
@@ -161,7 +170,7 @@ risorse Azure vedi [docs/deploy.md](docs/deploy.md).
 | P4 | CRUD sponsor e upload loghi | fatto (risorse Azure da creare) |
 | P4b | Contenuti della home editabili (foto, "Chi siamo", statistiche, footer) | fatto (risorse Azure da creare) |
 | P5 | Eventi gestiti dall'admin, importazione dal link Luma/Meetup | fatto (risorse Azure da creare) |
-| P5b | Filtro temporale eventi `Prossimi \| Passati` | da fare |
+| P5b | Cinque eventi in home e archivio filtrabile su `/eventi/` | fatto |
 | P6 | Telemetria, SEO, accessibilità | da fare |
 
 ## Riprendere il lavoro

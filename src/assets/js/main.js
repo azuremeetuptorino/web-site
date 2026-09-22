@@ -3,10 +3,11 @@ import { renderDataError } from './dom.js';
 import { renderTeam } from './render-team.js';
 import { renderSponsors } from './render-sponsors.js';
 import { renderSite } from './render-site.js';
-import { renderEvents } from './render-events.js';
+import { renderEvents, visibleEvents } from './render-events.js';
 import { initTeamSwiper, initEventsSwiper } from './swiper-init.js';
 import { MEETUP_GROUP_URL } from './config.js';
 import { initNav } from './nav.js';
+import { initEmailCopy } from './email-copy.js';
 
 /* ==========================================================
    1. HERO PARALLAX & NAVBAR
@@ -68,23 +69,39 @@ initNav();
 
 /* ==========================================================
    2. COPIA RAPIDA EMAIL
-   Era un onclick inline: la CSP con script-src 'self' lo blocca.
    ========================================================== */
-const emailBar = document.getElementById('email-copy-bar');
+initEmailCopy();
 
-if (emailBar) {
-    emailBar.addEventListener('click', async () => {
-        const email = document.getElementById('email-text')?.textContent?.trim();
-        if (!email) return;
-        try {
-            await navigator.clipboard.writeText(email);
-        } catch {
-            return; // clipboard negata: si lascia la barra invariata
-        }
-        const originalHtml = emailBar.innerHTML;
-        emailBar.innerHTML = '<i class="bi bi-check-lg copy-ok"></i> <span>Copiato negli appunti!</span>';
-        setTimeout(() => { emailBar.innerHTML = originalHtml; }, 2000);
-    });
+/* ==========================================================
+   2b. EVENTI IN HOME
+   ========================================================== */
+
+/**
+ * In home ne stanno cinque, il resto sta in /eventi/.
+ *
+ * Il calendario di una community che dura cresce di un evento al mese: prima o
+ * poi il carosello diventa una fila lunghissima in cui bisogna trascinare otto
+ * volte per arrivare al 2023, senza vederne mai l'insieme. Cinque card
+ * rispondono alla domanda che porta chi arriva in home ("quando e il
+ * prossimo?"), e il bottone porta a una pagina dove l'archivio si filtra
+ * invece di scorrerlo.
+ *
+ * Sono i primi cinque dell'ordine di `visibleEvents`: i prossimi in ordine di
+ * data e, se il futuro non ne riempie cinque, gli ultimi fatti.
+ */
+const HOME_EVENTS = 5;
+
+function renderHomeEvents(track, payload) {
+    // Il totale sul bottone dice quanto vale il click: l'archivio e il
+    // capitale sociale della community, non un ripostiglio.
+    const total = visibleEvents(payload).length;
+    const badge = document.querySelector('[data-events-total]');
+    if (badge && total > 0) {
+        badge.textContent = `(${total})`;
+        badge.hidden = false;
+    }
+
+    return renderEvents(track, payload, Date.now(), { limit: HOME_EVENTS });
 }
 
 /* ==========================================================
@@ -140,7 +157,7 @@ await Promise.allSettled([
         collection: 'events',
         trackId: 'events-track',
         sectionId: 'events-carousel',
-        render: renderEvents,
+        render: renderHomeEvents,
         onSuccess: () => initEventsSwiper(),
         errorMessage: 'Non riusciamo a caricare il calendario in questo momento.',
         errorLink: { url: MEETUP_GROUP_URL, label: 'Vedi gli eventi su Meetup' }

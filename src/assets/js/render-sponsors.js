@@ -10,12 +10,12 @@ import { PLACEHOLDER_LOGO } from './config.js';
  * Tenuta allineata a TIERS di api/src/lib/validate.js.
  */
 export const TIERS = [
+    { key: 'diamond', label: 'Diamond' },
+    { key: 'platinum', label: 'Platinum' },
     { key: 'gold', label: 'Gold' },
     { key: 'silver', label: 'Silver' },
     { key: 'bronze', label: 'Bronze' },
-    { key: 'partner', label: 'Partner' },
-    { key: 'venue', label: 'Location' },
-    { key: 'media', label: 'Media partner' }
+    { key: 'partner', label: 'Partner' }
 ];
 
 /** Peso per l'ordinamento: la posizione nella lista qui sopra. */

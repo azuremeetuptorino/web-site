@@ -99,7 +99,7 @@ test('la validazione applicata e quella degli sponsor', async () => {
             method: 'PUT',
             // `tier` inventato e `logoUrl` assente: errori che solo il
             // validatore degli sponsor sa riconoscere.
-            body: { data: { version: 1, sponsors: [{ id: 'acme', name: 'ACME', tier: 'platinum' }] } }
+            body: { data: { version: 1, sponsors: [{ id: 'acme', name: 'ACME', tier: 'titanium' }] } }
         }),
         contextSpy(),
         store

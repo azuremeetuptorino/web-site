@@ -1,6 +1,6 @@
 # Stato dei lavori
 
-Aggiornato al **21 settembre 2026**. Documento di ripresa: serve a ricominciare
+Aggiornato al **22 settembre 2026**. Documento di ripresa: serve a ricominciare
 da dove si è lasciato senza rileggere tutto.
 
 Piano completo: [docs/piano.md](piano.md).
@@ -20,7 +20,7 @@ Branch **`feat/azure-static-web-apps`**, mai pushato.
 | P4 | CRUD sponsor e upload loghi | fatto, verificato in locale contro Azurite |
 | P4b | Contenuti della home editabili | fatto, verificato in locale contro Azurite |
 | P5 | Eventi dall'admin, importazione dal link Luma/Meetup | fatto, API verificate contro Azurite e le pagine vere |
-| P5b | Filtro temporale eventi `Prossimi \| Passati` | da fare, è il prossimo |
+| P5b | Cinque eventi in home, archivio filtrabile su `/eventi/` | fatto, **guardato in un browser** |
 | P6 | Telemetria, SEO, accessibilità | da fare |
 
 ## Cosa è entrato con la P3
@@ -194,6 +194,60 @@ Verificato contro le pagine vere (`luma.com/2ffi3qjx` e l'evento Meetup
 con ETag, `PUT` che ripubblica, import reale da Luma → 200 con la scheda, host
 esterno → 400 con la lista degli host ammessi.
 
+## Cosa è entrato con la P5b
+
+La home mostrava tutti gli eventi in un carosello. Con un evento al mese
+quell'elenco diventa una fila che si trascina, senza mai vederne l'insieme:
+adesso in home ce ne sono **cinque** e il resto sta su **`/eventi/`**.
+
+- `src/eventi/index.html` — pagina vera, servita da SWA senza nessuna route
+  nuova (`/eventi` → 301 → `/eventi/`, ci pensa `trailingSlash: auto`). Testata
+  e footer sono quelli della home e si popolano dallo stesso `site.json`;
+  `renderSite` ha preso un'opzione `title: false`, perché qui il titolo della
+  scheda è quello della pagina e non `brand.name | tagline`.
+- `render-events.js` è diventato **una card sola in due involucri**: la slide
+  del carosello e la cella della griglia, che in più mostra la descrizione.
+  `renderEvents(..., { limit: 5 })` è tutto quello che distingue la home.
+- `events-filter.js` — la logica pura: `splitEvents`, `yearsOf`, `selectEvents`,
+  `readFilter`, `filterToSearch`. Sta a parte per poterla provare senza browser,
+  ed è il file da leggere per sapere cosa si vede quando.
+- `events-page.js` — il DOM della pagina: segmentato `Prossimi | Passati` come
+  `role="tablist"` con le frecce, chip per anno come `aria-pressed`, "Mostra
+  altri" 12 alla volta, stato nella **query string**
+  (`?stato=passati&anno=2025`) via `replaceState`.
+- `events.css` + `.page-inner` in `layout.css`: le pagine interne non hanno la
+  foto alta 65% dello schermo, e la testata è opaca dall'inizio con le misure
+  ferme (in home le scrive `main.js` mentre si scorre).
+- `email-copy.js` — la barra dell'email era dentro `main.js`, ma il footer c'è
+  su tutte le pagine e una barra che non copia niente è peggio di una assente.
+- 188 test: 21 nuovi in `api/test/events-view.test.js`, che coprono i cinque
+  della home, l'ordine, l'escaping della card, gli anni e il filtro.
+
+### Tre cose trovate guardando, non leggendo
+
+Il browser headless (vedi *Come guardare*) è servito di nuovo.
+
+1. **Le card del carosello erano di altezze diverse.** Swiper mette le slide a
+   `height: 100%`, che dentro un contenitore di altezza automatica significa
+   "quanto il tuo contenuto": la fila finiva sfrangiata, e il luogo in fondo
+   alla card non si allineava. `.swiper-events .swiper-slide { height: auto }`
+   e il flex le stira tutte quanto la più alta. Era così **da sempre**, si
+   notava poco perché la card aveva solo il titolo.
+2. **`text-transform: capitalize` scriveva "Ven 16 Ott 2026".** In italiano il
+   mese è minuscolo. Ora la maiuscola è solo la prima, con `::first-letter`.
+3. **`hidden` non è garantito.** Basta una regola del foglio che dia un
+   `display` a un elemento perché l'attributo smetta di funzionare: lo stile
+   dell'autore batte quello del browser. Aggiunta `[hidden] { display: none
+   !important }` in `base.css`, che copre anche i casi futuri.
+
+Verificato nel browser, a 1280 e a 390 px: cinque card in home con le altezze
+allineate e il bottone con il totale; il click porta su `/eventi/`; segmentato,
+chip e "Mostra altri" (provati con 25 eventi finti su quattro anni, iniettati
+con `page.route`); link profondo `?stato=passati&anno=2023` che riapre la
+pagina dov'era; nessun evento futuro → messaggio con il link a Meetup; blob che
+risponde 500 → messaggio e pagina ancora in piedi; nessuno scorrimento
+orizzontale su telefono; console pulita.
+
 ## Passata sul mobile
 
 `layout.css` non aveva **nessuna** media query: il sito era disegnato a 1280 px
@@ -345,11 +399,15 @@ Errori trovati testando, non in astratto.
    funziona: **servono i nomi, le foto delle persone e i loghi degli sponsor**.
    Da lì in poi si fa tutto da `/admin`, senza toccare il repo.
 
-3. **Gli editor sponsor, "Home e footer" ed Eventi non sono mai stati aperti in
-   un browser.** Quello del team sì, upload compreso. Per Eventi il cablaggio
-   DOM è stato controllato con lo stesso script (ogni `data-field` e
-   `data-preview` usato dal JavaScript esiste nel template e viceversa) e le
-   API con curl, ma la barra di importazione e le `datetime-local` vanno viste. Il lato server è verificato
+3. **Della `/admin` resta da guardare la barra di importazione.** Il log
+   dell'emulatore mostra la pagina aperta in un browser con tutti e quattro gli
+   editor che caricano i loro dati (`/api/me`, team, sponsor, eventi, site), e
+   gli sponsor sono stati modificati davvero. Quello che nessuno ha ancora
+   provato in una pagina vera è **incollare un link e premere Importa**, con le
+   `datetime-local` che si riempiono. Il cablaggio DOM è controllato da uno
+   script (ogni `data-field` e `data-preview` usato dal JavaScript esiste nel
+   template e viceversa) e le API con curl. Il **sito pubblico**, eventi
+   compresi, è stato guardato in un browser. Il lato server è verificato
    con curl (200 con ETag, 409, 400 con le issues) e il cablaggio DOM a
    tavolino — uno script confronta ogni `id`, `data-field`, `data-list` e
    `data-add` usato dal JavaScript con quello che c'è nel markup — ma le pagine
@@ -392,19 +450,22 @@ username qualsiasi e nel campo dei ruoli scrivi `admin`, uno per riga.
 > L'emulatore rilegge `staticwebapp.config.json` **solo all'avvio**: dopo averlo
 > modificato riavvia `npm start`, altrimenti stai testando la vecchia config.
 
-## Prossimo passo: P5b
+## Prossimo passo: P6
 
-Il nuovo rendering degli eventi, disegnato in [docs/piano.md](piano.md), sezione
-*Filtro temporale*: segmentato `Prossimi | Passati`, griglia per l'archivio con
-le chip per anno, via il carosello (con due eventi futuri mostra una track
-mezza vuota e frecce morte). I dati ci sono già tutti: `dateTime`, `venue`,
-`isOnline`, `eventUrl`, `excerpt`. Prima, però, **aprire la scheda Eventi in un
-browser** (bloccante 3): importare il link Luma vero, controllare le date nella
-`datetime-local`, salvare, vedere la card sul sito.
+Restano due cose piccole prima delle fasi vere:
 
-Da tenere a mente per la P5b: `render-events.js` esporta già `isPast`,
-`sortEvents`, `formatWhen` e `formatWhere`, pensati per essere riusati dal
-nuovo layout.
+- **Importare un evento dalla `/admin` in un browser** (bloccante 3): incollare
+  il link Luma, controllare le date, salvare, vedere la card sul sito.
+- **Le risorse Azure** (bloccante 1): finché non esistono, tutto quello che è
+  scritto qui sopra è verificato solo contro Azurite.
+
+Poi la P6: Application Insights, `robots.txt`, `sitemap.xml` (ora ci sono due
+URL da dichiarare, `/` e `/eventi/`), tag Open Graph, passata Lighthouse e axe.
+
+Sulla SEO degli eventi la situazione è cambiata a metà: `/eventi/` **è un
+indirizzo vero**, condivisibile e indicizzabile, ma le card le disegna ancora il
+JavaScript. Lo snapshot statico generato al salvataggio resta l'idea giusta, e
+ora ha una pagina dove atterrare invece di doverla inventare.
 
 ## Cose lasciate indietro di proposito
 
@@ -416,10 +477,14 @@ nuovo layout.
   Luma o Meetup (`img-src https:` lo ammette). Se una piattaforma cambiasse le
   URL, la card ripiega sul segnaposto; il bottone **Carica** c'è già per
   metterci un file nostro.
-- **SEO degli eventi**: spostandoli su rendering client-side sono diventati
+- **SEO degli eventi**: le card le disegna il JavaScript, quindi restano
   invisibili ai crawler senza JS e alle anteprime dei link su LinkedIn e
-  WhatsApp. Recuperabile in P6 con uno snapshot statico generato dal job di
-  refresh.
+  WhatsApp. Con la P5b almeno l'archivio ha un indirizzo suo (`/eventi/`).
+  Recuperabile in P6 con uno snapshot statico scritto al salvataggio.
+- **Ricerca testuale nell'archivio**: rimandata a quando gli eventi passeranno
+  la quarantina. Prima di allora si trova prima guardando che scrivendo.
+- **Una card grande per l'evento unico in arrivo**: la griglia con una card sola
+  si legge già bene, e sarebbe un secondo layout da mantenere per un caso solo.
 - **I 6 sponsor sono finti** (CloudNova, TechFlow, …), come i loghi. Adesso
   l'editor c'è: vanno sostituiti con quelli veri, e **servono i loghi**.
 - **Gli 11 membri del team sono placeholder** con foto Unsplash, tranne forse

@@ -1,0 +1,178 @@
+/* =========================================
+   ARCHIVIO EVENTI — /eventi/
+   Caricato solo da quella pagina: la home non ha ne griglia ne filtri.
+   ========================================= */
+
+/* ---------- Testata della pagina ---------- */
+.archive-header {
+    max-width: 760px;
+    margin-bottom: 2rem;
+}
+
+.archive-header .section-title {
+    font-size: 1.9rem;
+    margin-bottom: 0.2rem;
+}
+
+.archive-back {
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+    margin-bottom: 0.9rem;
+}
+
+.archive-back a { display: inline-flex; align-items: center; gap: 6px; }
+.archive-back a:hover { color: var(--azure-blue); }
+
+/* ---------- Comandi ---------- */
+.archive-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.8rem;
+}
+
+.segmented {
+    display: inline-flex;
+    gap: 4px;
+    padding: 4px;
+    background: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    box-shadow: var(--shadow-sm);
+}
+
+.segmented-btn {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    padding: 0.5rem 1.4rem;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.segmented-btn:hover { color: var(--azure-blue); }
+
+.segmented-btn[aria-selected="true"] {
+    background: var(--azure-blue);
+    color: var(--bg-white);
+}
+
+.segmented-btn:focus-visible {
+    outline: 2px solid var(--azure-blue);
+    outline-offset: 2px;
+}
+
+.year-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.chip {
+    appearance: none;
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    padding: 0.35rem 0.9rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.chip:hover { border-color: var(--azure-blue); color: var(--azure-blue); }
+
+.chip[aria-pressed="true"] {
+    background: var(--azure-light);
+    border-color: var(--azure-blue);
+    color: var(--azure-accent);
+}
+
+.chip:focus-visible {
+    outline: 2px solid var(--azure-blue);
+    outline-offset: 2px;
+}
+
+/* ---------- Griglia ---------- */
+/*
+   Le colonne le decide lo spazio, non una media query: l'archivio deve stare
+   bene a 375 px come a 1920, e la card ha una larghezza minima sotto la quale
+   il titolo si spezza male.
+*/
+.events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1.5rem;
+}
+
+/* Il pannello e il bersaglio del focus dopo "Mostra altri": niente contorno. */
+#events-panel:focus { outline: none; }
+
+.events-empty {
+    padding: 2.5rem 0;
+    text-align: center;
+}
+
+.events-more {
+    text-align: center;
+    margin: 0;
+}
+
+.btn-more {
+    display: inline-block;
+    margin-top: 2rem;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--azure-dark);
+    background: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 0.7rem 1.6rem;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-more:hover {
+    border-color: var(--azure-blue);
+    color: var(--azure-blue);
+    transform: translateY(-2px);
+}
+
+.btn-more:focus-visible {
+    outline: 2px solid var(--azure-blue);
+    outline-offset: 2px;
+}
+
+@media (max-width: 900px) {
+    .archive-header .section-title { font-size: 1.5rem; }
+
+    .archive-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    /* A tutta larghezza i due stati sono due bersagli grandi, non due parole. */
+    .segmented { display: flex; }
+    .segmented-btn { flex: 1; padding: 0.6rem 0.8rem; }
+
+    .events-grid { gap: 1rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .segmented-btn, .chip, .btn-more { transition: none; }
+    .btn-more:hover { transform: none; }
+}

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutti gli eventi | Azure Meetup Torino</title>
+    <meta name="description" content="L'archivio completo degli incontri di Azure Meetup Torino: i prossimi appuntamenti e tutti quelli gia fatti, anno per anno.">
+
+    <!--
+        Il titolo di questa pagina resta quello scritto qui: e la pagina degli
+        eventi, non la home, e render-site.js viene chiamato con `title: false`.
+        La favicon invece si aggiorna da site.json come ovunque.
+    -->
+    <link rel="icon" href="https://media.licdn.com/dms/image/v2/D4D0BAQEhN0BwKgacBQ/company-logo_200_200/B4DZYBX6NlHwAI-/0/1743779767492/azure_meetup_torino_logo?e=2147483647&v=beta&t=Cdt2pJTS6y7cAX9074JPwxQ4BSl3pd9T1k1rDMnMbBQ">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/assets/vendor/bootstrap-icons/bootstrap-icons.min.css">
+
+    <link rel="stylesheet" href="/assets/css/tokens.css">
+    <link rel="stylesheet" href="/assets/css/base.css">
+    <link rel="stylesheet" href="/assets/css/layout.css">
+    <link rel="stylesheet" href="/assets/css/components.css">
+    <link rel="stylesheet" href="/assets/css/events.css">
+</head>
+<!-- Nessuna foto fissa in cima: qui si viene per cercare, non per essere accolti. -->
+<body class="page-inner">
+
+    <header id="main-header">
+        <div class="nav-container" id="nav-container">
+            <a href="/" class="logo">
+                <img src="https://media.licdn.com/dms/image/v2/D4D0BAQEhN0BwKgacBQ/company-logo_200_200/B4DZYBX6NlHwAI-/0/1743779767492/azure_meetup_torino_logo?e=2147483647&v=beta&t=Cdt2pJTS6y7cAX9074JPwxQ4BSl3pd9T1k1rDMnMbBQ" alt="Azure Meetup Torino Logo" class="logo-img" id="logo-img" data-site="brand.logoUrl">
+                <span data-site="brand.name">Azure Meetup Torino</span>
+            </a>
+            <button type="button" class="nav-toggle" id="nav-toggle"
+                    aria-controls="primary-nav" aria-expanded="false" aria-label="Apri il menu">
+                <i class="bi bi-list" aria-hidden="true"></i>
+            </button>
+
+            <nav id="primary-nav">
+                <ul>
+                    <li><a href="/#chi-siamo">Chi Siamo</a></li>
+                    <li><a href="/#partecipanti">Partecipanti</a></li>
+                    <li><a href="/eventi/" aria-current="page">Eventi</a></li>
+                    <li><a href="/#sponsors">Sponsor</a></li>
+                    <li><a href="/#contacts">Contatti</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main id="main-content">
+        <section id="eventi" class="archive">
+            <div class="container">
+
+                <div class="archive-header">
+                    <p class="archive-back">
+                        <a href="/#eventi"><i class="bi bi-arrow-left" aria-hidden="true"></i> Torna alla home</a>
+                    </p>
+                    <h1 class="section-title">Tutti gli eventi</h1>
+                    <p class="section-subtitle" id="events-count">L'archivio degli incontri della community.</p>
+                </div>
+
+                <!--
+                    Comandi e griglia restano nascosti finche i dati non sono
+                    arrivati: un filtro che si puo premere su una lista vuota
+                    sembra rotto.
+                -->
+                <div class="archive-toolbar" id="events-toolbar" hidden>
+                    <div class="segmented" role="tablist" aria-label="Quali eventi mostrare">
+                        <button type="button" class="segmented-btn" role="tab"
+                                id="tab-prossimi" data-status="prossimi"
+                                aria-controls="events-panel" aria-selected="true">
+                            Prossimi
+                        </button>
+                        <button type="button" class="segmented-btn" role="tab"
+                                id="tab-passati" data-status="passati"
+                                aria-controls="events-panel" aria-selected="false" tabindex="-1">
+                            Passati
+                        </button>
+                    </div>
+
+                    <div class="year-chips" id="events-years" role="group" aria-label="Filtra per anno" hidden></div>
+                </div>
+
+                <div id="events-panel" role="tabpanel" aria-labelledby="tab-prossimi" tabindex="0">
+                    <div class="events-grid" id="events-grid"></div>
+
+                    <!-- Un <div>: ci scrive dentro renderDataError, che emette un <p>. -->
+                    <div class="events-empty" id="events-empty" hidden></div>
+
+                    <p class="events-more">
+                        <button type="button" class="btn-more" id="events-more" hidden></button>
+                    </p>
+                </div>
+
+                <!-- Un <div>: al suo posto scrive renderDataError, che emette un <p>. -->
+                <div id="events-status"><p class="data-error">Carico gli eventi...</p></div>
+
+                <noscript>
+                    <p class="data-error">
+                        Per sfogliare l'archivio serve JavaScript.
+                        Gli eventi sono anche su
+                        <a href="https://www.meetup.com/it-IT/meetup-microsoft-azure-torino/" target="_blank" rel="noopener noreferrer">Meetup</a>.
+                    </p>
+                </noscript>
+
+            </div>
+        </section>
+    </main>
+
+    <footer id="contacts">
+        <div class="footer-brand" data-site="brand.name">Azure Meetup Torino</div>
+        <p class="footer-intro" data-site="footer.intro">Entra in contatto con noi o unisciti ai nostri canali per restare aggiornato.</p>
+
+        <div class="contact-channels" data-site-list="channels">
+            <a href="mailto:info@azuremeetuptorino.it?subject=[Azure%20Meetup%20Torino]%20Richiesta%20Info" class="channel-btn btn-email">
+                <i class="bi bi-envelope-fill"></i> Scrivici una Mail
+            </a>
+
+            <a href="https://t.me/AzureMeetupTorino" target="_blank" rel="noopener noreferrer" class="channel-btn btn-telegram">
+                <i class="bi bi-telegram"></i> Canale Telegram
+            </a>
+
+            <a href="https://chat.whatsapp.com" target="_blank" rel="noopener noreferrer" class="channel-btn btn-whatsapp">
+                <i class="bi bi-whatsapp"></i> Canale WhatsApp
+            </a>
+        </div>
+
+        <div>
+            <button type="button" class="email-copy-bar" id="email-copy-bar" title="Clicca per copiare l'email">
+                <i class="bi bi-copy"></i>
+                <span id="email-text" data-site="footer.email">info@azuremeetuptorino.it</span>
+            </button>
+        </div>
+
+        <div class="social-links" data-site-list="social">
+            <a href="https://it.linkedin.com/company/azure-meetup-torino" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+            <a href="https://www.youtube.com/@AzureMeetupTorino" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
+            <a href="https://www.instagram.com/azuremeetuptorino" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+            <a href="https://github.com/Azure-Meetup-Torino" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><i class="bi bi-github"></i></a>
+        </div>
+
+        <p class="footer-legal" data-site="footer.legal">
+            &copy; 2026 Azure Meetup Torino. Community indipendente non affiliata con Microsoft Corporation.
+        </p>
+    </footer>
+
+    <script type="module" src="/assets/js/events-page.js"></script>
+</body>
+</html>

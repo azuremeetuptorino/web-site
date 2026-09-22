@@ -90,10 +90,10 @@ function applyFields(root, document_) {
  * applicato e continuano a mostrare la vecchia icona finche non si svuota la
  * cache.
  */
-function applyMeta(root, brand) {
+function applyMeta(root, brand, { title = true } = {}) {
     if (!brand) return;
 
-    if (filled(brand.name) && typeof root.title === 'string') {
+    if (title && filled(brand.name) && typeof root.title === 'string') {
         root.title = filled(brand.tagline) ? `${brand.name} | ${brand.tagline}` : brand.name;
     }
 
@@ -210,13 +210,18 @@ function applySocial(root, social) {
    ========================================================== */
 
 /**
+ * `title: false` lascia stare il titolo della scheda: serve alle pagine che ne
+ * hanno uno proprio, come /eventi/, dove "Azure Meetup Torino | Community"
+ * sarebbe una bugia. La favicon invece si aggiorna ovunque, perche e del sito
+ * e non della pagina.
+ *
  * @returns {number} 1 se il documento e stato applicato, 0 se non c'era niente
  *   da applicare — la firma che si aspetta `hydrate()` in main.js.
  */
-export function renderSite(root, payload) {
+export function renderSite(root, payload, { title = true } = {}) {
     if (!payload || typeof payload !== 'object') return 0;
 
-    applyMeta(root, payload.brand);
+    applyMeta(root, payload.brand, { title });
     applyFields(root, payload);
     applyAbout(root, payload.about);
     applyStats(root, payload.stats);

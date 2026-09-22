@@ -194,7 +194,7 @@ function validateMember(issues, path, value, seenIds) {
  *
  * Tenuto allineato a TIER_WEIGHT di src/assets/js/render-sponsors.js.
  */
-export const TIERS = ['gold', 'silver', 'bronze', 'partner', 'venue', 'media'];
+export const TIERS = ['diamond', 'platinum', 'gold', 'silver', 'bronze', 'partner'];
 
 /** `since` e l'anno da cui ci sostengono, non una data: basta l'anno. */
 function year(issues, path, value) {

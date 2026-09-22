@@ -1,13 +1,13 @@
 {
   "version": 1,
-  "updatedAt": "2026-09-15T00:00:00Z",
+  "updatedAt": "2026-09-22T00:00:00Z",
   "updatedBy": "seed",
   "sponsors": [
     {
-      "id": "cloudnova",
-      "name": "CloudNova",
-      "tier": "gold",
-      "logoUrl": "/assets/img/sponsors/cloudnova.svg",
+      "id": "v-valley",
+      "name": "V-Valley",
+      "tier": "diamond",
+      "logoUrl": "/assets/img/placeholder-logo.svg",
       "logoDarkUrl": null,
       "websiteUrl": null,
       "description": null,
@@ -16,10 +16,10 @@
       "active": true
     },
     {
-      "id": "techflow",
-      "name": "TechFlow",
-      "tier": "gold",
-      "logoUrl": "/assets/img/sponsors/techflow.svg",
+      "id": "pa-expertise",
+      "name": "PA Expertise / Alveo Group",
+      "tier": "diamond",
+      "logoUrl": "/assets/img/placeholder-logo.svg",
       "logoDarkUrl": null,
       "websiteUrl": null,
       "description": null,
@@ -28,10 +28,10 @@
       "active": true
     },
     {
-      "id": "innovateit",
-      "name": "InnovateIT",
-      "tier": "silver",
-      "logoUrl": "/assets/img/sponsors/innovateit.svg",
+      "id": "qumulo",
+      "name": "Qumulo",
+      "tier": "diamond",
+      "logoUrl": "/assets/img/placeholder-logo.svg",
       "logoDarkUrl": null,
       "websiteUrl": null,
       "description": null,
@@ -40,10 +40,10 @@
       "active": true
     },
     {
-      "id": "securapp",
-      "name": "SecurApp",
-      "tier": "silver",
-      "logoUrl": "/assets/img/sponsors/securapp.svg",
+      "id": "avepoint",
+      "name": "AvePoint",
+      "tier": "diamond",
+      "logoUrl": "/assets/img/placeholder-logo.svg",
       "logoDarkUrl": null,
       "websiteUrl": null,
       "description": null,
@@ -52,27 +52,87 @@
       "active": true
     },
     {
-      "id": "devops-solutions",
-      "name": "DevOps Solutions",
-      "tier": "bronze",
-      "logoUrl": "/assets/img/sponsors/devops-solutions.svg",
+      "id": "extra-net",
+      "name": "Extra-Net",
+      "tier": "gold",
+      "logoUrl": "/assets/img/placeholder-logo.svg",
+      "logoDarkUrl": null,
+      "websiteUrl": null,
+      "description": null,
+      "since": null,
+      "order": 10,
+      "active": true
+    },
+    {
+      "id": "td-synnex",
+      "name": "TD SYNNEX",
+      "tier": "silver",
+      "logoUrl": "/assets/img/placeholder-logo.svg",
+      "logoDarkUrl": null,
+      "websiteUrl": null,
+      "description": null,
+      "since": null,
+      "order": 10,
+      "active": true
+    },
+    {
+      "id": "its-ict-piemonte",
+      "name": "Fondazione ITS ICT Piemonte",
+      "tier": "partner",
+      "logoUrl": "/assets/img/placeholder-logo.svg",
+      "logoDarkUrl": null,
+      "websiteUrl": null,
+      "description": null,
+      "since": null,
+      "order": 10,
+      "active": true
+    },
+    {
+      "id": "welol",
+      "name": "Welol",
+      "tier": "partner",
+      "logoUrl": "/assets/img/placeholder-logo.svg",
+      "logoDarkUrl": null,
+      "websiteUrl": null,
+      "description": null,
+      "since": null,
+      "order": 20,
+      "active": true
+    },
+    {
+      "id": "next",
+      "name": "Next",
+      "tier": "partner",
+      "logoUrl": "/assets/img/placeholder-logo.svg",
+      "logoDarkUrl": null,
+      "websiteUrl": null,
+      "description": null,
+      "since": null,
+      "order": 30,
+      "active": true
+    },
+    {
+      "id": "intre",
+      "name": "Intrè",
+      "tier": "partner",
+      "logoUrl": "/assets/img/placeholder-logo.svg",
+      "logoDarkUrl": null,
+      "websiteUrl": null,
+      "description": null,
+      "since": null,
+      "order": 40,
+      "active": true
+    },
+    {
+      "id": "retelit",
+      "name": "Retelit",
+      "tier": "partner",
+      "logoUrl": "/assets/img/placeholder-logo.svg",
       "logoDarkUrl": null,
       "websiteUrl": null,
       "description": null,
       "since": null,
       "order": 50,
-      "active": true
-    },
-    {
-      "id": "datasphere",
-      "name": "DataSphere",
-      "tier": "bronze",
-      "logoUrl": "/assets/img/sponsors/datasphere.svg",
-      "logoDarkUrl": null,
-      "websiteUrl": null,
-      "description": null,
-      "since": null,
-      "order": 60,
       "active": true
     }
   ]

@@ -108,6 +108,23 @@ Lo split di `index.html` è il passo a più alto rischio di regressione: va fatt
 
 ### Filtro temporale eventi (scelta di design)
 
+> **Aggiornato il 22/09/2026, a lavoro fatto.** Il disegno qui sotto e stato
+> realizzato **su una pagina a parte** invece che dentro la sezione della home:
+> `/eventi/`. In home restano **cinque card** nel carosello e un bottone *Vedi
+> tutti gli eventi*. Tre motivi, emersi costruendolo:
+> - la home ha un compito solo, rispondere a "quando e il prossimo?", e cinque
+>   card lo fanno senza chiedere di scegliere niente;
+> - **il carosello non e piu il problema che era**: con cinque card e quattro
+>   visibili ha un senso — una track mezza vuota con le frecce morte capitava
+>   proprio perche gli eventi erano pochi *e* tutti li dentro;
+> - un archivio con un suo indirizzo si manda a qualcuno, finisce nei preferiti
+>   e un domani nella sitemap; una sezione della home no.
+>
+> Lo stato sta quindi nella **query string** (`/eventi/?stato=passati&anno=2025`)
+> e non nel frammento. Non realizzata la *card hero larga* per l'evento unico in
+> arrivo: la griglia con una card sola gia si legge bene, e sarebbe stato un
+> secondo layout da mantenere per un caso solo.
+
 Segmentato a due stati **`Prossimi | Passati`**, deep-linkabile via `#eventi?stato=passati&anno=2025`.
 
 - **`Prossimi`** → 0–3 card in flex row; con un solo evento diventa una card hero larga con data, venue, numero di iscritti e CTA diretta a Meetup.
@@ -282,7 +299,7 @@ Regole: `id` `^[a-z0-9][a-z0-9-]{1,48}$` univoco; `roleKey ∈ co-founder|organi
 }
 ```
 
-Regole: `tier ∈ gold|silver|bronze|partner|venue|media` — è l'**unico** dato che governa dimensione del logo, raggruppamento e ordine delle fasce, così aggiungere uno sponsor non tocca mai il CSS; ordinamento per `tier` poi `order` poi `name`; `logoUrl` obbligatoria e `https:`; `logoDarkUrl` opzionale per i loghi che scompaiono su fondo scuro; `websiteUrl` opzionale (se assente la card non è un link); `description` opzionale, max 200 caratteri; `active:false` sposta lo sponsor nello storico senza cancellarlo.
+Regole: `tier ∈ diamond|platinum|gold|silver|bronze|partner` — è l'**unico** dato che governa dimensione del logo, raggruppamento e ordine delle fasce, così aggiungere uno sponsor non tocca mai il CSS; ordinamento per `tier` poi `order` poi `name`; `logoUrl` obbligatoria e `https:`; `logoDarkUrl` opzionale per i loghi che scompaiono su fondo scuro; `websiteUrl` opzionale (se assente la card non è un link); `description` opzionale, max 200 caratteri; `active:false` sposta lo sponsor nello storico senza cancellarlo.
 
 `public/events.json` (generato da Meetup):
 
@@ -384,7 +401,7 @@ export function buildAssertion({ clientKey, memberId, signingKeyId, privateKeyPe
 | **P4** | `GET/PUT /api/sponsors` + editor sponsor (stesso pattern di P3, riuso diretto di `blob.js`/`validate.js`/`image.js`, che accetta già `kind: 'sponsor'`); rendering sponsor raggruppato per tier. | Sponsor creato da zero nell'admin, logo caricato dal disco, visibile sul sito con la dimensione del suo tier. |
 | **P4b** | `GET/PUT /api/site` + editor "Home e footer": foto principale, logo, "Chi siamo", statistiche, canali e social del footer. Anticipato mentre l'accesso a Meetup non c'era ancora. L'HTML resta il fallback e il rendering sovrascrive solo ciò che riceve. | Una parola cambiata dall'admin si vede sul sito; svuotando un campo la pagina torna al testo dell'HTML invece di restare vuota. |
 | **P5** | **Cambio di rotta (21/09/2026):** niente chiave API Meetup, e gli eventi stanno anche su Luma. Gli eventi diventano un documento come team e sponsor — `GET/PUT /api/events` + editor — con `POST /api/events/import` che compila la scheda dal link della pagina pubblica (JSON-LD `schema.org/Event`, host in allowlist). Il piano originale (`meetup/{jwt,token,query,map}.js`, `/api/refresh-events`, cron) e archiviato. | Un evento pubblicato su Luma o Meetup compare sul sito incollando il suo link nell'admin e premendo Salva. |
-| **P5b** | Il nuovo rendering eventi e il filtro temporale di §Filtro. | `Prossimi \| Passati` con le chip per anno, senza carosello. |
+| **P5b** | Cinque eventi in home con il link all'archivio; `/eventi/` con griglia, segmentato `Prossimi \| Passati`, chip per anno e "Mostra altri". Vedi la nota in cima a §Filtro: la pagina a parte ha preso il posto del filtro dentro la home. | Dalla home si arriva all'archivio in un click; un anno dell'archivio si manda per link. |
 | **P6** | Application Insights, runbook rotazione chiavi in `docs/`, `robots.txt`/`sitemap.xml`/OG tags, passata Lighthouse + axe. Opzionale: il job di refresh scrive anche uno snapshot statico `eventi.html` per recuperare SEO e anteprime LinkedIn/WhatsApp. | — |
 
 **Fuori scope** (restano hardcoded): sessioni/talk. "Chi siamo", footer e statistiche sono passati editabili con la P4b. Le sessioni sono facilmente aggiungibili in seguito come `sessions.json` con lo stesso pattern di `team.json`, collegate agli eventi tramite l'id Meetup.

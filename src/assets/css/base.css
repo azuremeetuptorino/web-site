@@ -14,6 +14,15 @@ body {
 
 a { text-decoration: none; color: inherit; }
 
+/*
+   `hidden` deve vincere sempre. Basta una regola di questo foglio che dia un
+   `display` a un elemento (un bottone `inline-flex`, per dire) perche
+   l'attributo smetta di funzionare: lo stile dell'autore batte quello del
+   browser, e l'elemento resta in pagina mentre il JavaScript e convinto di
+   averlo nascosto.
+*/
+[hidden] { display: none !important; }
+
 /* Nascosto visivamente ma leggibile dagli screen reader */
 .visually-hidden {
     position: absolute;
