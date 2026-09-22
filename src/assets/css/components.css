@@ -420,7 +420,15 @@
 .sponsor-tiers {
     display: flex;
     flex-direction: column;
-    gap: 2.25rem;
+    gap: 1.75rem;
+}
+
+/* Le fasce sono <section> annidate: senza questo azzeramento prendono il
+   `padding: 4rem 1.5rem` e lo sfondo alternato che layout.css riserva alle
+   sezioni di primo livello. Erano ~8 rem di vuoto per fascia, quattro volte. */
+section.sponsor-tier {
+    padding: 0;
+    background-color: transparent;
 }
 
 .sponsor-tier-title {
@@ -433,19 +441,27 @@
     margin-bottom: 1rem;
 }
 
+/* Flex e non griglia: con `auto-fill` una fascia da un solo sponsor lasciava
+   in piedi le colonne vuote accanto, e l'ultima riga restava spaiata a
+   sinistra. Cosi le card si centrano e le righe parziali non fanno buchi. */
 .sponsors-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 1.25rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     align-items: stretch;
+    gap: 1.25rem;
 }
 
+/* La card cresce per riempire la riga, ma il tetto le impedisce di diventare
+   un cartellone quando nella fascia c'e un logo solo. */
 .sponsor-card {
+    flex: 1 1 200px;
+    max-width: 260px;
     background: var(--bg-white);
     border: 1px solid var(--border-color);
     border-radius: 8px;
-    min-height: 100px;
-    padding: 1.2rem;
+    min-height: 92px;
+    padding: 1rem 1.2rem;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -466,36 +482,41 @@
 /* LA DIMENSIONE DEL LOGO LA DECIDE IL TIER.
    E tutto quello che serve per aggiungere uno sponsor senza toccare il CSS:
    l'editor sceglie la fascia, il resto viene da qui. */
-.sponsor-tier[data-tier="diamond"] .sponsors-grid {
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+.sponsor-card[data-tier="diamond"] {
+    flex-basis: 260px;
+    max-width: 300px;
+    min-height: 128px;
 }
-
-.sponsor-card[data-tier="diamond"] { min-height: 164px; }
 .sponsor-card[data-tier="diamond"] img,
 .sponsor-card[data-tier="diamond"] svg { height: 76px; }
 
-.sponsor-tier[data-tier="platinum"] .sponsors-grid {
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+.sponsor-card[data-tier="platinum"] {
+    flex-basis: 250px;
+    max-width: 290px;
+    min-height: 122px;
 }
-
-.sponsor-card[data-tier="platinum"] { min-height: 150px; }
 .sponsor-card[data-tier="platinum"] img,
 .sponsor-card[data-tier="platinum"] svg { height: 68px; }
 
-.sponsor-tier[data-tier="gold"] .sponsors-grid {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+.sponsor-card[data-tier="gold"] {
+    flex-basis: 230px;
+    max-width: 280px;
+    min-height: 116px;
 }
-
-.sponsor-card[data-tier="gold"] { min-height: 140px; }
 .sponsor-card[data-tier="gold"] img,
 .sponsor-card[data-tier="gold"] svg { height: 62px; }
 
-.sponsor-card[data-tier="silver"] { min-height: 118px; }
+.sponsor-card[data-tier="silver"] {
+    flex-basis: 210px;
+    max-width: 260px;
+    min-height: 102px;
+}
 .sponsor-card[data-tier="silver"] img,
 .sponsor-card[data-tier="silver"] svg { height: 48px; }
 
-.sponsor-tier[data-tier="bronze"] .sponsors-grid {
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+.sponsor-card[data-tier="bronze"] {
+    flex-basis: 160px;
+    max-width: 210px;
 }
 
 .sponsor-card[data-tier="bronze"] img,
@@ -645,20 +666,23 @@ footer {
     .sponsor-card[data-tier="gold"] img,
     .sponsor-card[data-tier="gold"] svg { height: 46px; }
 
-    /* Due per riga: con 130 px di minimo e 12 px di spazio ci stanno in 293 px
-       di larghezza utile, mentre a 140 ne sforavano sette e la griglia
-       collassava a una colonna sola, allungando la sezione a 1400 px. */
-    .sponsors-grid {
-        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-        gap: 0.75rem;
+    /* Due per riga: con 130 px di base e 12 px di spazio ci stanno in 293 px di
+       larghezza utile, e il tetto va tolto o resterebbero due monconi. */
+    .sponsors-grid { gap: 0.75rem; }
+    .sponsor-card {
+        flex-basis: 130px;
+        max-width: 220px;
     }
 
     /* Le fasce di testa restano una per riga: la prominenza e tutto il loro senso. */
-    .sponsor-tier[data-tier="diamond"] .sponsors-grid,
-    .sponsor-tier[data-tier="platinum"] .sponsors-grid,
-    .sponsor-tier[data-tier="gold"] .sponsors-grid { grid-template-columns: 1fr; }
+    .sponsor-card[data-tier="diamond"],
+    .sponsor-card[data-tier="platinum"],
+    .sponsor-card[data-tier="gold"] {
+        flex-basis: 100%;
+        max-width: none;
+    }
 
-    .sponsor-tiers { gap: 1.75rem; }
+    .sponsor-tiers { gap: 1.5rem; }
 
     /* Il footer: i bottoni a tutta larghezza si toccano senza mirare. */
     .contact-channels { flex-direction: column; align-items: stretch; }
