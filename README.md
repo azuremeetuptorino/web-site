@@ -156,7 +156,9 @@ il CSS.
 ## Deploy
 
 Ogni push su `main` fa il deploy tramite
-`.github/workflows/azure-static-web-apps.yml`.
+`.github/workflows/azure-static-web-apps.yml`, che si autentica col secret
+`AZURE_STATIC_WEB_APPS_API_TOKEN`. Il repo **non** è collegato dal portale: così
+Azure non genera un secondo workflow accanto al nostro.
 
 Le risorse stanno in `rg-lrizzi-meetup`: la Static Web App `swa-meetup` (West
 Europe) e lo storage `stazuremeetuptorino2` (italynorth). Nella stessa resource

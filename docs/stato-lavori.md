@@ -14,7 +14,7 @@ Branch **`feat/azure-static-web-apps`**, mai pushato.
 | Fase | Contenuto | Stato |
 |---|---|---|
 | P0 | Refactor statico, contenuti su JSON | fatto, verificato |
-| P1 | Configurazione SWA, pagine di errore, CI/CD | risorse Azure create, **repo GitHub da collegare dal portale** |
+| P1 | Configurazione SWA, pagine di errore, CI/CD | fatto, **in produzione su swa-meetup** |
 | P2 | `/admin` e autenticazione Entra ID | fatto, verificato con l'emulatore |
 | P3 | CRUD team su Blob Storage | fatto, verificato in locale contro Azurite |
 | P4 | CRUD sponsor e upload loghi | fatto, verificato in locale contro Azurite |
@@ -392,10 +392,13 @@ Errori trovati testando, non in astratto.
    Nessuna Azure Policy vietava l'accesso anonimo, quindi la lettura dal blob
    con ETag è rimasta com'era progettata.
 
-   Resta da fare **il collegamento del repo GitHub alla SWA dal portale**
-   (Deployment > Source): finché non c'è, il sito su
-   `icy-coast-028c85103.5.azurestaticapps.net` risponde con la pagina di
-   benvenuto di Azure e il workflow non ha il secret per deployare.
+   Il repo è collegato via secret da CLI e non dal portale, per non farsi
+   generare da Azure un secondo workflow: vedi [deploy.md](deploy.md#3-collegare-il-repo).
+   Il primo deploy è passato e il sito è su
+   `https://icy-coast-028c85103.5.azurestaticapps.net` — home 200 con CSP e
+   header di sicurezza, `/eventi/` 200, `/admin/` e `/api/*` 302 al login,
+   404 sulla pagina inesistente, e la fetch del blob dall'origin del sito
+   risponde 200 con `Access-Control-Allow-Origin` ed ETag.
 
 2. **I contenuti veri non ci sono.** Gli 11 membri del team e i 6 sponsor sono
    inventati, foto e loghi compresi. Gli editor ci sono e il caricamento
@@ -458,10 +461,11 @@ username qualsiasi e nel campo dei ruoli scrivi `admin`, uno per riga.
 Restano due cose piccole prima delle fasi vere:
 
 - **Importare un evento dalla `/admin` in un browser** (bloccante 3): incollare
-  il link Luma, controllare le date, salvare, vedere la card sul sito.
-- **Collegare il repo alla SWA** (bloccante 1): le risorse ora esistono, ma
-  finché GitHub non è collegato dal portale non c'è deploy, e tutto quello che è
-  scritto qui sopra resta verificato solo contro Azurite.
+  il link Luma, controllare le date, salvare, vedere la card sul sito. Ora si può
+  fare in produzione, non più solo contro Azurite.
+- **Invitare il primo `admin`** dal portale (Role management > Invite): finché
+  non c'è nessuno col ruolo, `/admin` risponde 403 a chiunque, anche a chi ha
+  creato le risorse.
 
 Poi la P6: Application Insights — la risorsa `appi-meetup` è già in
 `rg-lrizzi-meetup`, con la connection string pronta —, `robots.txt`,

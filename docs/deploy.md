@@ -83,16 +83,34 @@ della SWA: senza, lo storage finirebbe in West Europe con la Static Web App.
 
 ## 3. Collegare il repo
 
-Dal portale Azure, sulla Static Web App appena creata: **Deployment > Source**,
-scegli GitHub e autorizza il repo `azuremeetuptorino/web-site`, branch `main`.
+Il workflow ha bisogno di una cosa sola: il secret
+`AZURE_STATIC_WEB_APPS_API_TOKEN` nel repo. Da CLI, senza passare dal portale:
 
-Azure crea nel repo il secret `AZURE_STATIC_WEB_APPS_API_TOKEN`.
+```bash
+gh auth login   # servono gli scope repo e workflow, e ADMIN sul repo
 
-**Se Azure aggiunge un suo file di workflow, cancellalo.** Il nostro è
-`.github/workflows/azure-static-web-apps.yml` e ha due cose che quello
-generato non ha: `skip_app_build: true` (il frontend non ha build, `src/` va
-caricato verbatim) e la guardia sulle PR da fork, che altrimenti fallirebbero
-a ogni contributo esterno perché non ricevono i secret.
+TOKEN=$(az staticwebapp secrets list -n swa-meetup -g rg-lrizzi-meetup \
+  --query "properties.apiKey" -o tsv)
+
+gh secret set AZURE_STATIC_WEB_APPS_API_TOKEN -b "$TOKEN" \
+  -R azuremeetuptorino/web-site
+```
+
+Da qui in poi ogni push su `main` deploya. È la strada preferibile: collegando
+il repo dal portale (**Deployment > Source**) Azure genera **un secondo file di
+workflow** accanto al nostro, e i due si pesterebbero i piedi. Il nostro è
+`.github/workflows/azure-static-web-apps.yml` e ha due cose che quello generato
+non ha: `skip_app_build: true` (il frontend non ha build, `src/` va caricato
+verbatim) e la guardia sulle PR da fork, che altrimenti fallirebbero a ogni
+contributo esterno perché non ricevono i secret.
+
+Se un giorno si passa comunque dal portale, **cancella il workflow che Azure
+aggiunge.**
+
+Conseguenza di questa scelta: sulla SWA i campi `repositoryUrl` e `branch`
+restano vuoti (`az staticwebapp show`), e il portale mostra la sorgente come non
+configurata. È normale — il deploy lo fa GitHub Actions con il token, non il
+collegamento.
 
 ## 4. Storage: app setting e primo caricamento
 
