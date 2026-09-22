@@ -8,7 +8,16 @@
     "DATA_STORAGE_CONNECTION": "UseDevelopmentStorage=true",
     "CONTAINER_PRIVATE": "site-data",
     "CONTAINER_PUBLIC": "public",
-    "PUBLIC_BASE_URL": "http://127.0.0.1:10000/devstoreaccount1/public"
+    "PUBLIC_BASE_URL": "http://127.0.0.1:10000/devstoreaccount1/public",
+
+    "_commento_promemoria": "Facoltative. Senza, la scheda Promemoria funziona lo stesso: i testi si copiano e si segnano a mano.",
+    "TELEGRAM_BOT_TOKEN": "",
+    "TELEGRAM_CHAT_ID": "",
+
+    "_commento_riscrittura": "Facoltative. Senza, non compare il pulsante Riscrivi con AI e restano i testi standard.",
+    "FOUNDRY_BASE_URL": "",
+    "FOUNDRY_API_KEY": "",
+    "FOUNDRY_DEPLOYMENT": ""
   },
   "Host": {
     "CORS": "*"

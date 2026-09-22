@@ -9,6 +9,7 @@
     "node": ">=20"
   },
   "dependencies": {
+    "@anthropic-ai/foundry-sdk": "^0.4.8",
     "@azure/functions": "^4.7.0",
     "@azure/storage-blob": "^12.33.0"
   }

@@ -146,6 +146,53 @@ guardi. Sul sito i prossimi eventi vengono prima in ordine di data, poi i
 passati dal piu recente; `active: false` toglie un evento dalla pagina senza
 cancellarlo.
 
+### Promemoria sui social
+
+Dalla scheda **Promemoria** dell'admin ogni evento in arrivo si ricorda su
+Telegram, WhatsApp, LinkedIn e Instagram, **un evento alla volta**. Tre finestre
+per evento: **due settimane**, **una settimana** e **due giorni** prima. Quando
+una finestra si apre resta aperta — un promemoria in ritardo è meglio di uno
+saltato — e quando se ne apre una più vicina le precedenti si marcano *superate*
+invece di sparire.
+
+Non c'è nessun cron dietro, ed è una scelta doppia: le managed functions di SWA
+sono solo HTTP, ma soprattutto un promemoria è un post a nome della community, e
+chi lo firma vuole vederlo prima che esca.
+
+Ogni canale ha limiti diversi, ed è il motivo per cui `api/src/lib/reminder-channels.js`
+esiste: Telegram **1024** caratteri con la copertina e 4096 senza, WhatsApp
+**1000**, LinkedIn **3000**, Instagram **2200** con al massimo 30 hashtag. Lo
+stesso evento viene quindi scritto in quattro lunghezze, e quando non ci sta si
+sacrifica sempre nello stesso ordine: prima la descrizione, poi il titolo, **mai
+il link di iscrizione**.
+
+**La copertina dell'evento** compare in ogni scheda, perché un post con
+l'immagine rende molto più di uno senza e per allegarla bisogna prima vederla.
+Su Telegram il bot la spedisce insieme al testo; sugli altri canali si apre, si
+salva e si allega a mano. Su Instagram è obbligatoria: senza, il post non si può
+proprio pubblicare, e la scheda lo dice.
+
+Su **Telegram** si pubblica davvero dal pannello, con un bot amministratore del
+canale: è l'unico dei quattro con un'API utilizzabile senza approvazioni. Se la
+copertina non viene accettata — capita con le WebP di Luma — il promemoria esce
+lo stesso come solo testo, invece di fallire. Per **WhatsApp, LinkedIn e
+Instagram** non esiste un'API praticabile oggi: si copia il testo, si pubblica, e
+si preme *Segna come inviato*. L'interfaccia di un canale è volutamente piccola
+(`limitFor`, `buildText`, un `send` facoltativo), così il giorno in cui LinkedIn
+avrà credenziali utilizzabili basterà aggiungere il suo `send`.
+
+Con una risorsa **Microsoft Foundry** configurata compare anche *Riscrivi con
+AI*: una sola chiamata a Claude produce le quattro varianti, che diventano bozze
+modificabili. Il prompt vieta di aggiungere qualunque dato non presente
+nell'evento, e quello che torna passa comunque per lo stesso troncamento dei
+template — il modello stima i caratteri a occhio, Telegram non tratta.
+
+Cosa è già uscito sta in `site-data/reminders.json`, un blob a parte: il
+validatore degli eventi scarta i campi che non conosce, e un campo aggiunto lì
+verrebbe cancellato al primo salvataggio dall'admin. Entrambe le integrazioni
+sono facoltative — senza, la scheda funziona in sola copia-incolla. La
+configurazione è in [docs/deploy.md](docs/deploy.md).
+
 Il testo di "Chi siamo" ammette `**grassetto**` e `[link](https://...)` — un
 sottoinsieme minimo, utile per esempio a segnalare l'iscrizione al prossimo
 evento. Non è HTML: `src/assets/js/rich-text.js` scappa tutto e poi reintroduce
@@ -189,6 +236,7 @@ Dettagli e runbook in [docs/deploy.md](docs/deploy.md).
 | P4b | Contenuti della home editabili (foto, "Chi siamo", statistiche, footer) | fatto |
 | P5 | Eventi gestiti dall'admin, importazione dal link Luma/Meetup | fatto |
 | P5b | Cinque eventi in home e archivio filtrabile su `/eventi/` | fatto |
+| P5c | Promemoria social dall'admin (Telegram via Bot API, gli altri copia e segna) | fatto |
 | P6 | Telemetria, SEO, accessibilità | da fare |
 
 ## Riprendere il lavoro

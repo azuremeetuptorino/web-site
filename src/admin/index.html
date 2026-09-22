@@ -40,7 +40,8 @@
         <h1 class="admin-title">Gestione contenuti</h1>
         <p class="admin-subtitle">
             Da qui si modificano team, sponsor, eventi e contenuti della home mostrati sul sito pubblico.
-            Gli eventi si importano dal link della loro pagina su Luma o Meetup.
+            Gli eventi si importano dal link della loro pagina su Luma o Meetup, e da
+            <strong>Promemoria</strong> si ricordano sui canali social.
         </p>
 
         <div id="admin-notice" class="admin-notice" hidden></div>
@@ -61,6 +62,10 @@
             <button type="button" class="admin-tab" role="tab" id="tab-home"
                     data-tab="home" aria-controls="panel-home" aria-selected="false" tabindex="-1">
                 <i class="bi bi-house" aria-hidden="true"></i> Home e footer
+            </button>
+            <button type="button" class="admin-tab" role="tab" id="tab-reminder"
+                    data-tab="reminder" aria-controls="panel-reminder" aria-selected="false" tabindex="-1">
+                <i class="bi bi-megaphone" aria-hidden="true"></i> Promemoria
             </button>
         </div>
 
@@ -409,6 +414,41 @@
                     Ogni campo lasciato vuoto <strong>non svuota il sito</strong>: quella parte torna al
                     testo scritto nell'HTML, che e anche quello che vedono i motori di ricerca e chi
                     naviga senza JavaScript.
+                </p>
+            </div>
+        </section>
+        <!-- ================= PROMEMORIA ================= -->
+        <section class="admin-panel" id="panel-reminder" role="tabpanel" aria-labelledby="tab-reminder" tabindex="0" hidden>
+
+            <div class="admin-placeholder" id="reminder-loading">
+                <i class="bi bi-hourglass-split" aria-hidden="true"></i>
+                <strong>Carico i promemoria...</strong>
+            </div>
+
+            <div class="editor" id="reminder-panel" hidden>
+                <div class="editor-bar">
+                    <div class="editor-actions">
+                        <button type="button" class="editor-btn" id="reminder-reload">
+                            <i class="bi bi-arrow-clockwise" aria-hidden="true"></i> Ricarica
+                        </button>
+                    </div>
+                    <p class="editor-state" id="reminder-state" role="status" aria-live="polite"></p>
+                </div>
+
+                <div class="editor-alert" id="reminder-alert" hidden></div>
+
+                <ol class="editor-list" id="reminder-list"></ol>
+
+                <p class="editor-empty" id="reminder-empty" hidden>
+                    Nessun evento in programma. I promemoria compaiono qui quando c'e un evento futuro
+                    attivo nella scheda <strong>Eventi</strong>.
+                </p>
+
+                <p class="editor-hint">
+                    Ogni evento si ricorda tre volte: <strong>due settimane</strong>, <strong>una settimana</strong>
+                    e <strong>due giorni</strong> prima. Su Telegram si pubblica da qui. Per WhatsApp, LinkedIn e
+                    Instagram non esiste un'API utilizzabile: copia il testo, pubblicalo tu, poi premi
+                    <strong>Segna come inviato</strong> cosi la scheda smette di chiedertelo.
                 </p>
             </div>
         </section>
@@ -893,6 +933,95 @@
                 </button>
             </div>
         </li>
+    </template>
+
+    <!--
+        Un evento, le sue tre finestre, e per ogni finestra una scheda per canale.
+        Come per gli editor: si clona e si riempie con .textContent, mai
+        concatenando HTML con i dati che arrivano dall'API.
+    -->
+    <template id="reminder-event-template">
+        <li class="editor-row">
+            <details class="editor-details">
+                <summary class="editor-summary">
+                    <img class="editor-thumb editor-thumb-wide" alt="" data-slot="image"
+                         src="/assets/img/placeholder-event.svg">
+                    <span class="editor-heading">
+                        <strong data-slot="title"></strong>
+                        <span data-slot="when"></span>
+                    </span>
+                    <span class="editor-flag" data-slot="badge"></span>
+                    <i class="bi bi-chevron-down editor-chevron" aria-hidden="true"></i>
+                </summary>
+
+                <div class="editor-body editor-body-plain" data-slot="windows"></div>
+            </details>
+        </li>
+    </template>
+
+    <template id="reminder-window-template">
+        <section class="reminder-window">
+            <div class="reminder-window-bar">
+                <h3 class="reminder-window-title">
+                    <span data-slot="label"></span>
+                    <span class="editor-flag editor-flag-muted" data-slot="state"></span>
+                </h3>
+                <button type="button" class="editor-btn reminder-ai" data-action="compose" hidden>
+                    <i class="bi bi-stars" aria-hidden="true"></i> <span data-slot="compose-label">Riscrivi con AI</span>
+                </button>
+            </div>
+            <div class="reminder-cards" data-slot="channels"></div>
+        </section>
+    </template>
+
+    <template id="reminder-channel-template">
+        <article class="reminder-card">
+            <header class="reminder-card-bar">
+                <span class="reminder-card-name">
+                    <i aria-hidden="true" data-slot="icon"></i> <span data-slot="label"></span>
+                </span>
+                <span class="editor-flag" data-slot="state" hidden></span>
+            </header>
+
+            <!-- La copertina dell'evento: su Telegram parte da sola, altrove va
+                 allegata a mano, e per allegarla bisogna prima vederla. -->
+            <figure class="reminder-photo" data-slot="photo" hidden>
+                <img alt="" loading="lazy" data-slot="photo-img">
+                <figcaption data-slot="photo-note"></figcaption>
+            </figure>
+
+            <pre class="reminder-text" data-slot="text"></pre>
+            <textarea class="reminder-text reminder-text-edit" data-slot="editor" rows="10" hidden></textarea>
+
+            <p class="reminder-notes" data-slot="notes" hidden></p>
+
+            <footer class="reminder-card-foot">
+                <span class="reminder-counter" data-slot="counter"></span>
+                <span class="reminder-actions">
+                    <button type="button" class="editor-btn editor-btn-primary" data-action="send" hidden>
+                        <i class="bi bi-send" aria-hidden="true"></i> <span data-slot="send-label">Pubblica</span>
+                    </button>
+                    <button type="button" class="editor-btn" data-action="copy">
+                        <i class="bi bi-clipboard" aria-hidden="true"></i> <span data-slot="copy-label">Copia</span>
+                    </button>
+                    <a class="editor-btn" data-action="image" target="_blank" rel="noopener noreferrer" hidden>
+                        <i class="bi bi-image" aria-hidden="true"></i> <span data-slot="image-label">Apri la foto</span>
+                    </a>
+                    <button type="button" class="editor-btn" data-action="save-draft" hidden>
+                        <i class="bi bi-check2" aria-hidden="true"></i> Salva bozza
+                    </button>
+                    <button type="button" class="editor-btn" data-action="reset-draft" hidden>
+                        <i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i> Torna al testo standard
+                    </button>
+                    <button type="button" class="editor-btn" data-action="mark" hidden>
+                        <i class="bi bi-check2-square" aria-hidden="true"></i> Segna come inviato
+                    </button>
+                    <button type="button" class="editor-btn" data-action="unmark" hidden>
+                        <i class="bi bi-x-square" aria-hidden="true"></i> Togli il segno
+                    </button>
+                </span>
+            </footer>
+        </article>
     </template>
 
     <script type="module" src="/assets/js/admin/app.js"></script>

@@ -54,9 +54,17 @@ export const apiPut = (path, body, etag) =>
         body: JSON.stringify(body)
     });
 
-export const apiPost = (path, body) =>
+/**
+ * L'ETag e facoltativo: lo passano le azioni che cambiano un documento condiviso
+ * (i promemoria), cosi il server puo rifiutarle se qualcun altro e arrivato
+ * prima. Le POST che non scrivono niente, come l'importazione, lo omettono.
+ */
+export const apiPost = (path, body, etag) =>
     request(path, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+            ...(etag ? { 'If-Match': etag } : {})
+        },
         body: body === undefined ? undefined : JSON.stringify(body)
     });

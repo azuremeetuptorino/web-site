@@ -21,6 +21,7 @@ Branch **`feat/azure-static-web-apps`**, mai pushato.
 | P4b | Contenuti della home editabili | fatto, verificato in locale contro Azurite |
 | P5 | Eventi dall'admin, importazione dal link Luma/Meetup | fatto, API verificate contro Azurite e le pagine vere |
 | P5b | Cinque eventi in home, archivio filtrabile su `/eventi/` | fatto, **guardato in un browser** |
+| P5c | Promemoria social dall'admin | fatto, 286 test verdi; **da guardare in un browser** |
 | P6 | Telemetria, SEO, accessibilità | da fare |
 
 ## Cosa è entrato con la P3
@@ -247,6 +248,71 @@ con `page.route`); link profondo `?stato=passati&anno=2023` che riapre la
 pagina dov'era; nessun evento futuro → messaggio con il link a Meetup; blob che
 risponde 500 → messaggio e pagina ancora in piedi; nessuno scorrimento
 orizzontale su telefono; console pulita.
+
+## Cosa è entrato con la P5c
+
+Gli eventi si pubblicano, poi si dimentica di ricordarli. La scheda
+**Promemoria** dell'admin dice cosa è dovuto, mostra il testo già pronto per
+ogni canale e aspetta un clic — un evento alla volta.
+
+**Le decisioni, con il perché.**
+
+| Tema | Scelta | Perché non l'altra |
+|---|---|---|
+| Automazione | nessun cron, tutto dall'admin | le managed functions sono solo HTTP, ma soprattutto un promemoria è un post firmato dalla community: chi lo firma lo vuole vedere |
+| Dove stanno i template | solo nell'API | l'API deployata non vede `src/` a runtime, e il testo che parte su Telegram lo compone il server: due copie divergerebbero |
+| Stato «già mandato» | blob a parte, `site-data/reminders.json` | `validateEvent` scarta i campi sconosciuti, e l'editor eventi lo cancellerebbe al primo salvataggio; in più niente gara sull'ETag |
+| Riuso di `createDocumentResource` | no, handler dedicati | quello ripubblica sempre su `public/` e modella un PUT intero, qui le mutazioni sono azioni che il server applica lui |
+| Riuso di `createEditorCore` | no, modulo suo | è pensato per form con stato non salvato; qui non c'è niente da compilare, `isDirty` risponde sempre no |
+| Finestre | 14, 7 e 2 giorni, e restano aperte | una scadenza che passa fa saltare il promemoria; una finestra aperta al massimo lo fa uscire tardi |
+
+**I file.**
+
+- `api/src/lib/reminder-channels.js` — i quattro template e `fit`, il
+  troncamento. Ordine di sacrificio fisso: descrizione, poi titolo, **mai il
+  link**. Testo semplice su tutti e quattro: la Bot API di Telegram saprebbe
+  leggere l'HTML e il titolo uscirebbe in grassetto, ma lo stesso testo si copia
+  anche a mano — sempre per tre canali su quattro, e su Telegram ogni volta che
+  il bot non è configurato — e l'app di Telegram l'HTML non lo interpreta: chi
+  incolla si ritroverebbe i tag scritti nel messaggio. Trovato guardandolo in
+  pagina, non leggendo il codice.
+- `api/src/lib/telegram.js` — Bot API. `sendPhoto` con la copertina, `sendMessage`
+  senza; se la copertina viene rifiutata (le WebP di Luma dietro CDN) si ripiega
+  sul solo testo invece di far fallire tutto. Il token non compare mai negli errori.
+- `api/src/lib/reminders.js` — finestre, `superseded`, stato immutabile con
+  potatura dei gusci vuoti, e `buildOverview`, che è tutta la risposta del GET.
+- `api/src/functions/reminders.js` — cinque route: `GET /api/reminders`, poi
+  `send`, `mark`, `compose`, `draft` in POST.
+- `api/src/lib/ai-compose.js` — Claude su Foundry, facoltativo.
+- `src/assets/js/admin/reminders.js` + tab, pannello e tre `<template>`. Ogni
+  scheda porta la **copertina dell'evento**: su Telegram parte con il messaggio,
+  altrove si apre e si allega a mano, e su Instagram senza non si pubblica.
+  Sul mobile la miniatura sparisce dall'intestazione dell'evento — lasciava al
+  titolo una colonna da due parole, e la copertina si rivede comunque sotto.
+
+**Le due cose che non devono succedere, e come sono state chiuse.**
+
+1. *Pubblicare due volte lo stesso promemoria.* Ogni strada verso Telegram passa
+   prima da tre controlli: record già presente → 409, `If-Match` non
+   corrispondente → 409, evento non più futuro → 422. Tutti **prima** della
+   chiamata, e i test verificano che in quei casi la fetch non parta proprio.
+2. *Un post uscito che non risulta uscito.* Se la scrittura dello stato fallisce
+   **dopo** l'invio, la risposta è comunque **200** con `recorded: false`:
+   rispondere 500 farebbe rimandare il promemoria, e sul canale ne uscirebbero
+   due. La scheda dice di premere *Segna come inviato*.
+
+**Le due integrazioni sono facoltative.** Senza `TELEGRAM_*` la scheda funziona
+in copia-incolla anche per Telegram; senza `FOUNDRY_*` non compare il pulsante
+di riscrittura. Nomi delle impostazioni e passi in [deploy.md](deploy.md) §4b.
+
+**Nuova dipendenza**: `@anthropic-ai/foundry-sdk` in `api/package.json`, la
+prima oltre a `@azure/functions` e `@azure/storage-blob`.
+
+286 test, 98 nuovi: 48 in `reminders.test.js`, 24 in `reminder-channels.test.js`,
+13 in `telegram.test.js`, 13 in `ai-compose.test.js`.
+
+**Da fare prima di dirla finita**: guardarla in un browser contro Azurite, e
+provare un invio vero su un canale Telegram di prova.
 
 ## Passata sul mobile
 

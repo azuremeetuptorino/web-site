@@ -752,3 +752,200 @@
 }
 
 .rich-preview-empty { color: #9FC4E8; font-style: italic; }
+
+/* ==========================================================
+   PROMEMORIA SOCIAL
+   ========================================================== */
+
+/* Le finestre stanno in colonna, non nella griglia a due campi degli editor. */
+.editor-body-plain {
+    display: block;
+    padding: 0.9rem;
+}
+
+.reminder-window {
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 0.8rem 0.9rem 0.9rem 0.9rem;
+    background: var(--bg-white);
+}
+
+.reminder-window + .reminder-window { margin-top: 0.9rem; }
+
+/* Quella su cui si deve agire si stacca; le altre restano leggibili ma zitte. */
+.reminder-window.is-due { border-color: var(--azure-blue); background: var(--azure-light); }
+
+.reminder-window.is-faded { opacity: 0.72; }
+
+.reminder-window-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.8rem;
+}
+
+.reminder-window-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+.reminder-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 0.8rem;
+}
+
+.reminder-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 0.7rem 0.8rem;
+    background: var(--bg-white);
+    min-width: 0;
+}
+
+.reminder-card.is-sent { opacity: 0.75; }
+
+.reminder-card-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.reminder-card-name {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-dark);
+}
+
+/* Il testo si legge come uscira: a capo dove ci sono, e in tondo, non a
+   spaziatura fissa - su Telegram non sara certo monospaziato. */
+.reminder-text {
+    margin: 0;
+    padding: 0.6rem 0.7rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--bg-light);
+    color: var(--text-dark);
+    font-family: inherit;
+    font-size: 0.83rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    max-height: 15rem;
+    overflow-y: auto;
+}
+
+.reminder-text-edit {
+    width: 100%;
+    resize: vertical;
+    background: var(--bg-white);
+}
+
+.reminder-text-edit:focus-visible {
+    outline: 2px solid var(--azure-blue);
+    outline-offset: 1px;
+}
+
+.reminder-notes {
+    margin: 0;
+    font-size: 0.78rem;
+    line-height: 1.45;
+    color: var(--text-muted);
+}
+
+.reminder-card-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: auto;
+}
+
+.reminder-counter {
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+
+/* Oltre il limite il post verrebbe rifiutato: e un errore, non un avviso. */
+.reminder-counter.is-over { color: #A4262C; font-weight: 700; }
+
+.reminder-counter.is-truncated { color: #8A5A00; font-weight: 600; }
+
+.reminder-actions {
+    display: flex;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+}
+
+.reminder-actions .editor-btn { font-size: 0.78rem; padding: 0.3rem 0.6rem; }
+
+.reminder-flag-sent {
+    color: #0B6A0B;
+    background: #DFF6DD;
+    border-color: #9FD89F;
+}
+
+.reminder-flag-todo {
+    color: #004578;
+    background: var(--azure-light);
+    border-color: #A8D0F0;
+}
+
+@media (max-width: 640px) {
+    .reminder-cards { grid-template-columns: 1fr; }
+    .reminder-window { padding: 0.7rem; }
+    .editor-body-plain { padding: 0.6rem; }
+
+    /* Su schermo stretto la miniatura, il contatore e la freccia lasciavano al
+       titolo una colonna da due parole, e la data ci andava a capo sei volte.
+       La copertina qui si toglie: si rivede comunque in ogni scheda sotto. */
+    #panel-reminder .editor-thumb-wide { display: none; }
+
+    #panel-reminder .editor-heading span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
+/* La copertina dell'evento dentro la scheda del canale. Piccola: serve a
+   riconoscerla prima di allegarla, non a valutarla. */
+.reminder-photo {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+}
+
+.reminder-photo img {
+    width: 84px;
+    height: 56px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-light);
+    flex-shrink: 0;
+}
+
+.reminder-photo figcaption {
+    font-size: 0.76rem;
+    line-height: 1.4;
+    color: var(--text-muted);
+}

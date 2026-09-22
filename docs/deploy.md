@@ -148,6 +148,59 @@ privato `site-data/team.json`. Il master **non** viene sovrascritto se esiste
 già: quello è il documento che l'admin modifica, e rimetterci sopra il seed
 cancellerebbe il suo lavoro. Per forzare serve `npm run seed -- --force`.
 
+## 4b. Promemoria social (facoltativo)
+
+La scheda **Promemoria** dell'admin funziona senza configurare niente: mostra i
+testi già adattati al limite di ogni canale, si copiano e si pubblicano a mano.
+Le due integrazioni qui sotto tolgono lavoro, ma nessuna delle due è necessaria.
+
+**Telegram: pubblicare davvero dal pannello.** È l'unico dei quattro canali con
+un'API utilizzabile senza approvazioni. WhatsApp non espone i canali, LinkedIn e
+Instagram richiedono un'app in review, e Instagram pretende pure un account
+Business: per quei tre il flusso resta copia-incolla.
+
+1. Da Telegram, scrivere a [@BotFather](https://t.me/BotFather), `/newbot`, e
+   segnarsi il token.
+2. Aggiungere il bot come **amministratore** del canale, con il solo permesso
+   *Pubblica messaggi*. Senza questo passaggio l'API risponde «bot is not a
+   member of the channel chat».
+3. `TELEGRAM_CHAT_ID` è lo username pubblico con la chiocciola
+   (`@AzureMeetupTorino`); per un canale privato serve l'id numerico `-100…`.
+
+```bash
+az staticwebapp appsettings set -n swa-meetup -g rg-lrizzi-meetup \
+  --setting-names TELEGRAM_BOT_TOKEN="123456:AA..." TELEGRAM_CHAT_ID="@AzureMeetupTorino"
+```
+
+**Claude su Foundry: far riscrivere i testi.** Aggiunge il pulsante *Riscrivi
+con AI*, che genera le quattro versioni in una chiamata sola. Il risultato non
+viene pubblicato: diventa una bozza modificabile, e va comunque riletta prima di
+mandarla.
+
+1. Creare una risorsa **Microsoft Foundry** e deployare un modello Claude. Il
+   consigliato è `claude-opus-5`; `claude-sonnet-5` costa circa un terzo e per
+   testi di dieci righe la differenza si nota poco.
+2. `FOUNDRY_BASE_URL` è `https://<risorsa>.services.ai.azure.com/anthropic`,
+   **senza** `/v1` finale.
+3. `FOUNDRY_DEPLOYMENT` è il **nome del deployment**, che di solito coincide con
+   l'id del modello ma può essere stato cambiato al momento della creazione.
+4. Si usa la chiave API e non Entra ID: le managed functions non hanno Managed
+   Identity.
+
+```bash
+az staticwebapp appsettings set -n swa-meetup -g rg-lrizzi-meetup \
+  --setting-names FOUNDRY_BASE_URL="https://<risorsa>.services.ai.azure.com/anthropic" \
+                  FOUNDRY_API_KEY="<chiave>" \
+                  FOUNDRY_DEPLOYMENT="claude-opus-5"
+```
+
+Una riscrittura sono circa tremila token fra andata e ritorno: nell'ordine dei
+tre centesimi con Opus 5, uno con Sonnet 5. Si paga a consumo sulla sottoscrizione
+Azure, insieme al resto.
+
+**Lo stato dei promemoria** vive in `site-data/reminders.json`, nel container
+privato. Non ha copia pubblica e non va nel seed: nasce da solo alla prima azione.
+
 ## 5. Verifica
 
 ```bash
