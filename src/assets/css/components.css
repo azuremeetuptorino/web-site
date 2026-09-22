@@ -1,7 +1,7 @@
 /* =========================================
    1. CHI SIAMO (Bisezione Perfetta e Nuova Griglia)
    ========================================= */
-#chi-siamo {
+.about-section {
     padding-top: 0;
 }
 
@@ -10,6 +10,16 @@
     position: relative;
     z-index: 10;
 }
+
+/*
+   L'ancora `#chi-siamo` del menu sta sul wrapper, non sulla <section>: su
+   desktop la box e traslata di meta della propria altezza sopra il posto che
+   occupa in pagina, quindi fermarsi al bordo della sezione la lasciava sopra
+   la piega, mezza nascosta dalla testata. Il rettangolo del wrapper tiene
+   conto della `transform`, cosi il salto si ferma dove la box si vede davvero.
+   Il valore e lo stesso di `section, footer` in `layout.css`.
+*/
+.about-manifesto-wrapper { scroll-margin-top: 80px; }
 
 @media (min-width: 901px) {
     .about-manifesto-wrapper {
@@ -22,8 +32,9 @@
 }
 
 @media (max-width: 900px) {
-    #chi-siamo { padding-top: 3rem; }
+    .about-section { padding-top: 3rem; }
     .about-manifesto-wrapper {
+        scroll-margin-top: 58px;
         transform: none;
         margin-bottom: 0;
         margin-top: -60px; /* Leggera sovrapposizione su mobile */
