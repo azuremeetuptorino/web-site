@@ -9,7 +9,7 @@ const prefersReducedMotion = () =>
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /**
- * Marquee dei partecipanti: scorrimento continuo, in pausa mentre
+ * Marquee dello staff: scorrimento continuo, in pausa mentre
  * l'utente tiene premuto su una card.
  */
 export function initTeamSwiper(selector = '.swiper-team') {
@@ -41,27 +41,31 @@ export function initTeamSwiper(selector = '.swiper-team') {
 
     if (reduced) return swiper;
 
-    let isCardClicked = false;
+    // Swiper mette in pausa l'autoplay al touchstart ma, in freeMode, non
+    // sempre lo fa ripartire al rilascio: con una pressione senza trascinamento,
+    // o trascinando verso destra, la track restava ferma. Il touchstart ferma
+    // la transizione senza che scatti transitionend, e `animating` resta true:
+    // slideNext viene ignorato per sempre. Al rilascio lo azzeriamo e facciamo
+    // ripartire l'autoplay noi, ovunque sia finito il puntatore.
+    let pressed = false;
 
-    document.addEventListener('mousedown', (event) => {
-        if (event.target.closest(`${selector} .member-card`)) {
-            isCardClicked = true;
-            swiper.autoplay.stop();
-        } else if (isCardClicked) {
-            swiper.autoplay.start();
-            isCardClicked = false;
-        }
+    element.addEventListener('pointerdown', () => {
+        pressed = true;
     });
 
-    element.addEventListener('touchstart', () => {
-        swiper.autoplay.stop();
-    }, { passive: true });
-
-    element.addEventListener('touchend', () => {
+    const resume = () => {
+        if (!pressed) return;
+        pressed = false;
         setTimeout(() => {
-            if (!isCardClicked) swiper.autoplay.start();
-        }, 50);
-    }, { passive: true });
+            if (swiper.destroyed) return;
+            swiper.animating = false;
+            swiper.autoplay.stop();
+            swiper.autoplay.start();
+        }, 0);
+    };
+
+    window.addEventListener('pointerup', resume);
+    window.addEventListener('pointercancel', resume);
 
     return swiper;
 }
