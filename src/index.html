@@ -24,13 +24,63 @@
     <link rel="stylesheet" href="/assets/css/base.css">
     <link rel="stylesheet" href="/assets/css/layout.css">
     <link rel="stylesheet" href="/assets/css/components.css">
+    <link rel="stylesheet" href="/assets/css/effects.css">
 </head>
-<body>
+<body class="page-home">
 
-    <!-- HERO BACKGROUND FISSO AL 65% -->
+    <!--
+        HERO FISSA
+        La foto resta sotto, scurita dal velo blu; sopra, la rete di punti
+        (hero-network.js) e il contenuto. Titolo e bottoni sono scritti qui e
+        non dal JavaScript: sono la prima cosa che vedono crawler e anteprime.
+        La card del prossimo evento invece nasce nascosta, e la riempie hero.js
+        solo se in calendario c'e davvero qualcosa.
+    -->
     <div id="hero-background">
         <img src="https://images.unsplash.com/photo-1546938482-2ad7abfb620c?auto=format&fit=crop&q=80&w=2000" alt="Torino Skyline" id="hero-img"
              data-site="brand.heroImageUrl" data-site-alt="brand.heroImageAlt">
+        <div class="hero-overlay" aria-hidden="true">
+            <span class="hero-glow hero-glow-1"></span>
+            <span class="hero-glow hero-glow-2"></span>
+        </div>
+        <canvas class="hero-network" id="hero-network" aria-hidden="true"></canvas>
+
+        <div class="hero-content" id="hero-content">
+            <div class="hero-copy">
+                <p class="hero-eyebrow">
+                    <span class="hero-eyebrow-dot" aria-hidden="true"></span>
+                    Community indipendente &middot; Torino
+                </p>
+                <h1 class="hero-title">
+                    La community <span class="text-gradient">Cloud&nbsp;&amp;&nbsp;AI</span> del Piemonte
+                </h1>
+                <p class="hero-lead">
+                    Talk, demo e networking su
+                    <span class="hero-type" data-typewriter data-words="Microsoft Azure|Intelligenza Artificiale|DevOps|GitHub Copilot|Cloud Architecture" aria-hidden="true">Microsoft Azure</span><span class="hero-caret" aria-hidden="true"></span>
+                    <span class="visually-hidden">Microsoft Azure, Intelligenza Artificiale, DevOps, GitHub Copilot e Cloud Architecture</span>
+                </p>
+                <div class="hero-actions">
+                    <a href="https://www.meetup.com/it-IT/meetup-microsoft-azure-torino/" target="_blank" rel="noopener noreferrer" class="hero-btn hero-btn-primary">
+                        <i class="bi bi-people-fill" aria-hidden="true"></i> Unisciti su Meetup
+                    </a>
+                    <a href="https://sessionize.com/azure-meetup-torino" target="_blank" rel="noopener noreferrer" class="hero-btn hero-btn-ghost">
+                        <i class="bi bi-mic-fill" aria-hidden="true"></i> Proponi un talk
+                    </a>
+                </div>
+            </div>
+
+            <a class="hero-next-event" id="hero-next-event" href="#eventi" hidden>
+                <span class="hero-next-label">
+                    <span class="hero-eyebrow-dot" aria-hidden="true"></span>
+                    <span data-next="label">Prossimo evento</span>
+                </span>
+                <strong class="hero-next-title" data-next="title"></strong>
+                <span class="hero-next-meta"><i class="bi bi-calendar-event" aria-hidden="true"></i> <span data-next="when"></span></span>
+                <span class="hero-next-meta"><i class="bi bi-geo-alt" aria-hidden="true"></i> <span data-next="where"></span></span>
+                <span data-next="countdown"></span>
+                <span class="hero-next-cta">Iscriviti gratis <i class="bi bi-arrow-right" aria-hidden="true"></i></span>
+            </a>
+        </div>
     </div>
 
     <!-- NAVBAR FIXED -->
@@ -108,7 +158,7 @@
              ========================================= -->
         <section id="staff">
             <div class="container">
-                <div class="section-header-centered">
+                <div class="section-header-centered" data-reveal>
                     <h2 class="section-title">Staff</h2>
                     <p class="section-subtitle">Le persone che organizzano gli incontri e fanno crescere la community.</p>
                 </div>
@@ -127,26 +177,10 @@
              a partire da /data/events.json.
              ========================================= -->
         <section id="eventi">
-            <div class="section-header">
+            <div class="section-header" data-reveal>
                 <div>
                     <h2 class="section-title">Calendario Eventi</h2>
                     <p class="section-subtitle">I prossimi incontri e gli ultimi appuntamenti della community.</p>
-                </div>
-
-                <div class="event-actions">
-                    <a href="https://www.meetup.com/it-IT/meetup-microsoft-azure-torino/" target="_blank" rel="noopener noreferrer" class="btn-event-action btn-meetup" title="Seguici su Meetup">
-                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
-                            <path d="M22.42 8.52c-.15-1.57-1.35-2.76-3-2.76-1.5 0-2.7 1.05-3 2.55-.45-1.35-1.8-2.25-3.3-2.25-1.35 0-2.55.9-3 2.1-.3-1.05-1.2-1.8-2.4-1.8C6.37 6.36 5.32 7.26 5.02 8.46c-1.35.3-2.4 1.5-2.4 3 0 1.2.75 2.25 1.8 2.7-.15.45-.15.9-.15 1.35 0 1.95 1.5 3.6 3.45 3.6 1.8 0 3.3-1.35 3.45-3 .45 1.05 1.5 1.8 2.7 1.8 1.5 0 2.7-1.05 3-2.55.45 1.35 1.8 2.25 3.15 2.25 1.8 0 3.3-1.5 3.3-3.3 0-1.05-.45-1.95-1.2-2.55.75-.75 1.35-1.8 1.35-3 .02-1.31-.73-2.49-1.95-3.03l.9.8ZM4.42 11.16c-.9 0-1.5-.75-1.5-1.65s.6-1.65 1.5-1.65 1.65.6 1.65 1.5c0 .15 0 .15-.15.3l-1.35.45c-.3.15-.3.45-.15.6.15.15.45.15.6 0l1.2-.6c.15.6.3 1.2.3 1.8-.15 0-.15-.15-.3-.3l-.45-.45c-.15-.15-.45-.15-.6 0-.15.15-.15.45 0 .6l1.2 1.2c.15.15.15.45 0 .6l-1.2 1.2c-.15.15-.45.15-.6 0-.15-.15-.15-.45 0-.6l.45-.45c.15-.15.15-.3.3-.3 0 .45-.15 1.05-.3 1.5-.15.15-.45.15-.6 0z" />
-                        </svg>
-                        <span>Seguici su Meetup</span>
-                    </a>
-
-                    <a href="https://sessionize.com/azure-meetup-torino" target="_blank" rel="noopener noreferrer" class="btn-event-action btn-sessionize" title="Invia il tuo talk">
-                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
-                            <path d="M3.46 3.09L21.5 11.23c1.07.48 1.1 1.95.05 2.48L3.45 20.89c-.93.47-1.95-.36-1.74-1.37l1.7-8.08c.06-.27.28-.48.56-.53l8.83-1.58c.27-.05.27-.44 0-.49l-8.83-1.58c-.28-.05-.5-.26-.56-.53l-1.7-8.08C1.5 1.6 2.53.76 3.46 3.09z"/>
-                        </svg>
-                        <span>Proponi un Talk</span>
-                    </a>
                 </div>
             </div>
 
@@ -175,7 +209,7 @@
         <!-- Banner verso /global-azure/: compare solo se c'e un'edizione pubblicata. -->
         <section id="global-azure-teaser" class="ga-teaser-section" hidden>
             <div class="container">
-                <a class="ga-teaser" id="ga-teaser" href="/global-azure/"></a>
+                <a class="ga-teaser" id="ga-teaser" href="/global-azure/" data-reveal></a>
             </div>
         </section>
 
@@ -186,7 +220,7 @@
              ========================================= -->
         <section id="sponsors">
             <div class="container">
-                <div class="section-header-centered">
+                <div class="section-header-centered" data-reveal>
                     <h2 class="section-title">Sponsor &amp; Partner</h2>
                     <p class="section-subtitle">Aziende e realtà che supportano la community offrendo location, catering e risorse formative.</p>
                 </div>
@@ -203,6 +237,18 @@
          5. CONTATTI & FOOTER
          ========================================= -->
     <footer id="contacts">
+        <!-- Luci che si muovono piano sullo sfondo: solo decorazione, in effects.css. -->
+        <div class="footer-aurora" aria-hidden="true"><span></span><span></span><span></span></div>
+
+        <div class="footer-cta" data-reveal>
+            <p class="footer-cta-eyebrow">Il prossimo talk potrebbe essere il tuo</p>
+            <h2 class="footer-cta-title">Unisciti alla <span class="text-gradient">community</span></h2>
+            <p class="footer-cta-text">Incontri gratuiti, di persona, a Torino. Iscriviti su Meetup per sapere quando è il prossimo.</p>
+            <a href="https://www.meetup.com/it-IT/meetup-microsoft-azure-torino/" target="_blank" rel="noopener noreferrer" class="hero-btn hero-btn-primary">
+                <i class="bi bi-people-fill" aria-hidden="true"></i> Iscriviti su Meetup
+            </a>
+        </div>
+
         <div class="footer-brand" data-site="brand.name">Azure Meetup Torino</div>
         <p class="footer-intro" data-site="footer.intro">Entra in contatto con noi o unisciti ai nostri canali per restare aggiornato.</p>
 
@@ -227,7 +273,7 @@
             </button>
         </div>
 
-        <div class="social-links" data-site-list="social">
+        <div class="social-links" data-site-list="social" data-reveal-stagger>
             <a href="https://it.linkedin.com/company/azure-meetup-torino" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
             <a href="https://www.youtube.com/@AzureMeetupTorino" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
             <a href="https://www.instagram.com/azuremeetuptorino" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="bi bi-instagram"></i></a>

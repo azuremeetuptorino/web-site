@@ -54,6 +54,41 @@ export function editionPhase(edition, now = Date.now()) {
     return edition.date > today ? 'upcoming' : 'past';
 }
 
+/**
+ * L'inizio della giornata, per il conto alla rovescia. Nel JSON c'e solo il
+ * giorno: le edizioni aprono alle 9, e cadono sempre tra aprile e maggio,
+ * quindi in ora legale (+02:00).
+ */
+export function editionStart(edition) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(edition?.date ?? '')) return NaN;
+    return Date.parse(`${edition.date}T09:00:00+02:00`);
+}
+
+/**
+ * Un'edizione "gia fatta" e una di cui conta piu com'e andata di cosa c'era
+ * in programma. Vale anche per quelle senza data (2018, 2024): se l'anno e
+ * alle spalle, sono passate.
+ */
+export function isEditionOver(edition, phase = editionPhase(edition), now = Date.now()) {
+    if (phase === 'past') return true;
+    if (phase !== 'unknown') return false;
+    const year = Number(edition?.year ?? edition?.id);
+    return Number.isInteger(year) && year < new Date(now).getFullYear();
+}
+
+/** Le sezioni che cambiano posto, nell'ordine in cui compaiono prima dello sponsor. */
+export const MOVABLE_SECTIONS = ['agenda', 'speaker', 'foto'];
+
+/**
+ * Prima dell'evento si viene a vedere il programma; dopo, le foto. Per
+ * un'edizione conclusa agenda e speaker scendono sotto la galleria.
+ */
+export function sectionOrder(edition, phase = editionPhase(edition), now = Date.now()) {
+    return isEditionOver(edition, phase, now)
+        ? ['foto', 'agenda', 'speaker']
+        : [...MOVABLE_SECTIONS];
+}
+
 /** Edizioni pubblicate, dalla piu recente. */
 export function visibleEditions(index) {
     return (index?.editions ?? [])
@@ -97,13 +132,13 @@ export function renderHeroActions(edition, phase, content) {
         actions.push(`<a class="ga-btn ga-btn-primary" href="${escapeHtml(registration)}" target="_blank" rel="noopener noreferrer">
             <i class="bi bi-ticket-perforated" aria-hidden="true"></i> Registrati</a>`);
     }
-    if (content.sessions.length > 0) {
-        actions.push(`<a class="ga-btn ${actions.length ? 'ga-btn-ghost' : 'ga-btn-primary'}" href="#agenda">
-            <i class="bi bi-calendar3-week" aria-hidden="true"></i> Agenda</a>`);
-    }
-    if (content.photos.length > 0) {
-        actions.push(`<a class="ga-btn ga-btn-ghost" href="#foto">
-            <i class="bi bi-images" aria-hidden="true"></i> ${content.photos.length} foto</a>`);
+    // A edizione conclusa le foto vengono prima dell'agenda, come in pagina.
+    const agenda = content.sessions.length > 0 ? ['#agenda', 'bi-calendar3-week', 'Agenda'] : null;
+    const photos = content.photos.length > 0 ? ['#foto', 'bi-images', `${content.photos.length} foto`] : null;
+    const order = isEditionOver(edition, phase) ? [photos, agenda] : [agenda, photos];
+    for (const [href, icon, label] of order.filter(Boolean)) {
+        actions.push(`<a class="ga-btn ${actions.length ? 'ga-btn-ghost' : 'ga-btn-primary'}" href="${href}">
+            <i class="bi ${icon}" aria-hidden="true"></i> ${escapeHtml(label)}</a>`);
     }
     if (registration && phase === 'past') {
         actions.push(`<a class="ga-btn ga-btn-ghost" href="${escapeHtml(registration)}" target="_blank" rel="noopener noreferrer">
@@ -374,26 +409,37 @@ export function renderSpeakerDetail(speaker, content) {
    ========================================================== */
 
 /**
- * Griglia "a mosaico": ogni foto occupa una o due celle a seconda della forma
- * e di `featured`. Le misure scritte nel JSON servono proprio a questo — e a
- * riservare lo spazio prima che l'immagine arrivi, senza salti di layout.
+ * Griglia "giustificata", come negli album fotografici: ogni riga ha la
+ * stessa altezza e ogni foto la larghezza che le spetta dalle sue
+ * proporzioni, quindi niente ritagli. Le proporzioni arrivano al CSS in
+ * `--ar`; le misure scritte nel JSON servono proprio a questo, e a riservare
+ * lo spazio prima che l'immagine arrivi, senza salti di layout.
+ *
+ * La prima foto in evidenza apre la galleria a tutta larghezza, e per
+ * questo usa la versione grande: la miniatura, stirata a 1300 px, si sgrana.
  */
-function tileShape(photo) {
-    if (photo.featured) return 'is-big';
-    const ratio = photo.width && photo.height ? photo.width / photo.height : 1.5;
-    if (ratio >= 1.9) return 'is-wide';
-    if (ratio <= 0.8) return 'is-tall';
-    return '';
-}
+export const photoRatio = (photo) =>
+    photo.width > 0 && photo.height > 0 ? Math.round((photo.width / photo.height) * 1000) / 1000 : 1.5;
 
 export function renderGallery(photos, { limit = Infinity } = {}) {
+    const spotlight = photos.findIndex((photo) => photo.featured);
     return photos.slice(0, limit).map((photo, index) => `
-        <button type="button" class="ga-tile ${tileShape(photo)}" data-photo="${index}"
+        <button type="button" class="ga-tile${index === spotlight ? ' is-spotlight' : ''}" data-photo="${index}"
+                style="--ar:${photoRatio(photo)}"
                 aria-label="${escapeHtml(photo.caption || `Foto ${index + 1} di ${photos.length}`)}">
-            <img src="${escapeHtml(safeUrl(photo.thumbUrl || photo.url, PLACEHOLDER_EVENT))}" alt="${escapeHtml(photo.caption ?? '')}"
-                 loading="lazy" decoding="async"
+            <img src="${escapeHtml(safeUrl(index === spotlight ? photo.url : photo.thumbUrl || photo.url, PLACEHOLDER_EVENT))}" alt="${escapeHtml(photo.caption ?? '')}"
+                 loading="${index < 8 ? 'eager' : 'lazy'}" decoding="async"
                  ${photo.width && photo.height ? `width="${photo.width}" height="${photo.height}"` : ''}>
             ${photo.caption ? `<span class="ga-tile-caption">${escapeHtml(photo.caption)}</span>` : ''}
+        </button>`).join('');
+}
+
+/** La striscia di miniature sotto la foto aperta. */
+export function renderFilmstrip(photos) {
+    return photos.map((photo, index) => `
+        <button type="button" class="ga-strip-thumb" data-strip="${index}" style="--ar:${photoRatio(photo)}"
+                aria-label="Foto ${index + 1} di ${photos.length}">
+            <img src="${escapeHtml(safeUrl(photo.thumbUrl || photo.url, PLACEHOLDER_EVENT))}" alt="" loading="lazy" decoding="async">
         </button>`).join('');
 }
 
@@ -484,6 +530,16 @@ export function renderTeaser(container, index, now = Date.now()) {
         past: 'Rivivi l’edizione: agenda e foto'
     }[phase] ?? 'Scopri Global Azure Torino';
 
+    // I due contenitori li riempie main.js: il conto alla rovescia se
+    // l'edizione deve ancora arrivare, le foto (caricate solo quando il banner
+    // entra nello schermo) se e gia passata.
+    const extra = phase === 'upcoming' && Number.isFinite(editionStart(edition))
+        ? '<span class="ga-teaser-countdown" data-teaser-countdown></span>'
+        : isEditionOver(edition, phase, now)
+            ? `<span class="ga-teaser-photos" data-teaser-photos="${escapeHtml(edition.id)}" hidden></span>`
+            : '';
+
+    container.dataset.phase = phase;
     container.innerHTML = `
         <span class="ga-teaser-year" aria-hidden="true">${escapeHtml(edition.id)}</span>
         <span class="ga-teaser-body">
@@ -491,6 +547,17 @@ export function renderTeaser(container, index, now = Date.now()) {
             <strong>${escapeHtml(edition.title || `Global Azure Torino ${edition.id}`)}</strong>
             ${edition.tagline || when ? `<span class="ga-teaser-text">${escapeHtml([when, edition.tagline].filter(Boolean).join(' — '))}</span>` : ''}
         </span>
-        <span class="ga-teaser-cta">${escapeHtml(cta)} <i class="bi bi-arrow-right" aria-hidden="true"></i></span>`;
+        <span class="ga-teaser-cta">${escapeHtml(cta)} <i class="bi bi-arrow-right" aria-hidden="true"></i></span>
+        ${extra}`;
     return 1;
+}
+
+/** Le foto del banner: prima quelle in evidenza, poi le altre, fino a `limit`. */
+export function renderTeaserPhotos(photos, limit = 5) {
+    const featured = photos.filter((photo) => photo.featured);
+    const rest = photos.filter((photo) => !photo.featured);
+    return [...featured, ...rest].slice(0, limit).map((photo, index) => `
+        <span class="ga-teaser-photo" style="--i:${index}">
+            <img src="${escapeHtml(safeUrl(photo.thumbUrl || photo.url, PLACEHOLDER_EVENT))}" alt="" loading="lazy" decoding="async">
+        </span>`).join('');
 }

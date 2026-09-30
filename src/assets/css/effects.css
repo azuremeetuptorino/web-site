@@ -1,0 +1,652 @@
+/* =========================================
+   EFFETTI
+   Tutto il movimento del sito sta qui: la hero della home, il conto alla
+   rovescia, le entrate allo scorrimento, l'inclinazione delle card, le luci
+   del footer e del banner Global Azure. Lo includono la home e la pagina
+   /global-azure/.
+
+   Una regola che vale ovunque in questo file: il contenuto non dipende mai
+   da un'animazione. Le entrate usano `animation-fill-mode: backwards`, cosi
+   finita l'animazione l'elemento torna agli stili normali (hover compresi),
+   e sotto `prefers-reduced-motion` in fondo al file si spegne tutto.
+   ========================================= */
+
+/* Serve per far ruotare i bordi a gradiente conico: una custom property
+   normale non si puo animare, una registrata come angolo si. */
+@property --fx-angle {
+    syntax: '<angle>';
+    inherits: false;
+    initial-value: 0deg;
+}
+
+@keyframes fx-spin { to { --fx-angle: 360deg; } }
+
+@keyframes fx-rise {
+    from { opacity: 0; transform: translateY(28px); filter: blur(8px); }
+    to { opacity: 1; transform: none; filter: none; }
+}
+
+@keyframes fx-pop {
+    from { opacity: 0; transform: translateY(18px) scale(0.96); }
+    to { opacity: 1; transform: none; }
+}
+
+@keyframes fx-shimmer {
+    from { background-position: 0% 50%; }
+    to { background-position: 200% 50%; }
+}
+
+@keyframes fx-drift {
+    0% { transform: translate3d(0, 0, 0) scale(1); }
+    50% { transform: translate3d(-6%, 8%, 0) scale(1.15); }
+    100% { transform: translate3d(5%, -4%, 0) scale(0.95); }
+}
+
+@keyframes fx-blink { 50% { opacity: 0; } }
+
+@keyframes fx-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(80, 230, 255, 0.55); }
+    50% { box-shadow: 0 0 0 7px rgba(80, 230, 255, 0); }
+}
+
+@keyframes fx-tick {
+    from { opacity: 0.2; transform: translateY(-35%); }
+    to { opacity: 1; transform: none; }
+}
+
+@keyframes fx-kenburns {
+    from { transform: scale(1.02) translate3d(0, 0, 0); }
+    to { transform: scale(1.14) translate3d(-3%, -2%, 0); }
+}
+
+/* ---------- Testo a gradiente che scorre ---------- */
+.text-gradient {
+    background: var(--gradient-text);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: fx-shimmer 6s linear infinite;
+}
+
+/* =========================================
+   HERO DELLA HOME
+   ========================================= */
+.hero-glow {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.55;
+    animation: fx-drift 20s ease-in-out infinite alternate;
+}
+
+.hero-glow-1 { width: 46vw; height: 46vw; max-width: 620px; max-height: 620px; top: -18%; right: -8%; background: #0078D4; }
+.hero-glow-2 { width: 34vw; height: 34vw; max-width: 460px; max-height: 460px; bottom: -10%; left: 18%; background: #6B4FD8; opacity: 0.4; animation-duration: 26s; }
+
+/*
+   Il contenuto occupa la parte della hero che si vede davvero: sotto la
+   testata e sopra il box "Chi siamo", che su desktop sale di meta della sua
+   altezza (circa 180 px) dentro la foto.
+*/
+.hero-content {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 135px 2rem 200px;
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(290px, 380px);
+    align-items: center;
+    gap: 3rem;
+    color: #FFFFFF;
+    will-change: transform, opacity;
+}
+
+.hero-copy { max-width: 720px; }
+
+.hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(8px);
+    font-size: 0.76rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #CFE8FF;
+}
+
+.hero-eyebrow-dot {
+    width: 8px;
+    height: 8px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--azure-cyan);
+    animation: fx-pulse 1.8s ease-in-out infinite;
+}
+
+.hero-title {
+    margin-top: 1.2rem;
+    font-size: clamp(2.3rem, 5.2vw, 4.6rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1.02;
+    text-wrap: balance;
+    text-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+}
+
+/* Il gradiente del testo non ha ombra: la toglie il clip, e resterebbe un alone sporco. */
+.hero-title .text-gradient { text-shadow: none; filter: drop-shadow(0 8px 30px rgba(0, 120, 212, 0.45)); }
+
+.hero-lead {
+    margin-top: 1.1rem;
+    font-size: clamp(1.02rem, 1.6vw, 1.3rem);
+    color: #C9DBF2;
+    min-height: 1.6em;
+}
+
+.hero-type { color: #FFFFFF; font-weight: 700; }
+
+.hero-caret {
+    display: inline-block;
+    width: 2px;
+    height: 1.05em;
+    margin-left: 3px;
+    vertical-align: -0.15em;
+    background: var(--azure-cyan);
+    animation: fx-blink 1s steps(1) infinite;
+}
+
+.hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    margin-top: 2rem;
+}
+
+/* ---------- Bottoni luminosi (hero e footer) ---------- */
+.hero-btn {
+    position: relative;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 0.9rem 1.45rem;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #FFFFFF;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, background-color 0.25s ease, border-color 0.25s ease;
+}
+
+.hero-btn-primary {
+    background: linear-gradient(120deg, #0078D4 0%, #2B88D8 45%, #00B7C3 100%);
+    box-shadow: 0 12px 34px rgba(0, 120, 212, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+/* Il lampo che attraversa il bottone al passaggio. */
+.hero-btn-primary::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -60%;
+    width: 45%;
+    background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+    transform: skewX(-20deg);
+    transition: left 0.7s ease;
+}
+
+.hero-btn-primary:hover::after { left: 120%; }
+
+.hero-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 18px 44px rgba(0, 120, 212, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.25); }
+
+.hero-btn-ghost {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(8px);
+}
+
+.hero-btn-ghost:hover { transform: translateY(-2px); background: rgba(255, 255, 255, 0.16); border-color: rgba(255, 255, 255, 0.45); }
+
+.hero-btn:focus-visible { outline: 3px solid var(--azure-cyan); outline-offset: 3px; }
+
+/* ---------- Card "Prossimo evento" ---------- */
+.hero-next-event {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    padding: 1.5rem 1.5rem 1.3rem;
+    border-radius: 22px;
+    color: #FFFFFF;
+    background: linear-gradient(160deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.04));
+    backdrop-filter: blur(16px) saturate(1.3);
+    -webkit-backdrop-filter: blur(16px) saturate(1.3);
+    box-shadow: 0 30px 80px rgba(2, 10, 28, 0.55);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+}
+
+.hero-next-event:hover { transform: translateY(-4px); box-shadow: 0 36px 90px rgba(2, 10, 28, 0.65), 0 0 40px rgba(80, 230, 255, 0.2); }
+
+.hero-next-event:focus-visible { outline: 3px solid var(--azure-cyan); outline-offset: 4px; }
+
+.hero-next-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--azure-cyan);
+}
+
+.hero-next-title { font-size: 1.25rem; line-height: 1.25; }
+
+.hero-next-meta {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    font-size: 0.86rem;
+    color: #C9DBF2;
+}
+
+.hero-next-meta i { color: var(--azure-cyan); }
+
+.hero-next-event .countdown { margin: 0.6rem 0 0.2rem; }
+
+.hero-next-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 0.4rem;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.hero-next-cta i { transition: transform 0.25s ease; }
+.hero-next-event:hover .hero-next-cta i { transform: translateX(4px); }
+
+/* ---------- Bordo a gradiente che ruota ----------
+   Un anello sottile disegnato con un conic-gradient e ritagliato con due
+   maschere: resta il bordo, il centro e trasparente. Lo usano la card del
+   prossimo evento, gli sponsor Diamond e il banner Global Azure. */
+.hero-next-event::before,
+.sponsor-card[data-tier="diamond"]::before,
+.ga-teaser::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    padding: 1.5px;
+    border-radius: inherit;
+    background: conic-gradient(from var(--fx-angle), rgba(80, 230, 255, 0.1), #50E6FF, #A18AFF, #0078D4, rgba(80, 230, 255, 0.1) 70%);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    animation: fx-spin 6s linear infinite;
+    pointer-events: none;
+}
+
+/* ---------- Entrata della hero ---------- */
+.hero-copy > *,
+.hero-next-event {
+    animation: fx-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+.hero-copy > :nth-child(1) { animation-delay: 0.1s; }
+.hero-copy > :nth-child(2) { animation-delay: 0.22s; }
+.hero-copy > :nth-child(3) { animation-delay: 0.36s; }
+.hero-copy > :nth-child(4) { animation-delay: 0.5s; }
+.hero-next-event { animation-delay: 0.3s; }
+
+/* Schermi larghi ma bassi (un portatile da 13"): layout.css porta la hero a
+   tutta altezza, e qui si stringe il resto. */
+@media (min-width: 901px) and (max-height: 780px) {
+    .hero-content { padding-top: 120px; padding-bottom: 175px; }
+    .hero-title { font-size: clamp(2.2rem, 4.2vw, 3.6rem); }
+}
+
+/* =========================================
+   CONTO ALLA ROVESCIA
+   Sempre su fondo scuro. La misura si regola con --cd-size.
+   ========================================= */
+.countdown {
+    --cd-size: 1.7rem;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.countdown-unit {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 0.55rem 0.3rem 0.45rem;
+    border-radius: 12px;
+    background: rgba(2, 10, 28, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    overflow: hidden;
+}
+
+.countdown-value {
+    display: block;
+    font-size: var(--cd-size);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+    background: linear-gradient(180deg, #FFFFFF 30%, #9FE9FF);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.countdown-value.is-tick { animation: fx-tick 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
+
+.countdown-label {
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #9FB6D6;
+}
+
+/* =========================================
+   ENTRATE ALLO SCORRIMENTO (reveal.js)
+   Nascosti solo sotto `.reveal-ready`, che mette il JavaScript.
+   ========================================= */
+.reveal-ready [data-reveal]:not(.is-visible),
+.reveal-ready [data-reveal-stagger]:not(.is-visible) > * {
+    opacity: 0;
+}
+
+.reveal-ready [data-reveal].is-visible {
+    animation: fx-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+.reveal-ready [data-reveal-stagger].is-visible > * {
+    animation: fx-pop 0.7s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+    animation-delay: calc(min(var(--i, 0), 12) * 70ms);
+}
+
+/* =========================================
+   INCLINAZIONE 3D (tilt.js)
+   Il JavaScript scrive --rx, --ry e la posizione del puntatore; qui si
+   decide cosa farne. Il riflesso segue il puntatore.
+   ========================================= */
+.sponsor-card,
+.ga-speaker,
+.ga-teaser {
+    position: relative;
+}
+
+.sponsor-card.is-tilting,
+.ga-speaker.is-tilting {
+    transform: perspective(800px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(-4px);
+}
+
+.ga-teaser.is-tilting {
+    transform: perspective(1400px) rotateX(calc(var(--rx, 0deg) * 0.4)) rotateY(calc(var(--ry, 0deg) * 0.4)) translateY(-3px);
+}
+
+.sponsor-card::after,
+.ga-speaker::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(240px circle at var(--mx, 50%) var(--my, 50%), rgba(80, 230, 255, 0.16), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.sponsor-card.is-tilting::after,
+.ga-speaker.is-tilting::after { opacity: 1; }
+
+/* =========================================
+   SPONSOR
+   ========================================= */
+.sponsor-card { isolation: isolate; }
+
+.sponsor-card[data-tier="diamond"] {
+    border-color: transparent;
+    box-shadow: 0 12px 34px rgba(0, 120, 212, 0.14);
+}
+
+.sponsor-card[data-tier="diamond"]:hover { box-shadow: var(--glow); }
+
+.sponsor-tier[data-tier="diamond"] .sponsor-tier-title {
+    background: linear-gradient(100deg, #0078D4, #50E6FF 50%, #8661C5);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+/* =========================================
+   BANNER GLOBAL AZURE IN HOME
+   ========================================= */
+.ga-teaser {
+    flex-wrap: wrap;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
+}
+
+.ga-teaser::after { padding: 2px; }
+
+.ga-teaser:hover { box-shadow: 0 30px 80px rgba(2, 10, 28, 0.35), 0 0 60px rgba(80, 230, 255, 0.18); }
+
+.ga-teaser-year {
+    background-size: 200% auto;
+    background-image: var(--gradient-text);
+    animation: fx-shimmer 6s linear infinite;
+}
+
+.ga-teaser-cta { position: relative; z-index: 1; transition: background-color 0.25s ease; }
+.ga-teaser:hover .ga-teaser-cta { background: rgba(255, 255, 255, 0.2); }
+
+/* Il testo non si deve stringere per fare posto al conto alla rovescia:
+   se non c'e spazio, e il conto a scendere sotto. */
+.ga-teaser-body { flex: 1 1 320px; }
+
+.ga-teaser-countdown {
+    --cd-size: 1.9rem;
+    flex: 1 1 100%;
+    max-width: 440px;
+}
+
+/* Le foto dell'edizione passata: una striscia che si muove piano. */
+.ga-teaser-photos {
+    flex: 1 1 100%;
+    display: grid;
+    grid-template-columns: 2fr repeat(4, 1fr);
+    gap: 8px;
+    height: 150px;
+    margin-top: 0.4rem;
+}
+
+.ga-teaser-photo {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.06);
+    animation: fx-pop 0.7s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+    animation-delay: calc(var(--i, 0) * 90ms);
+}
+
+.ga-teaser-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    animation: fx-kenburns 14s ease-in-out infinite alternate;
+    animation-delay: calc(var(--i, 0) * -2.5s);
+}
+
+.ga-teaser-photo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(2, 10, 28, 0.45), transparent 60%);
+}
+
+@media (max-width: 900px) {
+    .ga-teaser-photos { grid-template-columns: 2fr 1fr 1fr; height: 120px; }
+    .ga-teaser-photo:nth-child(n + 4) { display: none; }
+    .ga-teaser-countdown { --cd-size: 1.5rem; max-width: none; }
+}
+
+/* =========================================
+   FOOTER
+   ========================================= */
+footer {
+    overflow: hidden;
+    isolation: isolate;
+    background:
+        radial-gradient(60% 80% at 50% 0%, rgba(0, 120, 212, 0.28) 0%, transparent 70%),
+        linear-gradient(180deg, #002050 0%, var(--azure-night) 100%);
+}
+
+.footer-aurora { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+
+.footer-aurora span {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    opacity: 0.35;
+    animation: fx-drift 22s ease-in-out infinite alternate;
+}
+
+.footer-aurora span:nth-child(1) { width: 420px; height: 420px; top: -180px; left: -80px; background: #0078D4; }
+.footer-aurora span:nth-child(2) { width: 360px; height: 360px; top: -120px; right: -60px; background: #6B4FD8; animation-duration: 28s; }
+.footer-aurora span:nth-child(3) { width: 300px; height: 300px; bottom: -160px; left: 40%; background: #00B7C3; opacity: 0.22; animation-duration: 34s; }
+
+/* Una griglia di puntini che sfuma verso il basso, come nella hero di Global Azure. */
+footer::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.14) 1px, transparent 1.4px);
+    background-size: 24px 24px;
+    -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 70%);
+    mask-image: linear-gradient(180deg, #000 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.footer-cta {
+    max-width: 720px;
+    margin: 1rem auto 3.5rem;
+    padding-bottom: 3rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.footer-cta-eyebrow {
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--azure-cyan);
+}
+
+.footer-cta-title {
+    margin: 0.6rem 0 0.8rem;
+    font-size: clamp(2rem, 5vw, 3.4rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+}
+
+.footer-cta-text { color: #C9DBF2; font-size: 1rem; margin-bottom: 1.8rem; }
+
+.channel-btn:hover { box-shadow: 0 10px 28px rgba(0, 0, 0, 0.3), 0 0 24px rgba(80, 230, 255, 0.25); }
+
+.social-links a {
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.social-links a:hover {
+    background: linear-gradient(135deg, #0078D4, #00B7C3);
+    box-shadow: 0 0 0 4px rgba(80, 230, 255, 0.15), 0 10px 26px rgba(0, 120, 212, 0.5);
+}
+
+/* =========================================
+   SCHERMO STRETTO
+   ========================================= */
+@media (max-width: 900px) {
+    /* Una colonna: prima il titolo, poi la card. Sotto resta lo spazio per
+       i 60 px con cui il box "Chi siamo" sale sulla foto. */
+    .hero-content {
+        grid-template-columns: 1fr;
+        align-content: center;
+        gap: 1.4rem;
+        padding: 88px 1rem 84px;
+    }
+
+    .hero-title { font-size: clamp(1.9rem, 8vw, 2.6rem); margin-top: 0.9rem; }
+    .hero-lead { font-size: 0.98rem; margin-top: 0.8rem; }
+    .hero-actions { margin-top: 1.2rem; gap: 0.6rem; }
+    .hero-btn { flex: 1 1 0; padding: 0.8rem 0.9rem; font-size: 0.88rem; white-space: nowrap; }
+
+    .hero-next-event { padding: 1rem 1.1rem; gap: 0.35rem; border-radius: 18px; }
+    .hero-next-title { font-size: 1.05rem; }
+    .hero-next-cta { display: none; }
+    .hero-next-event .countdown { --cd-size: 1.3rem; margin-top: 0.3rem; }
+    .countdown-unit { padding: 0.4rem 0.2rem 0.35rem; }
+
+    .footer-cta { margin-bottom: 2.5rem; padding-bottom: 2.5rem; }
+    .footer-cta .hero-btn { flex: 0 0 auto; }
+}
+
+/* Su un telefono basso (SE, landscape) il luogo e la prima cosa da sacrificare. */
+@media (max-width: 900px) and (max-height: 700px) {
+    .hero-next-meta + .hero-next-meta { display: none; }
+    .hero-lead { display: none; }
+}
+
+/* =========================================
+   MENO MOVIMENTO
+   Resta tutto al suo posto e visibile; spariscono le cose che si muovono
+   da sole e le inclinazioni.
+   ========================================= */
+@media (prefers-reduced-motion: reduce) {
+    .text-gradient,
+    .hero-glow,
+    .hero-eyebrow-dot,
+    .hero-caret,
+    .footer-aurora span,
+    .ga-teaser-year,
+    .ga-teaser-photo,
+    .ga-teaser-photo img,
+    .countdown-value.is-tick,
+    .hero-copy > *,
+    .hero-next-event,
+    .hero-next-event::before,
+    .sponsor-card[data-tier="diamond"]::before,
+    .ga-teaser::after,
+    .reveal-ready [data-reveal].is-visible,
+    .reveal-ready [data-reveal-stagger].is-visible > * {
+        animation: none !important;
+    }
+
+    .hero-caret { display: none; }
+
+    .hero-btn-primary::after { display: none; }
+
+    .sponsor-card.is-tilting,
+    .ga-speaker.is-tilting,
+    .ga-teaser.is-tilting { transform: none; }
+}

@@ -234,42 +234,9 @@
 .member-bio { font-size: 0.8rem; color: var(--text-muted); line-height: 1.35; }
 
 /* =========================================
-   3. CALENDARIO EVENTI + TASTI UFFICIALI
+   3. CALENDARIO EVENTI
+   I tasti Meetup e Sessionize stanno nella hero.
    ========================================= */
-.event-actions {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-}
-
-.btn-event-action {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 0.6rem 1.1rem;
-    border-radius: 6px;
-    font-size: 0.88rem;
-    font-weight: 700;
-    color: white !important;
-    transition: var(--transition);
-    box-shadow: var(--shadow-sm);
-}
-
-.btn-meetup { background-color: var(--color-meetup); }
-.btn-meetup:hover {
-    background-color: #d92d4c;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(246, 64, 96, 0.4);
-}
-
-.btn-sessionize { background-color: var(--color-sessionize); }
-.btn-sessionize:hover {
-    background-color: #128e75;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(26, 179, 148, 0.4);
-}
-
 .swiper-container-wrapper {
     max-width: 1280px;
     margin: 0 auto;
@@ -620,8 +587,7 @@ footer {
     .card,
     .member-card,
     .sponsor-card,
-    .channel-btn,
-    .btn-event-action {
+    .channel-btn {
         transition: none;
     }
 }
@@ -648,11 +614,6 @@ footer {
         -webkit-mask-image: linear-gradient(to right, transparent, black 4%, black 96%, transparent);
         mask-image: linear-gradient(to right, transparent, black 4%, black 96%, transparent);
     }
-
-    /* I due bottoni Meetup e Sessionize vanno a capo sotto al titolo: che
-       occupino tutta la riga invece di restare due monconi disallineati. */
-    .event-actions { width: 100%; }
-    .btn-event-action { flex: 1 1 auto; justify-content: center; }
 
     /* Un logo di testa su un telefono non puo essere alto quanto su un monitor:
        sopra il gold le fasce si appiattiscono tutte sulla stessa misura. */

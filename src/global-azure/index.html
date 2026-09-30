@@ -25,6 +25,7 @@
     <link rel="stylesheet" href="/assets/css/base.css">
     <link rel="stylesheet" href="/assets/css/layout.css">
     <link rel="stylesheet" href="/assets/css/components.css">
+    <link rel="stylesheet" href="/assets/css/effects.css">
     <link rel="stylesheet" href="/assets/css/global-azure.css">
 </head>
 <body class="page-inner ga-page">
@@ -63,6 +64,7 @@
                 <span class="ga-orb ga-orb-2"></span>
                 <span class="ga-orb ga-orb-3"></span>
                 <span class="ga-grid"></span>
+                <canvas class="ga-network" id="ga-network"></canvas>
             </div>
 
             <div class="container ga-hero-inner">
@@ -73,6 +75,8 @@
                 </h1>
                 <p class="ga-hero-tagline" id="ga-tagline" hidden></p>
                 <ul class="ga-hero-meta" id="ga-meta"></ul>
+                <!-- Solo per un'edizione in arrivo: lo riempie global-azure-page.js. -->
+                <div class="ga-hero-countdown" id="ga-countdown" hidden></div>
                 <div class="ga-hero-actions" id="ga-actions"></div>
 
                 <nav class="ga-edition-switch" id="ga-edition-switch" aria-label="Scegli l'edizione"></nav>
@@ -82,7 +86,7 @@
         <!-- ================= NUMERI ================= -->
         <div class="ga-stats-wrap" id="ga-stats-wrap" hidden>
             <div class="container">
-                <dl class="ga-stats" id="ga-stats"></dl>
+                <dl class="ga-stats" id="ga-stats" data-reveal-stagger></dl>
             </div>
         </div>
 
@@ -109,35 +113,35 @@
         <!-- ================= AGENDA ================= -->
         <section class="ga-section" id="agenda" hidden>
             <div class="container">
-                <div class="ga-section-head">
+                <div class="ga-section-head" data-reveal>
                     <p class="ga-section-eyebrow">Programma</p>
                     <h2 class="ga-section-title">Agenda</h2>
                     <p class="ga-section-lead">Tocca una sessione per leggere l'abstract e conoscere chi la presenta.</p>
                 </div>
                 <div class="ga-track-filter" id="ga-track-filter" role="group" aria-label="Filtra per traccia"></div>
-                <div class="ga-agenda" id="ga-agenda"></div>
+                <div class="ga-agenda" id="ga-agenda" data-reveal></div>
             </div>
         </section>
 
         <!-- ================= SPEAKER ================= -->
         <section class="ga-section ga-section-alt" id="speaker" hidden>
             <div class="container">
-                <div class="ga-section-head">
+                <div class="ga-section-head" data-reveal>
                     <p class="ga-section-eyebrow">Sul palco</p>
                     <h2 class="ga-section-title">Speaker</h2>
                 </div>
-                <div class="ga-speakers" id="ga-speakers"></div>
+                <div class="ga-speakers" id="ga-speakers" data-reveal-stagger></div>
             </div>
         </section>
 
         <!-- ================= FOTO ================= -->
         <section class="ga-section ga-section-dark" id="foto" hidden>
             <div class="container">
-                <div class="ga-section-head">
+                <div class="ga-section-head" data-reveal>
                     <p class="ga-section-eyebrow">Com'e andata</p>
                     <h2 class="ga-section-title">Foto</h2>
                 </div>
-                <div class="ga-gallery" id="ga-gallery"></div>
+                <div class="ga-gallery" id="ga-gallery" data-reveal-stagger></div>
                 <p class="ga-more">
                     <button type="button" class="ga-btn ga-btn-ghost" id="ga-gallery-more" hidden></button>
                 </p>
@@ -147,7 +151,7 @@
         <!-- ================= SPONSOR ================= -->
         <section class="ga-section" id="sponsor" hidden>
             <div class="container">
-                <div class="ga-section-head">
+                <div class="ga-section-head" data-reveal>
                     <p class="ga-section-eyebrow">Grazie a</p>
                     <h2 class="ga-section-title">Sponsor</h2>
                 </div>
@@ -162,12 +166,12 @@
         <!-- ================= EDIZIONI ================= -->
         <section class="ga-section ga-section-alt" id="edizioni" hidden>
             <div class="container">
-                <div class="ga-section-head">
+                <div class="ga-section-head" data-reveal>
                     <p class="ga-section-eyebrow">Dal 2018</p>
                     <h2 class="ga-section-title">Le edizioni</h2>
                     <p class="ga-section-lead">Ogni anno, dal 2018, Torino partecipa al Global Azure con una giornata di talk della community.</p>
                 </div>
-                <div class="ga-editions" id="ga-editions"></div>
+                <div class="ga-editions" id="ga-editions" data-reveal-stagger></div>
             </div>
         </section>
 
@@ -186,27 +190,37 @@
         </div>
     </dialog>
 
-    <!-- Lightbox delle foto -->
+    <!--
+        Lightbox delle foto. Lo sfondo e la stessa foto, sfocata; sotto, la
+        striscia delle miniature. La scrive global-azure-page.js all'apertura.
+    -->
     <dialog class="ga-lightbox" id="ga-lightbox" aria-label="Foto">
+        <div class="ga-lightbox-ambient" aria-hidden="true"></div>
+        <div class="ga-lightbox-top">
+            <span class="ga-lightbox-counter"></span>
+            <button type="button" class="ga-lightbox-btn ga-lightbox-play" data-lightbox="play" aria-label="Avvia la presentazione" aria-pressed="false">
+                <i class="bi bi-play-fill" aria-hidden="true"></i>
+            </button>
+            <button type="button" class="ga-lightbox-btn ga-lightbox-close" data-lightbox="close" aria-label="Chiudi">
+                <i class="bi bi-x-lg" aria-hidden="true"></i>
+            </button>
+            <span class="ga-lightbox-progress" aria-hidden="true"></span>
+        </div>
         <div class="ga-lightbox-stage">
             <img class="ga-lightbox-image" alt="">
+            <button type="button" class="ga-lightbox-btn ga-lightbox-prev" data-lightbox="prev" aria-label="Foto precedente">
+                <i class="bi bi-chevron-left" aria-hidden="true"></i>
+            </button>
+            <button type="button" class="ga-lightbox-btn ga-lightbox-next" data-lightbox="next" aria-label="Foto successiva">
+                <i class="bi bi-chevron-right" aria-hidden="true"></i>
+            </button>
         </div>
-        <div class="ga-lightbox-bar">
-            <span class="ga-lightbox-counter"></span>
-            <p class="ga-lightbox-caption" hidden></p>
-        </div>
-        <button type="button" class="ga-lightbox-btn ga-lightbox-prev" data-lightbox="prev" aria-label="Foto precedente">
-            <i class="bi bi-chevron-left" aria-hidden="true"></i>
-        </button>
-        <button type="button" class="ga-lightbox-btn ga-lightbox-next" data-lightbox="next" aria-label="Foto successiva">
-            <i class="bi bi-chevron-right" aria-hidden="true"></i>
-        </button>
-        <button type="button" class="ga-lightbox-btn ga-lightbox-close" data-lightbox="close" aria-label="Chiudi">
-            <i class="bi bi-x-lg" aria-hidden="true"></i>
-        </button>
+        <p class="ga-lightbox-caption" hidden></p>
+        <div class="ga-lightbox-strip" id="ga-lightbox-strip"></div>
     </dialog>
 
     <footer id="contacts">
+        <div class="footer-aurora" aria-hidden="true"><span></span><span></span><span></span></div>
         <div class="footer-brand" data-site="brand.name">Azure Meetup Torino</div>
         <p class="footer-intro" data-site="footer.intro">Entra in contatto con noi o unisciti ai nostri canali per restare aggiornato.</p>
 
@@ -231,7 +245,7 @@
             </button>
         </div>
 
-        <div class="social-links" data-site-list="social">
+        <div class="social-links" data-site-list="social" data-reveal-stagger>
             <a href="https://it.linkedin.com/company/azure-meetup-torino" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
             <a href="https://www.youtube.com/@AzureMeetupTorino" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
             <a href="https://www.instagram.com/azuremeetuptorino" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
