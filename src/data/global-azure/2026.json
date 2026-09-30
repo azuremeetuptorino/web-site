@@ -1,0 +1,654 @@
+{
+    "version": 1,
+    "tracks": [
+        {
+            "id": "data-dev-and-ai",
+            "name": "Data. Dev and AI",
+            "color": "#0078D4"
+        },
+        {
+            "id": "security",
+            "name": "Security",
+            "color": "#D13438"
+        },
+        {
+            "id": "infrastructure",
+            "name": "Infrastructure",
+            "color": "#107C10"
+        },
+        {
+            "id": "modernwork-copilot",
+            "name": "ModernWork + Copilot",
+            "color": "#8764B8"
+        }
+    ],
+    "speakers": [
+        {
+            "id": "alberto-annunziata",
+            "name": "Alberto Annunziata",
+            "tagline": "Pa Extertise, Tech Lead",
+            "bio": "Tech Lead in ambito .Net. Fan boy .Net dai tempi universitari, dopo anni intensi tra codici e (fate un pò voi), Azure oggi è al centro della mia curiosità.",
+            "photoUrl": "https://cdn.sessionize.com/image/46a4-200o200o2-T6M9vefoGP4GFqjPDB1pQ6.jpg"
+        },
+        {
+            "id": "alberto-jacomuzzi",
+            "name": "Alberto Jacomuzzi",
+            "tagline": "Microsoft Cloud Director @PA Expertise - Community Coordinator @Azure Meetup Torino - Ad. professor ITS ICT Piemonte",
+            "bio": "Entrepreneur. Digital System Innovator\nSoftware and Solution Architect - Azure Enthusiast\nMicrosoft Certified Professional certified on Azure and Modern Work technologies",
+            "photoUrl": "https://cdn.sessionize.com/image/3aa0-200o200o2-XJpio1LvA498tDAetgRf9Y.jpg"
+        },
+        {
+            "id": "alessandro-appiani",
+            "name": "Alessandro Appiani",
+            "tagline": "IT Consultant & Trainer",
+            "bio": "Alessandro Appiani è Microsoft Certified Trainer ed è stato per 3 anni Microsoft MVP sulle tecnologie Teams (Office Servers & Services).\nAlessandro è certificato sulle tecnologie Microsoft dal 1995 e dal 1996 è consulente e speaker in eventi e conferenze tecniche.\nCon il ruolo di Cloud Architect in Durante SpA, l’azienda che ha incorporato Pulsar IT di cui è stato fondatore e CTO, lavora con i clienti per definire le migliori Architetture, le Best Practice, e le Roadmap di implementazione delle tecnologie Microsoft 365 con particolare attenzione alle tematiche di Identity, Security, e Collaboration.\nAlessandro è laureato “summa cum laude” in Scienze dell’Informazione all'università di Milano con una tesi sulla Knowledge Representation ed è stato socio fondatore, nel 1988, dell’Associazione Italiana Intelligenza Artificiale.",
+            "photoUrl": "https://cdn.sessionize.com/image/102e-200o200o2-V5g9Tg4ZKCBQACELUhGE8r.jpg"
+        },
+        {
+            "id": "alessandro-dellavedova",
+            "name": "Alessandro Dellavedova",
+            "tagline": "Sr. Systems Engineer - South EMEA - Qumulo",
+            "bio": "In 30 anni di carriera IT ne ho viste un po' di tutti i colori, inclusa la nascita del Cloud. Negli ultimi anni ho aiutato circa un centinaio di clienti a risolvere le problematiche legate ai dati non strutturati in Cloud, on-premise e all'Edge, in settori che spaziano dal Manufacturing alla Difesa, passando per Automotive, Healthcare e Media and Entertainment.",
+            "photoUrl": "https://cdn.sessionize.com/image/d439-200o200o2-WNWzaSHvp9YsUS6NtTFga.jpg"
+        },
+        {
+            "id": "andrea-benedetti",
+            "name": "Andrea Benedetti",
+            "tagline": "Microsoft",
+            "bio": "Andrea Benedetti, già responsabile del team Business Intelligence della divisione servizi professionali di Microsoft Western Europe, è stato il Technical Evangelism Director di Microsoft Italia.\nOggi si occupa di data strategy per i clienti Enterprise.\nPrima di entrare in Microsoft, è stato riconosciuto dall'azienda di Seattle come MVP (Most Valuable Professional) dal 2004 al 2012, ha contribuito alla nascita della community nazionale di riferimento per le tecnologie di data platform.\nÈ intervenuto, e interviene tuttora, come relatore in numerosi workshop, conferenze, seminari e roadshow.\nAppassionato di alpinismo (in solitaria) e ultra trail.",
+            "photoUrl": "https://cdn.sessionize.com/image/ec7d-200o200o2-XNyXUY2Mio7ZffXiZJytdC.jpg"
+        },
+        {
+            "id": "andrea-ceroni",
+            "name": "Andrea Ceroni",
+            "tagline": "Software Architect @ Elfo - Microsoft MVP for Azure and Developer Technologies - Azure Solutions Architect",
+            "bio": "Senior software architect, R&D team @Elfo.\nI started my career working for advertising and cinema companies, using Maya and Python.\nI have been working in .NET C# for more than ten years, with special interest in Azure cloud architectures, Infrastructure as Code, mobile applications, async/concurrent code and functional programming.\nI'm a proud Microsoft MVP and I do my best to support communities.\nMountains and MTB enthusiast!\nMarried with Federica, we have a golden retriever, Mila.",
+            "photoUrl": "https://cdn.sessionize.com/image/369b-200o200o2-Qfj2n9M1y7XXkdP7xkbGsK.jpeg",
+            "badges": [
+                "Microsoft MVP"
+            ]
+        },
+        {
+            "id": "andrea-mennuni",
+            "name": "Andrea Mennuni",
+            "tagline": "Senior Systems Engineer - Durante SpA",
+            "bio": "Andrea è Senior Systems Engineer in Durante, si occupa principalmente di Microsoft Exchange, Microsoft 365, Entra ID, Security e Active Directory. Ha un passato come sistemista Unix (HP-UX, Solaris e Linux) e VMware.",
+            "photoUrl": "https://cdn.sessionize.com/image/b336-200o200o2-e6-5dd2-4c04-aec9-be402000f9a2.9fcf9158-6fa6-4b03-b21b-8c4db3936aee.jpg"
+        },
+        {
+            "id": "antonio-buonaiuto",
+            "name": "Antonio Buonaiuto",
+            "tagline": "Azure Delivery Manager | PA Expertise - Alveo Group",
+            "bio": "Antonio lavora come Azure Delivery Manager presso Expertise - Gruppo Alveo, azienda italiana che fornisce soluzioni su tutto il mondo Microsoft, con sedi a Bologna, Milano, Udine, Torino, Roma e Cagliari. Antonio è un ingegnere delle Telecomunicazioni (DIEE, Cagliari) e da quasi vent'anni lavora in ambito IT, da sempre su tecnologie Microsoft. Dopo aver trascorso diversi anni nella programmazione software, si è concentrato nella progettazione di soluzioni per il cloud Azure gestendo un team di architetti stellari!. Attualmente segue la parte di prevendita tecnica, progettazione e garantisce che l'implementazione delle architetture segua le \"Best Practices\" definite da Microsoft.\nAntonio è anche coordinatore del Azure Meetup Casteddu, community nata nel 2025 per affrontare temi legati al Cloud di Microsoft.\nAntonio è membro della community Azure Meetup Torino che ogni anno organizza il Global Azure Torino.\n\nhobby: scacchi, cucina, sports e BBQ!",
+            "photoUrl": "https://cdn.sessionize.com/image/b175-200o200o2-XeqUwRYbof16ipfQeRW5sC.png"
+        },
+        {
+            "id": "davide-bellone",
+            "name": "Davide Bellone",
+            "tagline": "Principal Backend developer | Microsoft MVP | Blogger",
+            "bio": "Davide Bellone is a Principal Backend Developer, Content Creator and Microsoft MVP.\n\nHe loves to explore new tools and libraries, going the extra mile when writing blog posts and delivering tech sessions.\n\nHe also runs Code4IT.dev, a tech blog where he publishes articles about .NET, Azure, Software Architecture, Testing, and other stuff that most Backend Developers will find interesting.",
+            "photoUrl": "https://cdn.sessionize.com/image/ab7c-200o200o2-TzD4AU6EPPk2ZQF7fdya5p.jpg",
+            "badges": [
+                "Microsoft MVP"
+            ]
+        },
+        {
+            "id": "davide-salsi",
+            "name": "Davide Salsi",
+            "tagline": "Head of User Endpoint @Impresoft 4ward",
+            "bio": "Davide currently works as a Head of User Endpoint at Impresoft 4ward where he has over 10 years of work experience implementing Microsoft Endpoint Management solutions both in On-Premise and Cloud (Microsoft Configuration Manager and Microsoft Intune).\nHe also deals with Modern Deployment solutions for the Windows 10 operating systems distribution and Microsoft 365 Apps suite.\n\nIn 2021, Microsoft awarded him the title \"Most Valuable Professional\" (MVP) in the Security category (Intune specialization) for sharing his knowledge with others.\n\nDavide is Co-Founder of the first Italian User Group focused on Microsoft Intune (https://www.linkedin.com/groups/9007892/); this user group based on Linkedin is an open and collaborative technology community, created to discuss, improve and disseminate device management technology through Microsoft solutions. He is also a contributor to Cloud Community (www.cloudcommunity.it), the Italian community dedicated to Cloud management and governance.",
+            "photoUrl": "https://cdn.sessionize.com/image/82a6-200o200o2-9HzR3oWPidB1DZRwq3r7DY.jpg"
+        },
+        {
+            "id": "elena-cazzagon",
+            "name": "Elena Cazzagon",
+            "tagline": "Cloud Solution Architect",
+            "bio": "Microsoft Cloud Solution Architect with a focus on identity and security. I help organizations design and operate modern identity solutions using Microsoft Entra to enable secure access and governance.",
+            "photoUrl": "https://cdn.sessionize.com/image/ddf3-200o200o2-3onHMikFZjeJ1QL3BTwjtH.jpg"
+        },
+        {
+            "id": "emanuele-ciminaghi",
+            "name": "Emanuele Ciminaghi",
+            "tagline": "V-Valley, Azure Cloud Solution Architect | Microsoft Certified Trainer",
+            "bio": "\"Aiuto le aziende a trasformare requisiti complessi in infrastrutture Cloud scalabili, sicure ed efficienti.\"\n\nSono un Cloud Solution Architect e MCT con una forte specializzazione sulle tecnologie Microsoft Azure. Dal 2024 faccio parte del team di V-Valley / Esprinet, dove progetto architetture cloud e guido percorsi di formazione tecnica.",
+            "photoUrl": "https://cdn.sessionize.com/image/d4c8-200o200o2-VqmrAo47uKQXguX3Zgq6L6.jpg",
+            "badges": [
+                "MCT"
+            ]
+        },
+        {
+            "id": "fabio-santini",
+            "name": "Fabio Santini",
+            "tagline": "Senior Vice President Europe - Expert AI",
+            "bio": "Fabio Santini ha un’esperienza più che ventennale nel mondo dell’IT, che ha vissuto da protagonista negli anni in Microsoft Italia. Entrato in azienda nel 2002 con il ruolo di Net Developer Evangelist, nel tempo si è impegnato nel rapporto con sviluppatori e partner, anche a livello globale, prima di ricoprire per oltre sei anni il ruolo di One Commercial Partner and Small, Medium and Corporate Leader.\n\nAppassionato di informatica, mette a disposizione dei più giovani la sua esperienza insegnando coding. È Advisory Board Member di Cosbi, Board Member di blinkoo e Director dell’Ocp Program in Artificial Intelligence della Graduate School of Management del Polimi.\n\nDa un anno ricopre il ruolo di Senior Vice President Europe in Expert AI, società esperta nell'innovare i processi di business dei clienti con l'intelligenza artificiale.",
+            "photoUrl": "https://cdn.sessionize.com/image/9918-200o200o2-Y7Wxwzn6f3XMvvPsbfu4DZ.jpg"
+        },
+        {
+            "id": "francesco-facco",
+            "name": "Francesco Facco",
+            "tagline": "Senior Systems Specialist",
+            "bio": "Francesco è Senior Systems Specialist in Var Group SpA dove si occupa principalmente di Identity, Access e Modern Device Management.\nAppassionato ed entusiasta delle tecnologie, Microsoft cloud in particolare, ha oltre 15 anni di esperienza nella gestione di devices e sistemi Data Center. E' certificato Microsoft a livello Expert su Enterprise Administration ed Azure Solutions.",
+            "photoUrl": "https://cdn.sessionize.com/image/3437-200o200o2-VDM64jArJgW2yUobuWYQct.png"
+        },
+        {
+            "id": "giulia-spinetti",
+            "name": "Giulia Spinetti",
+            "tagline": "Could Solution Architect at Microsoft",
+            "bio": "Giulia Spinetti is a Cloud Solution Architect at Microsoft, where she has been working since 2022. With a background in IT that started in 2015, she has built solid experience across modern cloud and enterprise technologies. She is passionate about continuous learning and strongly believes in sharing knowledge with the community through talks, workshops, and technical discussions.",
+            "photoUrl": "https://cdn.sessionize.com/image/74cc-200o200o2-wwNtp8iVqh62sEHHQYWxq1.png"
+        },
+        {
+            "id": "giulio-sciarappa",
+            "name": "Giulio Sciarappa",
+            "tagline": "Enterprise Architect, Head of Azure & AI",
+            "bio": "Enterprise architect with multiple job experiences in different fields, from banking to aerospace, with a spice of DevOps and other less known methodologies",
+            "photoUrl": "https://cdn.sessionize.com/image/67f0-200o200o2-Bv46mWRJnrWdYAeSWeHUoM.jpg"
+        },
+        {
+            "id": "leonardo-rizzi",
+            "name": "Leonardo Rizzi",
+            "tagline": "Senior Cloud Engineer - PA Expertise",
+            "bio": "Leonardo lavora come Azure Cloud Engineer presso PA Expertise",
+            "photoUrl": "https://cdn.sessionize.com/image/a56b-200o200o2-s2Bmq9kbqQsPWcTStyBQdG.jpg"
+        },
+        {
+            "id": "livio-chiapparo",
+            "name": "Livio Chiapparo",
+            "tagline": "Welol, Senior System Engineer",
+            "bio": "Ho cominciato ad appassionarmi di informatica da quando ho ricevuto il mio primo Personal Computer, un IBM PS/1. Da allora ho avuto il privilegio di assistere a una radicale trasformazione del settore in oltre tre decenni di evoluzione tecnologica.\n\nHo lavorato in diverse aziende, su diverse piattaforme informatiche, acquisendo una vasta esperienza nel campo dell'infrastruttura IT, del networking e della sicurezza informatica, occupando ruoli sempre più sfidanti e stimolanti.\n\nHo trascorso gli ultimi anni a gestire progetti di migrazione verso il cloud di Microsoft, aiutando le aziende a sfruttarne i vantaggi in termini di scalabilità e flessibilità. Grazie alla mia esperienza, sono in grado di fornire un supporto completo per l'implementazione e la gestione di soluzioni cloud, garantendo sempre la massima efficienza e sicurezza.\n\nP.s. Nessun WordStar 7.0 è stato maltrattato per scrivere quanto sopra!",
+            "photoUrl": "https://cdn.sessionize.com/image/8331-200o200o2-3XEGx1VG8VpKh12jzokXwQ.jpg"
+        },
+        {
+            "id": "lorenzo-grasseni",
+            "name": "Lorenzo Grasseni",
+            "tagline": "CEO Lorenzograsseni.IT , IT & Security Consultant Overnet",
+            "bio": "Diplomato nel 1990, MCT Trainer , certificato Microsoft in ambienti M365 e in particolare Security. Ho maturato esperienze in tecnologie di virtualizzazione (VmWare) e VDI (Citrix - Microsoft).\nHo fondato la lorenzograsseni.IT nel 2008 con particolare riguardo alla gestione dell'identita' , sia in ambienti on-prem che hybrid, focalizzando l'attezione sulla security nel mondo Microsoft.\nDal 2018 faccio parte del team di consulenza di Overnet Education.",
+            "photoUrl": "https://cdn.sessionize.com/image/a27c-200o200o2-43wYkuyhvYp3Lm57Rz59nR.jpg"
+        },
+        {
+            "id": "luca-torresi",
+            "name": "Luca Torresi",
+            "tagline": "Cloud Solutions Architect | Microsoft (Azure) MVP",
+            "bio": "As a Cloud Engineer with a strong focus on Microsoft On-premises and Cloud solutions, I specialize in Hybrid and Cloud infrastructures.\nWith extensive hands-on experience in a wide range of IT solutions. including server management, Fortinet Security Technologies, Antivirus solutions, backup systems, and advanced network solutions, I bring a well-rounded expertise to every project.\n\nOver the years, I’ve developed a deep understanding of cloud technologies, consistently delivering reliable and scalable solutions that meet business needs.\nMy adaptability and commitment to learning ensure that I stay at the forefront of this ever-evolving industry.\n\nI believe that my greatest strength lies in my ability to quickly acquire new skills, allowing me to continuously innovate and improve the solutions I provide.",
+            "photoUrl": "https://cdn.sessionize.com/image/2d42-200o200o2-nChs9VWtw7i91uBovow4Mm.png",
+            "badges": [
+                "Microsoft MVP"
+            ]
+        },
+        {
+            "id": "marco-passanisi",
+            "name": "Marco Passanisi",
+            "tagline": "Cloud Security Architect | Microsoft MVP",
+            "bio": "A seasoned Security Architect with over 25 years of experience in infrastructure and cybersecurity, backed by multiple Microsoft certifications. Currently at Protiviti, he specializes in helping organizations adopt cutting-edge security solutions to protect data, identities, devices, applications, and cloud workloads. His expertise spans Identity & Access Management, XDR, and SIEM, with a strong focus on enterprise security strategy and risk mitigation.",
+            "photoUrl": "https://cdn.sessionize.com/image/1eb7-200o200o2-sAURDZtoDrDfMF9yKiGovx.jpg",
+            "badges": [
+                "Microsoft MVP"
+            ]
+        },
+        {
+            "id": "marco-rocca",
+            "name": "Marco Rocca",
+            "tagline": "Cloud Solution Architect MW",
+            "bio": "I'm a Cloud Solution Architect Modern Work and deals mainly (but not only ...) with SharePoint, a product that has been with him for 15 years and has experienced the birth and growth of all the latest versions. However, collaboration is not just SharePoint, but all Microsoft 365 applications that are helping to revolutionize the way we work. Today in my work I support customers to identify the better strategy for adopt new products and technologies. In the last period I'm focusing on Copilot, AI, Power Platform and SharePoint. As a speaker I have participated in several conferences as a speaker among which WPC Milan, Scottish Summit, CollabDays, European Collaboration Summit, European Power Platform Conference, Thrive and more.",
+            "photoUrl": "https://cdn.sessionize.com/image/83a2-200o200o2-2a-64ef-4fef-909a-a04bb9446176.227af842-a468-4acb-89db-91167ca07e66.png"
+        },
+        {
+            "id": "mario-serra",
+            "name": "Mario Serra",
+            "tagline": "Overnet, Trainer & IT Security Specialist",
+            "bio": "Mario Serra è Trainer & IT Security Specialist presso Overnet Education, con oltre vent’anni di esperienza nel settore dell’Information Technology. Nel corso della sua carriera ha maturato una profonda competenza in ambiti quali la sicurezza informatica, l'identity protection, la compliance e la protezione dei dati e soluzioni di infrastrutture Microsoft sia OnPrem che in Microsoft Azure, distinguendosi in particolare per l’expertise nelle soluzioni di Security & Compliance e Modern Work presenti nelle suite di Microsoft 365.\nHa ottenuto numerose certificazioni Microsoft, tra cui Identity and Access Management, Compliance, Active Directory, Server Virtualization e Server Administration, che attestano la sua preparazione tecnica e il suo costante aggiornamento professionale. Mario ha inoltre ricevuto per diversi anni il riconoscimento Microsoft MVP nelle categorie Directory Services, Remote Desktop Services ed Enterprise Mobility, ed è attualmente MVP nella categoria Security.\nLa sua attività si contraddistingue per l’approccio consulenziale, la capacità di formazione avanzata e la volontà di condividere conoscenze e best practice con colleghi e professionisti del settore.\nHa partecipato come speaker a molte conferenze come ad esempio WPC, BeConnected Day, Azure Day, Global Azure, Aperiteam Conference parlando sempre di tecnologie Microsoft.",
+            "photoUrl": "https://cdn.sessionize.com/image/9643-200o200o2-9bT6Bvbp8kmNpwvFkbFF1C.jpg"
+        },
+        {
+            "id": "mattia-contessa",
+            "name": "Mattia Contessa",
+            "tagline": "Azure Cloud Architect @PA Expertise - Alveo Group",
+            "bio": "... just a guy who had found a way to be paid for having the head in the clouds",
+            "photoUrl": "https://cdn.sessionize.com/image/db87-200o200o2-PCB6aEJPpRn3ui6YbBwbPD.png"
+        },
+        {
+            "id": "michele-sensalari",
+            "name": "Michele Sensalari",
+            "tagline": "Senior Consultant | CTO Overnet | MVP Security",
+            "bio": "Laureato in Scienze dell'Informazione e MCT trainer specializzato principalmente nell'ambiente IT, Security e Formazione su differenti tecnologie Microsoft da Windows Server a SCCM in ambienti locali, da Microsoft 365 ad Azure passando per Microsoft Endpoint Manager in ambiente hybrid cloud. Lavoro come dipendente part-time (50%) presso il Dipartimento di Informatica dell'Università degli Studi di Milano, dove svolgo l'attività di sistemista Microsoft, e come consulente libero professionista nel restante tempo. Come consulente svolgo attività di progettazione, implementazione, troubleshooting di ambienti ibridi basati su tecnologie Microsoft, progettazione e implementazione di funzionalità di sicurezza delle suite Microsoft e attività di docente/speaker.\nDa Agosto 2020 Microsoft MVP nella categoria Entreprise Mobility mentre da Gennaio 2023 nella categoria Security; da Febbraio 2021 CTO di Overnet Education.",
+            "photoUrl": "https://cdn.sessionize.com/image/7458-200o200o2-sC21DTx1PgoVNhtioT1nYA.jpg",
+            "badges": [
+                "Microsoft MVP"
+            ]
+        },
+        {
+            "id": "nino-crudele",
+            "name": "Nino Crudele",
+            "tagline": "Ethical hacker, esperto di AI e cyber intelligence.",
+            "bio": "Nino Crudele lavora da oltre 25 anni nel mondo della Cybersecurity, con una solida esperienza maturata in contesti governativi, infrastrutture critiche, operazioni di antiterrorismo digitale e cyber intelligence. È un esperto riconosciuto a livello internazionale, Microsoft MVP da 18 anni consecutivi, e punto di riferimento nell’uso dell’Intelligenza Artificiale applicata alla sicurezza.\n\nEthical hacker per vocazione, Nino unisce pensiero creativo e rigore tecnico per affrontare minacce avanzate e progettare soluzioni innovative. Ha collaborato con agenzie governative, grandi imprese e team operativi in scenari reali, portando sempre una visione fuori dagli schemi e fortemente orientata all’azione.\n\nConvinto sostenitore della condivisione del sapere, oggi affianca la sua attività operativa a quella divulgativa, aiutando nuovi talenti ad emergere e guidando aziende e istituzioni verso un futuro più sicuro e consapevole.",
+            "photoUrl": "https://cdn.sessionize.com/image/d230-200o200o2-sEzV5oKuVmkYy4yoWBT9Av.jpg"
+        },
+        {
+            "id": "paolo-ranzani",
+            "name": "Paolo Ranzani",
+            "tagline": "Lead Data&AI Architect @ Avvale | Associate @ Sloweb",
+            "bio": "I am a professional with a solid technical background (MSc in Mathematical Engineering at Politecnico of Milan) combined with a proven ability to communicate with different kind of audiences.\nAs a consultant, I specialize in designing and implementing end-to-end Data&AI solutions that span the entire stack of modern Cloud Data Platforms, mainly based on Microsoft Azure, Microsoft Fabric, Databricks, Hashicorp Terraform, Azure DevOps, and GitHub.\nI complement my core skills by cultivating interests in the ethical, social, and environmental aspects of modern technologies. I'm interested in science outreach and actively involved in tech events, always looking for continuous learning.",
+            "photoUrl": "https://cdn.sessionize.com/image/bc3a-200o200o2-9X6YJQTJy3FZ1hKkV9vws5.jpg"
+        },
+        {
+            "id": "pietro-visentin",
+            "name": "Pietro Visentin",
+            "tagline": "Head of Security - Moresi.com",
+            "bio": "I'm a Security Architect passionate about Microsoft technologies.\nI lead the Microsoft Security team at Moresi.com, and I write on azvise.com about Microsoft technologies, with a focus on identity security.\nIn consulting, I support clients in designing, implementing, and securing Microsoft cloud infrastructures.",
+            "photoUrl": "https://cdn.sessionize.com/image/3048-200o200o2-NSGBtpZa4SSJkySdvyYs4b.jpg"
+        },
+        {
+            "id": "rauno-de-pasquale",
+            "name": "Rauno De Pasquale",
+            "tagline": "Newesis Srl, CTO",
+            "bio": "Co-Founder and CTO of Newesis Srl. Founder and organiser of the Torino DevOps Meetup group. My core areas of expertise include: DevOps culture, methodologies and tools; Kubernetes adoption and operations; Infrastructure and technical architecture consultancy; IaaS and PaaS, having worked natively as well as with the world’s leading infrastructure companies including Amazon AWS, Microsoft Azure, Google Cloud, Alibaba and Rackspace; Content Delivery Networks – I’ve worked with 10 global CDNs; Security against Massive DDS attack attempts – I’ve successfully fought off some of the toughest attacks the digital world has received.",
+            "photoUrl": "https://cdn.sessionize.com/image/29bf-200o200o2-53f7a6fb-9e9b-4539-99c0-61d99545cbb8.jpg"
+        },
+        {
+            "id": "robert-przybylski",
+            "name": "Robert Przybylski",
+            "tagline": "Microsoft MVP, Security Practice Leader @ Formula 5",
+            "bio": "In my daily work, I help clients from all over the world in various projects, from planning, through management, to final implementation. I am an architect of security solutions in on-premises environments and in the Microsoft Azure cloud. Additionally, I am an academic lecturer.\nSince February 2021, I have been regularly receiving the prestigious title of Most Valuable Professional (MVP) from Microsoft, currently in the Security category.\nMy skills cover a wide range of IT-related areas, including knowledge of the Azure platform, IT security, identity management, Windows system administration and many others. I actively represent Poland during the NATO Locked Shields cybersecurity maneuvers, and I am also the author of the blog www.entrablog.com where I share my knowledge and experience in the field of cloud technologies.",
+            "photoUrl": "https://cdn.sessionize.com/image/998f-200o200o2-DG6yZBAcduVAKi8sBa57yr.jpg",
+            "badges": [
+                "Microsoft MVP"
+            ]
+        },
+        {
+            "id": "sandro-rosso",
+            "name": "Sandro Rosso"
+        }
+    ],
+    "sessions": [
+        {
+            "id": "s-dbbed3687c10",
+            "title": "Check - In",
+            "start": "2026-04-18T06:30:00.000Z",
+            "end": "2026-04-18T07:30:00.000Z",
+            "kind": "service"
+        },
+        {
+            "id": "s-1206220",
+            "title": "Welcome to Global Azure Torino 2026",
+            "description": "Introduzione a cura del team di Azure Meetup Torino, presentazione della giornata e ringraziamento agli sponsor.",
+            "start": "2026-04-18T07:30:00.000Z",
+            "end": "2026-04-18T08:00:00.000Z",
+            "speakerIds": [
+                "alberto-jacomuzzi",
+                "alberto-annunziata",
+                "antonio-buonaiuto",
+                "sandro-rosso",
+                "mattia-contessa",
+                "livio-chiapparo",
+                "leonardo-rizzi"
+            ],
+            "language": "it",
+            "kind": "plenary"
+        },
+        {
+            "id": "s-1183169",
+            "title": "L’era dell’infrastruttura cognitiva: come l’IA sta riscrivendo il futuro del cloud",
+            "description": "Negli ultimi vent’anni il cloud ha trasformato il modo in cui costruiamo software, gestiamo dati e progettiamo infrastrutture.\nMa oggi sta accadendo qualcosa di ancora più profondo.\nPer la prima volta nella storia dell’informatica stiamo costruendo infrastrutture progettate non solo per elaborare dati, ma per produrre intelligenza.\n\nNuovi datacenter ottimizzati per l’intelligenza artificiale.\nChip progettati specificamente per i modelli generativi.\nPiattaforme che integrano dati, modelli e agenti in un unico ecosistema.\n\nTutto questo sta ridefinendo il ruolo degli sviluppatori, degli architetti e dei leader tecnologici.\nDurante la keynote esploreremo cosa sta realmente accadendo dietro le quinte di questa trasformazione.\n\nNon sarà una sessione di prodotto.\nSarà piuttosto una riflessione su come l’intelligenza artificiale stia trasformando il cloud in qualcosa di molto più grande: una infrastruttura cognitiva globale.\n\nE su cosa questo significhi per chi oggi costruisce tecnologia.",
+            "start": "2026-04-18T08:00:00.000Z",
+            "end": "2026-04-18T08:45:00.000Z",
+            "speakerIds": [
+                "andrea-benedetti"
+            ],
+            "language": "it",
+            "kind": "keynote"
+        },
+        {
+            "id": "s-adcf575c1ead",
+            "title": "Coffee Break",
+            "start": "2026-04-18T08:45:00.000Z",
+            "end": "2026-04-18T09:15:00.000Z",
+            "kind": "service"
+        },
+        {
+            "id": "s-1116845",
+            "title": "Orchestrate Azure Container Apps with the Durable Task Scheduler",
+            "description": "The Durable Task Scheduler brings managed, reliable stateful orchestration to Azure, now extending beyond functions to orchestrate Container Apps and other compute resources. With its .NET SDK, you can define and coordinate complex workflows across distributed microservices, leveraging built-in monitoring and fault tolerance. In this session, we’ll demonstrate how to implement robust orchestration patterns for Container Apps using the Durable Task framework in .NET, enabling scalable cloud-native architectures with minimal overhead.",
+            "start": "2026-04-18T09:15:00.000Z",
+            "end": "2026-04-18T10:10:00.000Z",
+            "trackId": "data-dev-and-ai",
+            "speakerIds": [
+                "andrea-ceroni"
+            ],
+            "language": "it",
+            "kind": "talk"
+        },
+        {
+            "id": "s-1139622",
+            "title": "Da 1.8M€ a Zero Visibility: Purple Teaming Data-Driven per Microsoft Security Stack",
+            "description": "Un SOC enterprise investe 1.8 milioni di euro annui in log ingestion per Microsoft Sentinel, ma non dispone di metriche sulla copertura effettiva delle detection rules rispetto alle minacce reali.\n\nQuesta sessione presenta strumenti avanzati sviluppati personalmente e testati su scenari operativi reali, che forniscono visibilità immediata e ROI misurabile attraverso:\n\n• Mappatura automatica di centinaia di tecniche MITRE ATT&CK su Defender, Sentinel e Intune\n• Adversary emulation operativa con tooling personalizzato basato su Caldera\n• Integrazione nativa MISP per threat intelligence actionable\n• Calcolo quantitativo del ROI su investimenti security esistenti\nRisultato: riduzione costi SIEM del 50% con coverage detection >95%. Approccio Purple Teaming data-driven applicabile da subito.",
+            "start": "2026-04-18T09:15:00.000Z",
+            "end": "2026-04-18T10:10:00.000Z",
+            "trackId": "security",
+            "speakerIds": [
+                "nino-crudele"
+            ],
+            "language": "it",
+            "kind": "talk"
+        },
+        {
+            "id": "s-1121304",
+            "title": "Un Cloud Engineer e GitHub Copilot: la mia esperienza sul campo dopo due anni",
+            "description": "GitHub Copilot non è solo per sviluppatori: è un alleato potente anche per chi lavora in ambito infrastrutturale Cloud, Hybrid o On-Premises. In questa sessione condivido due anni di esperienza come Azure Cloud Engineer insieme a questo strumento.\nGenerazione di Script, pipeline Azure DevOps, integrazione con Entra ID, provisioning degli utenti (SAML/OIDC) tramite GitHub Enterprise e casi di studio reali. Se vuoi portare l’AI nel tuo team IT, questa è la sessione giusta.",
+            "start": "2026-04-18T09:15:00.000Z",
+            "end": "2026-04-18T10:10:00.000Z",
+            "trackId": "infrastructure",
+            "speakerIds": [
+                "luca-torresi"
+            ],
+            "language": "it",
+            "kind": "talk"
+        },
+        {
+            "id": "s-1118862",
+            "title": "Microsoft 365 security blueprint from the field",
+            "description": "In un panorama digitale in continua evoluzione, la sicurezza di Microsoft 365 è più cruciale che mai. In questa sessione ti guideremo attraverso i controlli di sicurezza più importanti da implementare, basandoci su best practices Microsoft (cloud ed endpoint), raccomandazioni CIS ed esperienza sul campo. Scoprirai come proteggere accessi e identità, governare il flusso informativo e mantenere sicuri dispositivi e applicazioni. Una sessione pratica per acquisire conoscenze applicabili da subito.",
+            "start": "2026-04-18T09:15:00.000Z",
+            "end": "2026-04-18T10:10:00.000Z",
+            "trackId": "modernwork-copilot",
+            "speakerIds": [
+                "pietro-visentin",
+                "francesco-facco"
+            ],
+            "language": "it",
+            "kind": "talk"
+        },
+        {
+            "id": "s-1131592",
+            "title": "Lost your phone? How to re-take control of your Microsoft 365 identity",
+            "description": "Le campagne di Microsoft per l'aumento della sicurezza dei tenant stanno portando la gran parte degli utenti, incluso gli amministratori, ad usare Microsoft Authenticator, spesso disabilitando del tutto i metodi MFA più deboli quali SMS o chiamate telefoniche.\nMa cosa succede quando si rompe o si perde lo smartphone? Authenticator, come tutti i metodi Device-bound, incluse le FIDO2 key, non può essere \"migrato\", by design, su un altro hardware.\nAnalizzeremo in questa sessione quali sono le Best Practice per configurare i metodi di autenticazione e accesso, soprattutto per gli account amministrativi o sensibili, garantendo una buona protezione.\nVedremo inoltre, anche con l'ausilio di demo, come le nuove funzionalità di Synched Passkey e Self-Service Account Recovery, recentemente introdotte in Microsoft Entra ID, aiutano gli amministratori a mantenere semplicità, flessibilità, e capacità di ripristino delle identità dei Microsoft 365 Account, pur introducendo metodi phishing-resistant ad elevata protezione.",
+            "start": "2026-04-18T10:15:00.000Z",
+            "end": "2026-04-18T11:10:00.000Z",
+            "trackId": "data-dev-and-ai",
+            "speakerIds": [
+                "alessandro-appiani",
+                "andrea-mennuni"
+            ],
+            "language": "it",
+            "kind": "talk"
+        },
+        {
+            "id": "s-1120323",
+            "title": "Entra ID Security as Code: Automating Identity Protection",
+            "description": "Discover how to elevate your organization’s security posture by implementing Entra ID Security as Code. This session will guide you through automating identity security configurations, enforcing governance policies, and enabling robust monitoring using modern infrastructure-as-code (IaC) practices. Gain hands-on insights into scripting security policies, integrating with DevSecOps pipelines, and ensuring continuous compliance. By the end of this session, you’ll be equipped to confidently adopt Security as Code principles to fortify your Entra ID environment.",
+            "start": "2026-04-18T10:15:00.000Z",
+            "end": "2026-04-18T11:10:00.000Z",
+            "trackId": "security",
+            "speakerIds": [
+                "robert-przybylski"
+            ],
+            "language": "en",
+            "kind": "talk"
+        },
+        {
+            "id": "s-1126411",
+            "title": "Sovranità Digitale su Azure: Strategie Architetturali tra Cloud-Native e l’Incognita del Lock-in",
+            "description": "In un panorama geopolitico e normativo in continua evoluzione, la Cloud Sovereignty non è più solo una voce nei documenti di compliance, ma un pilastro del design applicativo. Ma cosa significa davvero essere \"sovrani\" nel cloud di Microsoft?\nIn questa sessione, andremo oltre i miti e le paure ingiustificate per analizzare i reali pericoli della dipendenza da un singolo Hyperscaler. Vedremo perché Azure rimane una scelta eccellente per l'innovazione rapida e come i servizi PaaS possano essere utilizzati senza rinunciare alla propria libertà di manovra, e come Kubernetes e le pratiche di Platform Engineering possano essere i pilastri di questa strategia.",
+            "start": "2026-04-18T10:15:00.000Z",
+            "end": "2026-04-18T11:10:00.000Z",
+            "trackId": "infrastructure",
+            "speakerIds": [
+                "rauno-de-pasquale"
+            ],
+            "language": "it",
+            "kind": "talk"
+        },
+        {
+            "id": "s-1139650",
+            "title": "Al Assistant Code: dal Vibe Coding all'ingegneria del software assistita da AI",
+            "description": "lL'AI sta cambiando il modo in cui scriviamo codice, ma serve chiarezza. In questa sessione distingueremo tre paradigmi troppo spesso confusi - Vibe Coding, Copilot e Al Assistant Code - e mapperemo gli strumenti oggi disponibili sul mercato.\n\nPoi un deep dive operativo su Claude Code: strutturare progetti complessi, integrare MCP server, gestire contesto e sessioni lunghe, evitare allucinazioni e derive. Esperienza reale su progetti enterprise, zero hype.\n\nUscirete sapendo quando fidarvi dell'Al, quando verificare e quando riprendere il controllo.",
+            "start": "2026-04-18T10:15:00.000Z",
+            "end": "2026-04-18T11:10:00.000Z",
+            "trackId": "modernwork-copilot",
+            "speakerIds": [
+                "fabio-santini"
+            ],
+            "language": "it",
+            "kind": "talk"
+        },
+        {
+            "id": "s-963118971ef2",
+            "title": "Lunch",
+            "start": "2026-04-18T11:10:00.000Z",
+            "end": "2026-04-18T12:30:00.000Z",
+            "kind": "service"
+        },
+        {
+            "id": "s-1139689",
+            "title": "Riduzione costi, data anti-gravity e geo-distribuzione del dato: una tripletta (im)possibile?",
+            "description": "Ridurre i costi legati ai dati non strutturati in Cloud (FinOps), sconfiggere la data gravity e garantire accesso geo-distribuito ai dati ovunque essi si trovino (Cloud/Multi-Cloud/Core Data Center/Edge). Fantascienza? No, pura ingegneria. Presenteremo casi d'uso di clienti che si sono affidati a Qumulo per risolvere le problematiche di cui sopra, senza far impazzire il CFO.",
+            "start": "2026-04-18T12:30:00.000Z",
+            "end": "2026-04-18T13:25:00.000Z",
+            "trackId": "data-dev-and-ai",
+            "speakerIds": [
+                "alessandro-dellavedova"
+            ],
+            "language": "it",
+            "kind": "talk"
+        },
+        {
+            "id": "s-1125854",
+            "title": "Abbiamo Microsoft Security Copilot… e adesso?",
+            "description": "Con l’integrazione di Microsoft Security Copilot nei flussi di lavoro di Microsoft 365 tramite agent nativi, molte organizzazioni hanno oggi l’AI per la sicurezza già disponibile. Ma la disponibilità non garantisce valore. Questa sessione mostra come passare dagli agent integrati all’adozione reale, evidenziando casi d’uso concreti, prompt efficaci e criteri per misurare l’impatto dell’AI sulla sicurezza.",
+            "start": "2026-04-18T12:30:00.000Z",
+            "end": "2026-04-18T13:25:00.000Z",
+            "trackId": "security",
+            "speakerIds": [
+                "marco-passanisi"
+            ],
+            "language": "it",
+            "kind": "talk"
+        },
+        {
+            "id": "s-1131618",
+            "title": "Inside the Packets: Mastering Azure Networking Troubleshooting",
+            "description": "Ever wondered what really happens when your packets journey through Azure? Or why traffic sometimes takes unexpected paths, disappears into a black hole, or gets stopped by a security rule you forgot existed?\nIn this session, we’ll open the hood of Azure networking and walk through the real story of traffic flow—step by step, hop by hop.\nJoin me for a highly interactive, scenario-driven deep dive into Azure networking troubleshooting, where you'll learn not just how to fix issues, but how Azure actually thinks when routing and filtering traffic.\nThrough live demonstrations and practical examples, we’ll explore:\n🚦 What You’ll Learn\n\n- How Azure routes traffic inside VNets, across regions, and through hybrid networks\n- Where traffic can break and how to systematically identify the root cause\n- How tools like Network Watcher, NSG Flow Logs, Connection Monitor, and Effective Routes reveal hidden insights\n- How load balancers, firewalls, and private endpoints actually behave during real-world failures\n- How to visualize and trace network flows to quickly understand what Azure “decided” and why\n\n🎯 Why This Session Matters\nAzure networking is powerful—but it’s also complex. When things go wrong, you need more than documentation… you need intuition.\nThis session will help you build that intuition, so next time:\n\n- Your VM can’t reach the internet\n- Your App Service can’t talk to a database\n- Your hybrid connection feels “possessed”\n- A firewall rule breaks production at 2 AM\n\n…you’ll know exactly where to look, what to test, and how to fix it fast.\n🔥 What Makes This Session Fun\n\n- Real-world troubleshooting stories\n- Live packet flow explorations\n- “Guess the traffic path” challenges\n- Interactive problem-solving\n- Clear visuals and diagrams that finally make it click",
+            "start": "2026-04-18T12:30:00.000Z",
+            "end": "2026-04-18T13:25:00.000Z",
+            "trackId": "infrastructure",
+            "speakerIds": [
+                "antonio-buonaiuto"
+            ],
+            "language": "it",
+            "kind": "talk"
+        },
+        {
+            "id": "s-1119782",
+            "title": "Gestione moderna dei device Windows: cloud-native, sicurezza e AI per la modernizzazione dell'IT",
+            "description": "In questa sessione, esploreremo come un’approccio cloud-native nella gestione moderna dei device Windows attraverso Microsoft Intune possa contribuire a modernizzare l'IT; illustreremo come semplificare il provisioning, automatizzare la configurazione e rafforzare la postura di sicurezza con il contributo dell'intelligenza artificiale.\n\nVerranno inoltre approfondite le funzionalità più recenti di Intune per la gestinoe e protezione degli endpoint per migliorare il rilevamento delle minacce, supportare decisioni più rapide e ridurre la complessità operativa per i team IT.",
+            "start": "2026-04-18T12:30:00.000Z",
+            "end": "2026-04-18T13:25:00.000Z",
+            "trackId": "modernwork-copilot",
+            "speakerIds": [
+                "davide-salsi",
+                "mario-serra"
+            ],
+            "language": "it",
+            "kind": "talk"
+        },
+        {
+            "id": "s-1130020",
+            "title": "Strategie di CI/CD in Microsoft Fabric",
+            "description": "In questa sessione forniremo una panoramica delle opzioni per gestire il ciclo di vita degli asset sviluppati in Microsoft Fabric, analizzando le funzionalità disponibili in GA e quelle ancora in preview.\nIn particolare, tramite casi di successo, vedremo come abilitare la Git collaboration; come automatizzare la creazione e la gestione dei workspace utilizzando Terraform; come utilizzare Azure DevOps Pipelines per il rilascio dei contenuti sfruttando code-first esterni (come la libreria Python \"fabric-cicd\"); come integrare strumenti (quali SonarQube, Best Practice Analyzer o PBI Inspector) per eseguire controlli di qualità.",
+            "start": "2026-04-18T13:30:00.000Z",
+            "end": "2026-04-18T14:25:00.000Z",
+            "trackId": "data-dev-and-ai",
+            "speakerIds": [
+                "paolo-ranzani"
+            ],
+            "language": "it",
+            "kind": "talk"
+        },
+        {
+            "id": "s-1117858",
+            "title": "Securing Identity in the Cloud Era",
+            "description": "Identity is now the primary battlefield for cybersecurity. ⚠️\nThe presentation explains how to secure identities by strengthening identity governance through automated user onboarding, lifecycle management, and just-in-time access — applying the Zero Trust principle to reduce standing privileges and improve access control. 🛡️💻",
+            "start": "2026-04-18T13:30:00.000Z",
+            "end": "2026-04-18T14:25:00.000Z",
+            "trackId": "security",
+            "speakerIds": [
+                "giulia-spinetti",
+                "elena-cazzagon"
+            ],
+            "language": "it",
+            "kind": "talk"
+        },
+        {
+            "id": "s-1131615",
+            "title": "cli - tutti i gusti + 1",
+            "description": "Nella cassetta degli attrezzi delle CLI ci sono strumenti consumati dall’uso e altri ancora da scoprire. Alcuni li prendi quasi senza pensarci, altri restano lì finché, un giorno, diventano improvvisamente indispensabili.\nIn questa sessione apriremo quella cassetta e non ci limiteremo a guardare cosa c’è dentro: useremo questi strumenti, li vedremo all’opera, con esempi e demo che mostrano cosa succede quando le CLI vengono davvero messe al lavoro.\n\nTL;DR\n- azd\n- AI Shell\n- azqr\n- ari\n-az acme",
+            "start": "2026-04-18T13:30:00.000Z",
+            "end": "2026-04-18T14:25:00.000Z",
+            "trackId": "infrastructure",
+            "speakerIds": [
+                "leonardo-rizzi"
+            ],
+            "language": "it",
+            "kind": "talk"
+        },
+        {
+            "id": "s-1110599",
+            "title": "The Agent Creation Playbook: From Agent Builder to Copilot Studio without secrets!!",
+            "description": "Ready to build your own intelligent agents in Microsoft 365 Copilot? This session is your ultimate guide to creating powerful, productivity-boosting agents—no secrets, just the full playbook.\n\nWe’ll begin with Agent Builder, the no-code tool that makes it incredibly easy for anyone to create smart, task-oriented agents in just a few clicks. Whether you're answering common questions, Lite is your launchpad.\n\nNext, we’ll dive into Copilot Studio full experience, where low-code capabilities unlock the next level of customization. Build advanced agents with rich logic, external data integrations, and tailored user experiences that fit your organization’s unique needs.\n\nWhether you're a business user, IT pro, or developer, this session will show you how to turn your ideas into intelligent agents that transform the way you work with Microsoft 365.",
+            "start": "2026-04-18T13:30:00.000Z",
+            "end": "2026-04-18T14:25:00.000Z",
+            "trackId": "modernwork-copilot",
+            "speakerIds": [
+                "marco-rocca"
+            ],
+            "language": "it",
+            "kind": "talk"
+        },
+        {
+            "id": "s-1126775",
+            "title": "Il castello é in allerta: Notifiche e Workbook tra le mura di Azure",
+            "description": "*bling*\nUna notifica. Che sarà?\nDiamine! Il sistema è giù, devo sistemarlo subito!\n---\nNel tuo castello, Application Insights è spesso visto come il bibliotecario presso cui cercare informazioni. E se invece fosse anche il guardiano che lancia l'allarme?\n\nIn questa sessione impareremo come tenere d'occhio i log e le metriche in tempo reale, in modo tale da ricevere notifiche direttamente sui nostri device nel caso vengano superate certe soglie. Che sia Teams, Slack, una mail, una notifica, beh, non possiamo dire di non poter essere raggiungibili.\n\nE oltre alle notifiche, cosa possiamo fare? Da qui possiamo sbizzarrirci! Un mondo di possibilità, tutte all'interno dell'infrastruttura di Azure.\n\nE poi, con i Workbook, potremo vedere dall'alto lo stato del castello per vedere subito che cosa sta andando a fuoco.",
+            "start": "2026-04-18T14:30:00.000Z",
+            "end": "2026-04-18T15:25:00.000Z",
+            "trackId": "data-dev-and-ai",
+            "speakerIds": [
+                "davide-bellone"
+            ],
+            "language": "it",
+            "kind": "talk"
+        },
+        {
+            "id": "s-1131690",
+            "title": "Proteggere con Microsoft Defender for Cloud le istanze SQL ovunque si trovino.",
+            "description": "Le istanze SQL oggi come oggi le possiamo trovare in Azure, on‑premises e nei cloud più diversi, ma la loro protezione richiede un approccio olistico. In questa sessione vedremo come Microsoft Defender for Cloud permette di mettere in sicurezza i database SQL ovunque si trovino, tramite valutazione delle vulnerabilità, rilevamento delle minacce e integrazione con Azure Arc per i workload esterni ad Azure.\nVedremo insieme come proteggere Azure SQL e come estenderla ai server SQL in VM, datacenter o altri cloud, insieme agli alert più utili per individuare attacchi come SQL injection, accessi anomali e query sospette.",
+            "start": "2026-04-18T14:30:00.000Z",
+            "end": "2026-04-18T15:25:00.000Z",
+            "trackId": "security",
+            "speakerIds": [
+                "lorenzo-grasseni",
+                "michele-sensalari"
+            ],
+            "language": "it",
+            "kind": "talk"
+        },
+        {
+            "id": "s-1127080",
+            "title": "Azure Migrate: da assessment tool a piattaforma di modernizzazione",
+            "description": "Migrare verso il cloud non significa semplicemente spostare macchine virtuali da un data center ad Azure. Senza una corretta fase di discovery, analisi delle dipendenze e dimensionamento delle risorse, il rischio è quello di portare nel cloud gli stessi problemi dell’on-premises… pagando di più.\n\nNegli ultimi anni Azure Migrate è evoluto profondamente: nato come semplice strumento di assessment delle VM, oggi è diventato una piattaforma completa per migrazione e modernizzazione.\n\nIn questa sessione Emanuele Ciminaghi (Microsoft MVP – Azure e Microsoft Certified Trainer) mostrerà come lo strumento è cambiato nel tempo, cosa faceva nelle prime versioni, quali erano i limiti iniziali e come oggi possa aiutare a pianificare migrazioni più consapevoli, ottimizzare il dimensionamento delle risorse e identificare opportunità di modernizzazione.\n\nAttraverso spiegazioni pratiche e brevi demo dal vivo, vedremo alcune delle funzionalità più utili di Azure Migrate e gli errori più comuni che le aziende commettono durante le migrazioni verso il cloud.",
+            "start": "2026-04-18T14:30:00.000Z",
+            "end": "2026-04-18T15:25:00.000Z",
+            "trackId": "infrastructure",
+            "speakerIds": [
+                "emanuele-ciminaghi"
+            ],
+            "language": "it",
+            "kind": "talk"
+        },
+        {
+            "id": "s-1111947",
+            "title": "Agentic Cloud Ops: come Azure Copilot trasforma la gestione del cloud",
+            "description": "Il 52% delle implementazioni di agenti AI avviene nelle IT Operations. Azure Copilot aiuterà in questo conon 6 agenti specializzati: Migration, Deployment, Observability, Optimization, Resiliency e Troubleshooting.\nIn questa sessione vedremo come questi agenti orchestrano workflow complessi rispettando RBAC e compliance, con demo live dell’Observability Agent per investigare alert e dell’Optimization Agent per identificare cost savings.",
+            "start": "2026-04-18T14:30:00.000Z",
+            "end": "2026-04-18T15:25:00.000Z",
+            "trackId": "modernwork-copilot",
+            "speakerIds": [
+                "giulio-sciarappa"
+            ],
+            "language": "it",
+            "kind": "talk"
+        },
+        {
+            "id": "s-2b20320b6acb",
+            "title": "Aperitivo con la birra della Piazza dei Mestieri",
+            "start": "2026-04-18T15:30:00.000Z",
+            "end": "2026-04-18T17:00:00.000Z",
+            "kind": "service"
+        }
+    ],
+    "photos": [],
+    "sponsors": [
+        {
+            "id": "azure-meetup-torino",
+            "name": "Azure Meetup Torino",
+            "tier": "organizer",
+            "logoUrl": "https://media.licdn.com/dms/image/v2/D4D0BAQEhN0BwKgacBQ/company-logo_200_200/B4DZYBX6NlHwAI-/0/1743779767492/azure_meetup_torino_logo?e=2147483647&v=beta&t=Cdt2pJTS6y7cAX9074JPwxQ4BSl3pd9T1k1rDMnMbBQ",
+            "websiteUrl": "https://torino.azuremeetup.it/"
+        },
+        {
+            "id": "alveo",
+            "name": "Alveo Expertise",
+            "tier": "diamond",
+            "logoUrl": "/assets/img/placeholder-logo.svg",
+            "websiteUrl": "https://www.alveo.it/"
+        },
+        {
+            "id": "v-valley",
+            "name": "V-Valley",
+            "tier": "diamond",
+            "logoUrl": "/assets/img/placeholder-logo.svg",
+            "websiteUrl": "https://www.v-valley.com/"
+        },
+        {
+            "id": "qumulo",
+            "name": "Qumulo",
+            "tier": "diamond",
+            "logoUrl": "/assets/img/placeholder-logo.svg",
+            "websiteUrl": "https://qumulo.com/"
+        },
+        {
+            "id": "avepoint",
+            "name": "AvePoint",
+            "tier": "diamond",
+            "logoUrl": "/assets/img/placeholder-logo.svg",
+            "websiteUrl": "https://www.avepoint.com/"
+        },
+        {
+            "id": "extranet",
+            "name": "Extranet",
+            "tier": "gold",
+            "logoUrl": "/assets/img/placeholder-logo.svg"
+        },
+        {
+            "id": "td-synnex",
+            "name": "TD SYNNEX",
+            "tier": "silver",
+            "logoUrl": "/assets/img/placeholder-logo.svg",
+            "websiteUrl": "https://www.tdsynnex.com/"
+        },
+        {
+            "id": "microsoft",
+            "name": "Microsoft",
+            "tier": "contributor",
+            "logoUrl": "/assets/img/placeholder-logo.svg",
+            "websiteUrl": "https://www.microsoft.com/"
+        },
+        {
+            "id": "its-ict-piemonte",
+            "name": "ITS ICT Piemonte",
+            "tier": "contributor",
+            "logoUrl": "/assets/img/placeholder-logo.svg",
+            "websiteUrl": "https://www.its-ictpiemonte.it/"
+        }
+    ],
+    "updatedAt": "2026-09-30T00:00:00.000Z",
+    "updatedBy": "seed"
+}

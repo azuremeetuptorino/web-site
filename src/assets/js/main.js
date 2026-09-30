@@ -4,6 +4,7 @@ import { renderTeam } from './render-team.js';
 import { renderSponsors } from './render-sponsors.js';
 import { renderSite } from './render-site.js';
 import { renderEvents, visibleEvents } from './render-events.js';
+import { renderTeaser } from './render-global-azure.js';
 import { initTeamSwiper, initEventsSwiper } from './swiper-init.js';
 import { MEETUP_GROUP_URL } from './config.js';
 import { initNav } from './nav.js';
@@ -161,6 +162,15 @@ await Promise.allSettled([
         onSuccess: () => initEventsSwiper(),
         errorMessage: 'Non riusciamo a caricare il calendario in questo momento.',
         errorLink: { url: MEETUP_GROUP_URL, label: 'Vedi gli eventi su Meetup' }
+    }),
+    // Nessun messaggio d'errore: senza edizioni il banner semplicemente non c'e.
+    hydrate({
+        collection: 'global-azure',
+        trackId: 'ga-teaser',
+        sectionId: 'global-azure-teaser',
+        render: renderTeaser,
+        onSuccess: () => { document.getElementById('global-azure-teaser').hidden = false; },
+        errorMessage: null
     }),
     hydrate({
         collection: 'sponsors',

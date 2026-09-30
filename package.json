@@ -8,10 +8,12 @@
     "start": "swa start",
     "storage": "azurite --silent --location .azurite --skipApiVersionCheck",
     "seed": "node scripts/seed-blob.mjs",
-    "test": "node --test api/test/*.test.js"
+    "test": "node --test api/test/*.test.js",
+    "import:ga": "node scripts/import-global-azure.mjs"
   },
   "devDependencies": {
     "@azure/static-web-apps-cli": "^2.0.2",
-    "azurite": "^3.33.0"
+    "azurite": "^3.33.0",
+    "sharp": "^0.34.5"
   }
 }

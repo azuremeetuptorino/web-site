@@ -1,6 +1,6 @@
 # Stato dei lavori
 
-Aggiornato al **22 settembre 2026**. Documento di ripresa: serve a ricominciare
+Aggiornato al **30 settembre 2026**. Documento di ripresa: serve a ricominciare
 da dove si è lasciato senza rileggere tutto.
 
 Piano completo: [docs/piano.md](piano.md).
@@ -22,6 +22,7 @@ Branch **`feat/azure-static-web-apps`**, mai pushato.
 | P5 | Eventi dall'admin, importazione dal link Luma/Meetup | fatto, API verificate contro Azurite e le pagine vere |
 | P5b | Cinque eventi in home, archivio filtrabile su `/eventi/` | fatto, **guardato in un browser** |
 | P5c | Promemoria social dall'admin | fatto, 286 test verdi; **da guardare in un browser** |
+| P5d | Global Azure Torino: pagina `/global-azure/` e tab admin | fatto, 316 test verdi, **guardato in un browser** contro Azurite |
 | P6 | Telemetria, SEO, accessibilità | da fare |
 
 ## Cosa è entrato con la P3
@@ -313,6 +314,69 @@ prima oltre a `@azure/functions` e `@azure/storage-blob`.
 
 **Da fare prima di dirla finita**: guardarla in un browser contro Azurite, e
 provare un invio vero su un canale Telegram di prova.
+
+## Cosa è entrato con la P5d
+
+Global Azure Torino viveva su un WordPress a parte (globalazuretorino.welol.it),
+con agenda e speaker in un embed Sessionize e le edizioni passate ridotte a
+gallerie di foto. Adesso è una pagina del sito, `/global-azure/`, e un tab
+dell'admin.
+
+**Le decisioni, con il perché.**
+
+| Tema | Scelta | Perché non l'altra |
+|---|---|---|
+| Documenti | indice `global-azure.json` + uno per anno `global-azure/<anno>.json` | con un solo documento, due persone su anni diversi si darebbero 409, e la pagina scaricherebbe le foto del 2019 per mostrare il 2026 |
+| Route per anno | `createDocumentResource` accetta `blobName` funzione della richiesta; `null` → 404 | una seconda copia del GET/PUT con ETag sarebbe il posto dove prima o poi si perde la difesa dal conflitto |
+| Sessionize | import nell'admin, poi si salva a mano | l'embed richiederebbe di aprire la CSP a sessionize.com e non si potrebbe correggere niente |
+| Endpoint solo embed | si leggono le viste `GridSmart`, `Sessions`, `Speakers` con `?under=True` e `X-Requested-With` | `dtzcs2li` non ha una vista JSON: `view/All` restituisce uno script `document.write` |
+| Id stabili | sessioni `s-<id Sessionize>`, speaker e tracce slug del nome | reimportare aggiorna le righe invece di duplicarle; verificato con un secondo import |
+| Foto | ridimensionate nel browser (2000 px + miniatura 640, WebP) e caricate una per una | alzare il limite di richiesta per file da 8 MB sarebbe banda sprecata; il kind `photo` ha un tetto suo di 1,5 MB |
+| Riferimenti | `trackId` e `speakerIds` validati contro le liste dello stesso documento | una traccia cancellata ma usata deve essere un errore sul campo della sessione, non un buco nell'agenda |
+| Fasce sponsor | `organizer`, `diamond`, `platinum`, `gold`, `silver`, `contributor` | quelle del sito (`bronze`, `partner`) non corrispondono a come Global Azure presenta i suoi |
+
+**I file.**
+
+- `api/src/lib/sessionize.js` — import dalle due forme di endpoint (JSON e embed).
+  Converte gli orari in UTC con l'offset vero di Europe/Rome. Distingue `service`
+  (check-in, pause), `plenary` e `keynote` (plenaria con un solo speaker).
+- `api/src/functions/global-azure.js` — `GET/PUT /api/global-azure`,
+  `GET/PUT /api/global-azure/editions/{year}`, `POST /api/global-azure/sessionize`.
+- `api/src/lib/validate.js` — `validateGlobalAzureIndex`, `validateGlobalAzureEdition`.
+- `src/assets/js/admin/global-azure-editor.js` — due editor nello stesso tab
+  (indice e contenuti dell'anno scelto), import Sessionize, upload multiplo con
+  drag & drop, copia degli sponsor del sito, "Ricalcola dai contenuti" per i numeri.
+- `src/assets/js/admin/photo-resize.js` — ridimensionamento con `createImageBitmap`
+  e canvas. Ripiega su JPEG dove il browser non sa scrivere WebP.
+- `editor-core.js` — `endpoint` può essere una funzione. In più `reload()`,
+  `readRow()`, `refreshPreview()`, e `add`/`refill` con `{ open: false }`.
+- `src/global-azure/index.html`, `render-global-azure.js`, `global-azure-page.js`,
+  `global-azure.css`. Le sezioni sono: hero con l'anno, numeri animati, agenda a
+  griglia per traccia (lista sotto i 900 px), speaker, galleria a mosaico con
+  lightbox, sponsor, archivio. Il cambio di edizione avviene senza ricaricare,
+  con la cronologia del browser.
+- Home: banner verso l'edizione corrente; voce "Global Azure" nel menu.
+- `scripts/import-global-azure.mjs` (`npm run import:ga`) — migrazione una
+  tantum da welol. Legge i link `data-lbox` delle gallerie e le raggruppa per il
+  titolo d'anno che le precede. Rifà le foto con `sharp` (nuova devDependency
+  della root) e aggiunge solo quelle mancanti. Porta anche i loghi sponsor 2026.
+  Accetta `--dry-run` e `--years=`.
+
+**Trovati guardando, non leggendo.**
+
+1. Il dialog di sessione e speaker usava un `<header>`: `layout.css` fissa
+   **ogni** `header` in cima alla pagina, e il titolo usciva dal riquadro.
+2. Con sei voci, il menu andava a capo fra 901 e ~1100 px: ora si stringe.
+3. Il `max-width` di default del `<dialog>` lasciava un bordo a destra sul telefono.
+
+**Da fare prima del deploy.**
+
+- Lanciare `npm run import:ga` su produzione, con la `DATA_STORAGE_CONNECTION`
+  vera. In locale ha importato 210 foto su 8 edizioni (il 2020 non ha foto).
+- `npm run seed` per pubblicare `global-azure.json` e `global-azure/2026.json`
+  (il seed non sovrascrive i master esistenti).
+- I dati 2024, 2025 e delle edizioni online sono parziali: date, numeri e
+  copertine sono da completare dall'admin.
 
 ## Passata sul mobile
 

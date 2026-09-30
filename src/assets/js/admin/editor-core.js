@@ -32,8 +32,12 @@ import { uploadImage } from './upload.js';
  *   [data-empty="nome"]         mostrato quando quella lista e vuota
  *   [data-add="nome"]           bottone che aggiunge una riga a quella lista
  *   [data-action=up|down|remove] dentro una riga
- *   input[type=file][data-upload="avatar|sponsor|site|event"]
+ *   input[type=file][data-upload="avatar|sponsor|site|event|photo"]
  *                               carica e scrive nel [data-field] dello stesso .field
+ *
+ * `shape.endpoint` puo essere una funzione: serve all'editor di un'edizione di
+ * Global Azure, che cambia documento quando si sceglie un altro anno e poi
+ * chiama `reload()`.
  */
 
 export function createEditorCore(shape) {
@@ -48,6 +52,8 @@ export function createEditorCore(shape) {
     let busy = false;
 
     const lists = shape.lists ?? {};
+
+    const endpoint = () => (typeof shape.endpoint === 'function' ? shape.endpoint() : shape.endpoint);
 
     /* ==========================================================
        STATO E AVVISI
@@ -283,7 +289,7 @@ export function createEditorCore(shape) {
        ========================================================== */
 
     async function load() {
-        const { payload } = await apiGet(shape.endpoint);
+        const { payload } = await apiGet(endpoint());
         etag = payload.etag;
         shape.fill(payload.data ?? {}, tools);
         dirty = false;
@@ -299,7 +305,7 @@ export function createEditorCore(shape) {
         setBusy(true);
 
         try {
-            const { payload } = await apiPut(shape.endpoint, { data: shape.collect(tools) }, etag);
+            const { payload } = await apiPut(endpoint(), { data: shape.collect(tools) }, etag);
             etag = payload.etag;
             dirty = false;
             lastSavedAt = new Date();
@@ -329,7 +335,7 @@ export function createEditorCore(shape) {
         }
 
         if (!(error instanceof ApiError)) {
-            console.error(`[admin] ${shape.endpoint} fallito`, error);
+            console.error(`[admin] ${endpoint()} fallito`, error);
             setAlert('error', 'Non sono riuscito a salvare. Controlla la connessione e riprova.');
             return;
         }
@@ -347,7 +353,7 @@ export function createEditorCore(shape) {
             return;
         }
 
-        console.error(`[admin] ${shape.endpoint} fallito`, error);
+        console.error(`[admin] ${endpoint()} fallito`, error);
         setAlert('error', `Il server ha rifiutato il salvataggio (${error.status}). Riprova tra poco.`);
     }
 
@@ -521,7 +527,7 @@ export function createEditorCore(shape) {
         if (action === 'down') move(row, 1);
         if (action === 'remove') {
             const name = listNameOf(row);
-            const what = value(row, 'name') || value(row, 'label') || `questo ${lists[name].label}`;
+            const what = value(row, 'name') || value(row, 'title') || value(row, 'label') || `questo ${lists[name].label}`;
             if (!confirm(`Elimino ${what}?\n\nSparisce dal sito al prossimo salvataggio.`)) return;
             row.remove();
             refreshEmpty(name);
@@ -531,17 +537,28 @@ export function createEditorCore(shape) {
 
     el.save.addEventListener('click', () => save());
 
-    el.reload.addEventListener('click', async () => {
-        if (dirty && !confirm('Ricaricando perdi le modifiche non salvate. Procedo?')) return;
+    /** Rilegge dal server. La conferma sulle modifiche perse spetta a chi chiama. */
+    async function reload() {
         setBusy(true);
         try {
             await load();
+            return true;
         } catch (error) {
-            console.error(`[admin] ricaricamento di ${shape.endpoint} fallito`, error);
+            if (error instanceof SessionExpiredError) {
+                handleError(error);
+                return false;
+            }
+            console.error(`[admin] ricaricamento di ${endpoint()} fallito`, error);
             setAlert('error', 'Non sono riuscito a rileggere i dati dal server.');
+            return false;
         } finally {
             setBusy(false);
         }
+    }
+
+    el.reload.addEventListener('click', () => {
+        if (dirty && !confirm('Ricaricando perdi le modifiche non salvate. Procedo?')) return;
+        reload();
     });
 
     /* ==========================================================
@@ -559,7 +576,7 @@ export function createEditorCore(shape) {
                 ? 'La sessione e scaduta: ricarica la pagina per rientrare.'
                 : 'Non sono riuscito a leggere i dati dal server.';
             el.loading.append(message);
-            console.error(`[admin] caricamento di ${shape.endpoint} fallito`, error);
+            console.error(`[admin] caricamento di ${endpoint()} fallito`, error);
             return;
         }
 
@@ -579,32 +596,51 @@ export function createEditorCore(shape) {
        inserire una riga e segnalare l'esito con gli stessi strumenti.
        ========================================================== */
 
-    /** Aggiunge una riga nuova in fondo alla lista e la apre. */
-    function add(name, item) {
+    /**
+     * Aggiunge una riga nuova in fondo alla lista e la apre. Con `open: false`
+     * resta chiusa: un import che porta trenta righe non deve srotolarle tutte.
+     */
+    function add(name, item, { open = true } = {}) {
         const row = buildRow(name, item, { isNew: true });
+        if (!open) row.querySelector('.editor-details')?.removeAttribute('open');
         container(name).append(row);
         refreshEmpty(name);
         markDirty();
         return row;
     }
 
-    /** Riscrive i campi di una riga esistente e la apre. */
-    function refill(row, item) {
+    /** Riscrive i campi di una riga esistente e, salvo `open: false`, la apre. */
+    function refill(row, item, { open = true } = {}) {
         const name = listNameOf(row);
         lists[name].fill(row, item, tools);
         lists[name].preview?.(row, tools);
-        row.querySelector('.editor-details')?.setAttribute('open', '');
+        if (open) row.querySelector('.editor-details')?.setAttribute('open', '');
         markDirty();
         return row;
+    }
+
+    /** Ridisegna l'anteprima di una riga dopo una modifica fatta da fuori. */
+    function refreshPreview(row) {
+        lists[listNameOf(row)].preview?.(row, tools);
+    }
+
+    /** L'oggetto che la riga produrrebbe al salvataggio. */
+    function readRow(row) {
+        const name = listNameOf(row);
+        return lists[name].collect(row, rows(name).indexOf(row), tools);
     }
 
     return {
         init,
         isDirty: () => dirty,
+        reload,
         add,
         refill,
+        readRow,
+        refreshPreview,
         rows,
         value,
+        field,
         setAlert,
         clearAlert,
         markDirty,

@@ -4,6 +4,7 @@ import { sponsorsEditor } from './sponsors-editor.js';
 import { siteEditor } from './site-editor.js';
 import { eventsEditor } from './events-editor.js';
 import { remindersPanel } from './reminders.js';
+import { globalAzurePanel } from './global-azure-editor.js';
 
 /* ==========================================================
    SESSIONE
@@ -91,7 +92,7 @@ const canWrite = session?.isAdmin !== false;
 
 // In parallelo: sono chiamate indipendenti, e farle in fila triplicherebbe
 // l'attesa a freddo, quando le function si stanno ancora svegliando.
-const editors = [teamEditor, sponsorsEditor, eventsEditor, siteEditor, remindersPanel];
+const editors = [teamEditor, sponsorsEditor, eventsEditor, globalAzurePanel, siteEditor, remindersPanel];
 await Promise.allSettled(editors.map((editor) => editor.init(canWrite)));
 
 // Rete di sicurezza contro la chiusura distratta della scheda. Sta qui e non

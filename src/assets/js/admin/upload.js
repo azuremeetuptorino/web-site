@@ -17,6 +17,11 @@ import { apiPost, ApiError, SessionExpiredError } from './api.js';
 
 export const MAX_BYTES = 512 * 1024;
 
+/** Allineato a MAX_BYTES_BY_KIND di api/src/lib/image.js. */
+const MAX_BYTES_BY_KIND = { photo: 1536 * 1024 };
+
+export const maxBytesFor = (kind) => MAX_BYTES_BY_KIND[kind] ?? MAX_BYTES;
+
 export const ACCEPTED_TYPES = ['image/png', 'image/jpeg', 'image/webp', 'image/svg+xml'];
 
 /** Valore pronto per l'attributo accept di <input type="file">. */
@@ -69,16 +74,19 @@ function messageFor(error) {
 
 /**
  * @param {File} file
- * @param {'avatar' | 'sponsor' | 'site' | 'event'} kind
+ * @param {File | Blob} file un Blob deve avere `name`, oppure si passa `filename`
+ * @param {'avatar' | 'sponsor' | 'site' | 'event' | 'photo'} kind
+ * @param {{filename?: string}} [options]
  * @returns {Promise<string>} la URL pubblica da scrivere nel campo
  * @throws {UploadError | SessionExpiredError}
  */
-export async function uploadImage(file, kind) {
+export async function uploadImage(file, kind, { filename = file.name } = {}) {
     if (!ACCEPTED_TYPES.includes(file.type)) {
         throw new UploadError('Formato non ammesso. Servono PNG, JPEG, WebP o SVG.');
     }
-    if (file.size > MAX_BYTES) {
-        throw new UploadError(`Il file pesa ${kb(file.size)}, il limite e ${kb(MAX_BYTES)}.`);
+    const maxBytes = maxBytesFor(kind);
+    if (file.size > maxBytes) {
+        throw new UploadError(`Il file pesa ${kb(file.size)}, il limite e ${kb(maxBytes)}.`);
     }
 
     const dataBase64 = await toBase64(file);
@@ -86,7 +94,7 @@ export async function uploadImage(file, kind) {
     try {
         const { payload } = await apiPost('/api/assets', {
             kind,
-            filename: file.name,
+            filename,
             contentType: file.type,
             dataBase64
         });

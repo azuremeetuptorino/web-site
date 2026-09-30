@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Azure Torino | Azure Meetup Torino</title>
+    <meta name="description" content="Global Azure Torino: la giornata dedicata al cloud Microsoft organizzata da Azure Meetup Torino. Agenda, speaker, foto e tutte le edizioni dal 2018.">
+    <meta property="og:title" content="Global Azure Torino">
+    <meta property="og:description" content="Agenda, speaker, foto e tutte le edizioni di Global Azure Torino.">
+    <meta property="og:type" content="website">
+
+    <!--
+        Il titolo lo scrive global-azure-page.js in base all'edizione aperta;
+        render-site.js viene chiamato con `title: false`.
+    -->
+    <link rel="icon" href="https://media.licdn.com/dms/image/v2/D4D0BAQEhN0BwKgacBQ/company-logo_200_200/B4DZYBX6NlHwAI-/0/1743779767492/azure_meetup_torino_logo?e=2147483647&v=beta&t=Cdt2pJTS6y7cAX9074JPwxQ4BSl3pd9T1k1rDMnMbBQ">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/assets/vendor/bootstrap-icons/bootstrap-icons.min.css">
+
+    <link rel="stylesheet" href="/assets/css/tokens.css">
+    <link rel="stylesheet" href="/assets/css/base.css">
+    <link rel="stylesheet" href="/assets/css/layout.css">
+    <link rel="stylesheet" href="/assets/css/components.css">
+    <link rel="stylesheet" href="/assets/css/global-azure.css">
+</head>
+<body class="page-inner ga-page">
+
+    <header id="main-header">
+        <div class="nav-container" id="nav-container">
+            <a href="/" class="logo">
+                <img src="https://media.licdn.com/dms/image/v2/D4D0BAQEhN0BwKgacBQ/company-logo_200_200/B4DZYBX6NlHwAI-/0/1743779767492/azure_meetup_torino_logo?e=2147483647&v=beta&t=Cdt2pJTS6y7cAX9074JPwxQ4BSl3pd9T1k1rDMnMbBQ" alt="Azure Meetup Torino Logo" class="logo-img" id="logo-img" data-site="brand.logoUrl">
+                <span data-site="brand.name">Azure Meetup Torino</span>
+            </a>
+            <button type="button" class="nav-toggle" id="nav-toggle"
+                    aria-controls="primary-nav" aria-expanded="false" aria-label="Apri il menu">
+                <i class="bi bi-list" aria-hidden="true"></i>
+            </button>
+
+            <nav id="primary-nav">
+                <ul>
+                    <li><a href="/#chi-siamo">Chi Siamo</a></li>
+                    <li><a href="/#staff">Staff</a></li>
+                    <li><a href="/eventi/">Eventi</a></li>
+                    <li><a href="/global-azure/" aria-current="page">Global Azure</a></li>
+                    <li><a href="/#sponsors">Sponsor</a></li>
+                    <li><a href="/#contacts">Contatti</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main id="main-content">
+
+        <!-- ================= HERO ================= -->
+        <section class="ga-hero" id="ga-hero" aria-labelledby="ga-hero-title">
+            <div class="ga-hero-bg" aria-hidden="true">
+                <span class="ga-hero-cover"></span>
+                <span class="ga-orb ga-orb-1"></span>
+                <span class="ga-orb ga-orb-2"></span>
+                <span class="ga-orb ga-orb-3"></span>
+                <span class="ga-grid"></span>
+            </div>
+
+            <div class="container ga-hero-inner">
+                <p class="ga-eyebrow"><i class="bi bi-globe-europe-africa" aria-hidden="true"></i> Community event · Torino</p>
+                <h1 class="ga-hero-title" id="ga-hero-title">
+                    <span class="ga-hero-kicker" id="ga-kicker">Global Azure Torino</span>
+                    <span class="ga-hero-year" id="ga-hero-year">&nbsp;</span>
+                </h1>
+                <p class="ga-hero-tagline" id="ga-tagline" hidden></p>
+                <ul class="ga-hero-meta" id="ga-meta"></ul>
+                <div class="ga-hero-actions" id="ga-actions"></div>
+
+                <nav class="ga-edition-switch" id="ga-edition-switch" aria-label="Scegli l'edizione"></nav>
+            </div>
+        </section>
+
+        <!-- ================= NUMERI ================= -->
+        <div class="ga-stats-wrap" id="ga-stats-wrap" hidden>
+            <div class="container">
+                <dl class="ga-stats" id="ga-stats"></dl>
+            </div>
+        </div>
+
+        <!-- Sotto-menu della pagina: le voci delle sezioni vuote si nascondono. -->
+        <nav class="ga-subnav" id="ga-subnav" aria-label="Sezioni della pagina">
+            <ul class="container">
+                <li><a href="#agenda"><i class="bi bi-calendar3-week" aria-hidden="true"></i> Agenda</a></li>
+                <li><a href="#speaker"><i class="bi bi-mic" aria-hidden="true"></i> Speaker</a></li>
+                <li><a href="#foto"><i class="bi bi-images" aria-hidden="true"></i> Foto</a></li>
+                <li><a href="#sponsor"><i class="bi bi-award" aria-hidden="true"></i> Sponsor</a></li>
+                <li><a href="#edizioni"><i class="bi bi-clock-history" aria-hidden="true"></i> Edizioni</a></li>
+            </ul>
+        </nav>
+
+        <div id="ga-status"><p class="data-error">Carico Global Azure...</p></div>
+
+        <!-- ================= RACCONTO ================= -->
+        <section class="ga-story" id="ga-story" hidden>
+            <div class="container">
+                <p class="ga-story-text" id="ga-story-text"></p>
+            </div>
+        </section>
+
+        <!-- ================= AGENDA ================= -->
+        <section class="ga-section" id="agenda" hidden>
+            <div class="container">
+                <div class="ga-section-head">
+                    <p class="ga-section-eyebrow">Programma</p>
+                    <h2 class="ga-section-title">Agenda</h2>
+                    <p class="ga-section-lead">Tocca una sessione per leggere l'abstract e conoscere chi la presenta.</p>
+                </div>
+                <div class="ga-track-filter" id="ga-track-filter" role="group" aria-label="Filtra per traccia"></div>
+                <div class="ga-agenda" id="ga-agenda"></div>
+            </div>
+        </section>
+
+        <!-- ================= SPEAKER ================= -->
+        <section class="ga-section ga-section-alt" id="speaker" hidden>
+            <div class="container">
+                <div class="ga-section-head">
+                    <p class="ga-section-eyebrow">Sul palco</p>
+                    <h2 class="ga-section-title">Speaker</h2>
+                </div>
+                <div class="ga-speakers" id="ga-speakers"></div>
+            </div>
+        </section>
+
+        <!-- ================= FOTO ================= -->
+        <section class="ga-section ga-section-dark" id="foto" hidden>
+            <div class="container">
+                <div class="ga-section-head">
+                    <p class="ga-section-eyebrow">Com'e andata</p>
+                    <h2 class="ga-section-title">Foto</h2>
+                </div>
+                <div class="ga-gallery" id="ga-gallery"></div>
+                <p class="ga-more">
+                    <button type="button" class="ga-btn ga-btn-ghost" id="ga-gallery-more" hidden></button>
+                </p>
+            </div>
+        </section>
+
+        <!-- ================= SPONSOR ================= -->
+        <section class="ga-section" id="sponsor" hidden>
+            <div class="container">
+                <div class="ga-section-head">
+                    <p class="ga-section-eyebrow">Grazie a</p>
+                    <h2 class="ga-section-title">Sponsor</h2>
+                </div>
+                <div class="sponsor-tiers ga-sponsors" id="ga-sponsors"></div>
+                <p class="ga-sponsor-cta">
+                    Vuoi sostenere la prossima edizione?
+                    <a href="/#contacts">Scrivici <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+                </p>
+            </div>
+        </section>
+
+        <!-- ================= EDIZIONI ================= -->
+        <section class="ga-section ga-section-alt" id="edizioni" hidden>
+            <div class="container">
+                <div class="ga-section-head">
+                    <p class="ga-section-eyebrow">Dal 2018</p>
+                    <h2 class="ga-section-title">Le edizioni</h2>
+                    <p class="ga-section-lead">Ogni anno, dal 2018, Torino partecipa al Global Azure con una giornata di talk della community.</p>
+                </div>
+                <div class="ga-editions" id="ga-editions"></div>
+            </div>
+        </section>
+
+        <noscript>
+            <p class="data-error">Per vedere agenda e foto di Global Azure serve JavaScript.</p>
+        </noscript>
+    </main>
+
+    <!-- Dettaglio di una sessione o di uno speaker -->
+    <dialog class="ga-dialog" id="ga-dialog" aria-labelledby="ga-dialog-title">
+        <div class="ga-dialog-panel">
+            <button type="button" class="ga-dialog-close" aria-label="Chiudi">
+                <i class="bi bi-x-lg" aria-hidden="true"></i>
+            </button>
+            <div class="ga-dialog-body" id="ga-dialog-body"></div>
+        </div>
+    </dialog>
+
+    <!-- Lightbox delle foto -->
+    <dialog class="ga-lightbox" id="ga-lightbox" aria-label="Foto">
+        <div class="ga-lightbox-stage">
+            <img class="ga-lightbox-image" alt="">
+        </div>
+        <div class="ga-lightbox-bar">
+            <span class="ga-lightbox-counter"></span>
+            <p class="ga-lightbox-caption" hidden></p>
+        </div>
+        <button type="button" class="ga-lightbox-btn ga-lightbox-prev" data-lightbox="prev" aria-label="Foto precedente">
+            <i class="bi bi-chevron-left" aria-hidden="true"></i>
+        </button>
+        <button type="button" class="ga-lightbox-btn ga-lightbox-next" data-lightbox="next" aria-label="Foto successiva">
+            <i class="bi bi-chevron-right" aria-hidden="true"></i>
+        </button>
+        <button type="button" class="ga-lightbox-btn ga-lightbox-close" data-lightbox="close" aria-label="Chiudi">
+            <i class="bi bi-x-lg" aria-hidden="true"></i>
+        </button>
+    </dialog>
+
+    <footer id="contacts">
+        <div class="footer-brand" data-site="brand.name">Azure Meetup Torino</div>
+        <p class="footer-intro" data-site="footer.intro">Entra in contatto con noi o unisciti ai nostri canali per restare aggiornato.</p>
+
+        <div class="contact-channels" data-site-list="channels">
+            <a href="mailto:info@azuremeetuptorino.it?subject=[Azure%20Meetup%20Torino]%20Richiesta%20Info" class="channel-btn btn-email">
+                <i class="bi bi-envelope-fill"></i> Scrivici una Mail
+            </a>
+
+            <a href="https://t.me/AzureMeetupTorino" target="_blank" rel="noopener noreferrer" class="channel-btn btn-telegram">
+                <i class="bi bi-telegram"></i> Canale Telegram
+            </a>
+
+            <a href="https://chat.whatsapp.com" target="_blank" rel="noopener noreferrer" class="channel-btn btn-whatsapp">
+                <i class="bi bi-whatsapp"></i> Canale WhatsApp
+            </a>
+        </div>
+
+        <div>
+            <button type="button" class="email-copy-bar" id="email-copy-bar" title="Clicca per copiare l'email">
+                <i class="bi bi-copy"></i>
+                <span id="email-text" data-site="footer.email">info@azuremeetuptorino.it</span>
+            </button>
+        </div>
+
+        <div class="social-links" data-site-list="social">
+            <a href="https://it.linkedin.com/company/azure-meetup-torino" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+            <a href="https://www.youtube.com/@AzureMeetupTorino" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
+            <a href="https://www.instagram.com/azuremeetuptorino" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+            <a href="https://github.com/Azure-Meetup-Torino" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><i class="bi bi-github"></i></a>
+        </div>
+
+        <p class="footer-legal" data-site="footer.legal">
+            &copy; 2026 Azure Meetup Torino. Community indipendente non affiliata con Microsoft Corporation.
+        </p>
+    </footer>
+
+    <script type="module" src="/assets/js/global-azure-page.js"></script>
+</body>
+</html>

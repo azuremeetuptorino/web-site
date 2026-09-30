@@ -16,6 +16,10 @@
  * Uso:
  *   npm run seed                      # su Azurite
  *   npm run seed -- --force           # riscrive anche i master
+ *   npm run seed -- --only=global-azure.json,global-azure/2026.json
+ *                                     # solo quei file: su un ambiente vivo
+ *                                     # evita di ripubblicare su public/ i
+ *                                     # seed al posto dei master veri
  *   DATA_STORAGE_CONNECTION="..." npm run seed     # su un account vero
  *
  * L'import passa da api/src/lib/blob.js di proposito: il seed scrive con gli
@@ -48,13 +52,16 @@ const { readPrivate, writePrivate, publishPublic, PRIVATE_CONTAINER, PUBLIC_CONT
     await import('../api/src/lib/blob.js');
 
 const force = process.argv.includes('--force');
+const only = process.argv.find((arg) => arg.startsWith('--only='))?.slice(7).split(',').filter(Boolean);
 
 /** `master: true` = esiste anche una copia privata modificabile dall'admin. */
 const FILES = [
     { name: 'site.json', master: true },
     { name: 'team.json', master: true },
     { name: 'sponsors.json', master: true },
-    { name: 'events.json', master: true }
+    { name: 'events.json', master: true },
+    { name: 'global-azure.json', master: true },
+    { name: 'global-azure/2026.json', master: true }
 ];
 
 async function seed({ name, master }) {
@@ -83,6 +90,7 @@ async function seed({ name, master }) {
 console.log(`\nSeed dei dati su ${process.env.DATA_STORAGE_CONNECTION.startsWith('UseDevelopmentStorage') ? 'Azurite' : 'un account Azure'}\n`);
 
 for (const file of FILES) {
+    if (only && !only.includes(file.name)) continue;
     await seed(file);
 }
 

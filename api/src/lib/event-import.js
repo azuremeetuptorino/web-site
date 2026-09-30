@@ -112,7 +112,7 @@ const REQUEST_HEADERS = {
     'accept-language': 'it-IT,it;q=0.9,en;q=0.8'
 };
 
-async function readCapped(response, maxBytes) {
+export async function readCapped(response, maxBytes) {
     if (!response.body) return await response.text();
 
     const chunks = [];
@@ -189,7 +189,7 @@ export async function fetchPage(url, { fetchImpl = fetch, timeoutMs = TIMEOUT_MS
 
 const ENTITIES = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", '#39': "'", nbsp: ' ' };
 
-function decodeEntities(value) {
+export function decodeEntities(value) {
     return String(value).replace(/&(#x[0-9a-f]+|#\d+|[a-z]+\d*);/gi, (match, entity) => {
         const lower = entity.toLowerCase();
         if (lower.startsWith('#x')) return String.fromCodePoint(parseInt(lower.slice(2), 16));
