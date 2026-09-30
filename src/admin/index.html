@@ -39,7 +39,7 @@
     <main class="admin-main">
         <h1 class="admin-title">Gestione contenuti</h1>
         <p class="admin-subtitle">
-            Da qui si modificano team, sponsor, eventi e contenuti della home mostrati sul sito pubblico.
+            Da qui si modificano team, sponsor, eventi, le edizioni di Global Azure e i contenuti della home mostrati sul sito pubblico.
             Gli eventi si importano dal link della loro pagina su Luma o Meetup, e da
             <strong>Promemoria</strong> si ricordano sui canali social.
         </p>
@@ -58,6 +58,10 @@
             <button type="button" class="admin-tab" role="tab" id="tab-eventi"
                     data-tab="eventi" aria-controls="panel-eventi" aria-selected="false" tabindex="-1">
                 <i class="bi bi-calendar-event" aria-hidden="true"></i> Eventi
+            </button>
+            <button type="button" class="admin-tab" role="tab" id="tab-global-azure"
+                    data-tab="global-azure" aria-controls="panel-global-azure" aria-selected="false" tabindex="-1">
+                <i class="bi bi-cloud-sun" aria-hidden="true"></i> Global Azure
             </button>
             <button type="button" class="admin-tab" role="tab" id="tab-home"
                     data-tab="home" aria-controls="panel-home" aria-selected="false" tabindex="-1">
@@ -210,6 +214,206 @@
                     pagina pubblica si aggiorna entro 5 minuti, il tempo della cache.
                 </p>
             </div>
+        </section>
+
+        <!-- ================= GLOBAL AZURE ================= -->
+        <section class="admin-panel" id="panel-global-azure" role="tabpanel" aria-labelledby="tab-global-azure" tabindex="0" hidden>
+
+            <!-- ----- Edizioni: l'indice ----- -->
+            <div class="admin-placeholder" id="ga-index-loading">
+                <i class="bi bi-hourglass-split" aria-hidden="true"></i>
+                <strong>Carico le edizioni...</strong>
+            </div>
+
+            <div class="editor ga-block" id="ga-index-editor" hidden>
+                <header class="ga-block-header">
+                    <h2 class="ga-block-title"><i class="bi bi-collection" aria-hidden="true"></i> Edizioni</h2>
+                    <p class="ga-block-note">
+                        Una scheda per anno: data, sede, copertina e numeri. L'edizione <strong>corrente</strong>
+                        e quella che apre la pagina <a href="/global-azure/" target="_blank" rel="noopener">/global-azure/</a>;
+                        le altre finiscono nell'archivio.
+                    </p>
+                </header>
+
+                <div class="editor-bar">
+                    <div class="editor-actions">
+                        <button type="button" class="editor-btn editor-btn-primary" id="ga-index-save">
+                            <i class="bi bi-cloud-arrow-up" aria-hidden="true"></i> Salva e pubblica
+                        </button>
+                        <button type="button" class="editor-btn" data-add="editions">
+                            <i class="bi bi-plus-square" aria-hidden="true"></i> Nuova edizione
+                        </button>
+                        <button type="button" class="editor-btn" id="ga-index-reload">
+                            <i class="bi bi-arrow-clockwise" aria-hidden="true"></i> Ricarica
+                        </button>
+                    </div>
+                    <p class="editor-state" id="ga-index-state" role="status" aria-live="polite"></p>
+                </div>
+
+                <div class="editor-alert" id="ga-index-alert" hidden></div>
+
+                <ol class="editor-list" data-list="editions" data-template="ga-edition-template"></ol>
+
+                <p class="editor-empty" data-empty="editions" hidden>
+                    Nessuna edizione. Usa <strong>Nuova edizione</strong> per crearne una.
+                </p>
+            </div>
+
+            <!-- ----- Contenuti di un'edizione ----- -->
+            <div class="admin-placeholder ga-block" id="ga-edition-loading">
+                <i class="bi bi-hourglass-split" aria-hidden="true"></i>
+                <strong>Carico i contenuti dell'edizione...</strong>
+            </div>
+
+            <div class="editor ga-block" id="ga-edition-editor" hidden>
+                <header class="ga-block-header ga-block-header-split">
+                    <div>
+                        <h2 class="ga-block-title"><i class="bi bi-easel" aria-hidden="true"></i> Contenuti dell'edizione</h2>
+                        <p class="ga-block-note">Agenda, speaker, foto e sponsor dell'anno scelto. Ogni anno si salva per conto suo.</p>
+                    </div>
+                    <label class="ga-year-picker">
+                        <span>Edizione</span>
+                        <select id="ga-year"></select>
+                    </label>
+                </header>
+
+                <div class="editor-bar">
+                    <div class="editor-actions">
+                        <button type="button" class="editor-btn editor-btn-primary" id="ga-edition-save">
+                            <i class="bi bi-cloud-arrow-up" aria-hidden="true"></i> Salva e pubblica
+                        </button>
+                        <button type="button" class="editor-btn" id="ga-edition-reload">
+                            <i class="bi bi-arrow-clockwise" aria-hidden="true"></i> Ricarica
+                        </button>
+                    </div>
+                    <p class="editor-state" id="ga-edition-state" role="status" aria-live="polite"></p>
+                </div>
+
+                <div class="editor-alert" id="ga-edition-alert" hidden></div>
+
+                <div class="ga-subtabs" role="tablist" aria-label="Contenuti dell'edizione">
+                    <button type="button" class="ga-subtab" role="tab" aria-selected="true" data-ga-section="sessions">
+                        <i class="bi bi-calendar3-week" aria-hidden="true"></i> Agenda <span class="ga-count" data-ga-count="sessions">0</span>
+                    </button>
+                    <button type="button" class="ga-subtab" role="tab" aria-selected="false" tabindex="-1" data-ga-section="speakers">
+                        <i class="bi bi-mic" aria-hidden="true"></i> Speaker <span class="ga-count" data-ga-count="speakers">0</span>
+                    </button>
+                    <button type="button" class="ga-subtab" role="tab" aria-selected="false" tabindex="-1" data-ga-section="tracks">
+                        <i class="bi bi-signpost-split" aria-hidden="true"></i> Tracce <span class="ga-count" data-ga-count="tracks">0</span>
+                    </button>
+                    <button type="button" class="ga-subtab" role="tab" aria-selected="false" tabindex="-1" data-ga-section="photos">
+                        <i class="bi bi-images" aria-hidden="true"></i> Foto <span class="ga-count" data-ga-count="photos">0</span>
+                    </button>
+                    <button type="button" class="ga-subtab" role="tab" aria-selected="false" tabindex="-1" data-ga-section="sponsors">
+                        <i class="bi bi-award" aria-hidden="true"></i> Sponsor <span class="ga-count" data-ga-count="sponsors">0</span>
+                    </button>
+                </div>
+
+                <!-- Agenda -->
+                <section class="ga-section" data-ga-panel="sessions">
+                    <div class="editor-import" id="ga-sessionize">
+                        <label class="editor-import-label" for="ga-sessionize-id">
+                            <i class="bi bi-cloud-download" aria-hidden="true"></i> Importa agenda e speaker da Sessionize
+                        </label>
+                        <div class="editor-import-row">
+                            <div class="field">
+                                <input type="text" id="ga-sessionize-id" autocomplete="off" spellcheck="false"
+                                       placeholder="id dell'endpoint, per esempio dtzcs2li">
+                            </div>
+                            <button type="button" class="editor-btn editor-btn-primary" id="ga-sessionize-btn">
+                                <i class="bi bi-download" aria-hidden="true"></i> <span data-import-label>Importa</span>
+                            </button>
+                        </div>
+                        <p class="field-note">
+                            L'id si trova in Sessionize, alla voce <strong>API / Embed</strong> dell'evento. Tracce, speaker e
+                            sessioni gia in lista si aggiornano, le nuove si aggiungono; quelle inserite a mano restano
+                            come sono. Niente finisce sul sito finche non premi <strong>Salva e pubblica</strong>.
+                        </p>
+                        <p class="field-error" id="ga-sessionize-error" hidden></p>
+                    </div>
+
+                    <div class="ga-toolbar">
+                        <button type="button" class="editor-btn" data-add="sessions">
+                            <i class="bi bi-plus-square" aria-hidden="true"></i> Aggiungi sessione
+                        </button>
+                        <label class="ga-filter">
+                            <span>Traccia</span>
+                            <select id="ga-session-filter"><option value="">Tutte</option></select>
+                        </label>
+                    </div>
+
+                    <ol class="editor-list" data-list="sessions" data-template="ga-session-template"></ol>
+                    <p class="editor-empty" data-empty="sessions" hidden>
+                        Nessuna sessione. Importa da Sessionize oppure usa <strong>Aggiungi sessione</strong>.
+                    </p>
+                </section>
+
+                <!-- Speaker -->
+                <section class="ga-section" data-ga-panel="speakers" hidden>
+                    <div class="ga-toolbar">
+                        <button type="button" class="editor-btn" data-add="speakers">
+                            <i class="bi bi-person-plus" aria-hidden="true"></i> Aggiungi speaker
+                        </button>
+                        <label class="ga-filter ga-filter-grow">
+                            <span>Cerca</span>
+                            <input type="search" id="ga-speaker-search" placeholder="Nome o azienda" autocomplete="off">
+                        </label>
+                    </div>
+                    <ol class="editor-list" data-list="speakers" data-template="ga-speaker-template"></ol>
+                    <p class="editor-empty" data-empty="speakers" hidden>Nessuno speaker.</p>
+                </section>
+
+                <!-- Tracce -->
+                <section class="ga-section" data-ga-panel="tracks" hidden>
+                    <div class="ga-toolbar">
+                        <button type="button" class="editor-btn" data-add="tracks">
+                            <i class="bi bi-plus-square" aria-hidden="true"></i> Aggiungi traccia
+                        </button>
+                    </div>
+                    <ol class="editor-list" data-list="tracks" data-template="ga-track-template"></ol>
+                    <p class="editor-empty" data-empty="tracks" hidden>Nessuna traccia.</p>
+                    <p class="editor-hint">L'ordine delle tracce e l'ordine delle colonne dell'agenda sul sito.</p>
+                </section>
+
+                <!-- Foto -->
+                <section class="ga-section" data-ga-panel="photos" hidden>
+                    <label class="ga-dropzone" id="ga-photo-drop">
+                        <input type="file" id="ga-photo-input" multiple hidden
+                               accept="image/jpeg,image/png,image/webp">
+                        <i class="bi bi-cloud-arrow-up" aria-hidden="true"></i>
+                        <strong>Trascina qui le foto, oppure clicca per sceglierle</strong>
+                        <span>JPEG, PNG o WebP di qualunque dimensione: vengono ridotte nel browser a 2000 px, con miniatura.</span>
+                    </label>
+                    <div class="ga-progress" id="ga-photo-progress" hidden>
+                        <div class="ga-progress-bar"><span id="ga-photo-progress-bar"></span></div>
+                        <p id="ga-photo-progress-text" role="status" aria-live="polite"></p>
+                    </div>
+                    <ol class="editor-list ga-photo-grid" data-list="photos" data-template="ga-photo-template"></ol>
+                    <p class="editor-empty" data-empty="photos" hidden>Nessuna foto per questa edizione.</p>
+                    <p class="editor-hint">
+                        La stella mette una foto <strong>in evidenza</strong>: nella galleria occupa piu spazio, e le prime
+                        tre in evidenza fanno da anteprima nell'archivio delle edizioni. L'ordine qui e l'ordine della galleria.
+                    </p>
+                </section>
+
+                <!-- Sponsor -->
+                <section class="ga-section" data-ga-panel="sponsors" hidden>
+                    <div class="ga-toolbar">
+                        <button type="button" class="editor-btn" data-add="sponsors">
+                            <i class="bi bi-plus-square" aria-hidden="true"></i> Aggiungi sponsor
+                        </button>
+                        <button type="button" class="editor-btn" id="ga-sponsor-copy">
+                            <i class="bi bi-files" aria-hidden="true"></i> Copia dagli sponsor del sito
+                        </button>
+                    </div>
+                    <ol class="editor-list" data-list="sponsors" data-template="ga-sponsor-template"></ol>
+                    <p class="editor-empty" data-empty="sponsors" hidden>Nessuno sponsor per questa edizione.</p>
+                </section>
+            </div>
+
+            <p class="editor-empty ga-block" id="ga-edition-none" hidden>
+                Crea e salva un'edizione qui sopra per gestirne agenda, foto e sponsor.
+            </p>
         </section>
 
         <!-- ================= HOME E FOOTER ================= -->
@@ -1050,6 +1254,485 @@
                 </span>
             </footer>
         </article>
+    </template>
+
+    <!-- ================= GLOBAL AZURE ================= -->
+    <template id="ga-edition-template">
+        <li class="editor-row">
+            <details class="editor-details">
+                <summary class="editor-summary">
+                    <img class="editor-thumb editor-thumb-wide" alt="" data-preview="cover"
+                         src="/assets/img/placeholder-event.svg"
+                         data-preview-fallback="/assets/img/placeholder-event.svg">
+                    <span class="editor-heading">
+                        <strong data-preview="title">Nuova edizione</strong>
+                        <span data-preview="when"></span>
+                    </span>
+                    <span class="editor-flag editor-flag-muted" data-preview="current" hidden>corrente</span>
+                    <span class="editor-flag" data-preview="hidden" hidden>non pubblicata</span>
+                    <i class="bi bi-chevron-down editor-chevron" aria-hidden="true"></i>
+                </summary>
+
+                <div class="editor-body">
+                    <div class="field">
+                        <label data-label-for="id">Anno</label>
+                        <input type="text" data-field="id" maxlength="4" inputmode="numeric" autocomplete="off" placeholder="2027">
+                        <span class="field-note">E anche l'indirizzo: <code>/global-azure/?anno=2027</code>.</span>
+                        <span class="field-error" data-error-for="id" hidden></span>
+                    </div>
+
+                    <div class="field">
+                        <label data-label-for="date">Data</label>
+                        <input type="date" data-field="date">
+                        <span class="field-error" data-error-for="date" hidden></span>
+                    </div>
+
+                    <div class="field field-wide">
+                        <label data-label-for="title">Titolo</label>
+                        <input type="text" data-field="title" maxlength="80" autocomplete="off" placeholder="Global Azure Torino 2027">
+                        <span class="field-error" data-error-for="title" hidden></span>
+                    </div>
+
+                    <div class="field field-wide">
+                        <label data-label-for="tagline">Sottotitolo</label>
+                        <input type="text" data-field="tagline" maxlength="160" autocomplete="off"
+                               placeholder="L'appuntamento cloud dell'anno torna a Torino">
+                        <span class="field-error" data-error-for="tagline" hidden></span>
+                    </div>
+
+                    <div class="field field-wide">
+                        <label data-label-for="highlight">Racconto dell'edizione</label>
+                        <textarea data-field="highlight" maxlength="600" rows="3"></textarea>
+                        <span class="field-note">Due o tre frasi: compaiono sotto il titolo e nella card dell'archivio.</span>
+                        <span class="field-error" data-error-for="highlight" hidden></span>
+                    </div>
+
+                    <div class="field">
+                        <label data-label-for="venue.name">Sede</label>
+                        <input type="text" data-field="venue.name" maxlength="120" autocomplete="off">
+                        <span class="field-error" data-error-for="venue.name" hidden></span>
+                    </div>
+                    <div class="field">
+                        <label data-label-for="venue.address">Indirizzo</label>
+                        <input type="text" data-field="venue.address" maxlength="120" autocomplete="off">
+                        <span class="field-error" data-error-for="venue.address" hidden></span>
+                    </div>
+                    <div class="field">
+                        <label data-label-for="venue.city">Citta</label>
+                        <input type="text" data-field="venue.city" maxlength="120" autocomplete="off" placeholder="Torino">
+                        <span class="field-error" data-error-for="venue.city" hidden></span>
+                    </div>
+
+                    <div class="field">
+                        <label data-label-for="registrationUrl">Link iscrizione o pagina evento</label>
+                        <input type="url" data-field="registrationUrl" autocomplete="off" spellcheck="false" placeholder="https://...">
+                        <span class="field-error" data-error-for="registrationUrl" hidden></span>
+                    </div>
+
+                    <div class="field field-wide">
+                        <label data-label-for="coverUrl">Copertina</label>
+                        <div class="upload-row">
+                            <input type="url" data-field="coverUrl" autocomplete="off" spellcheck="false" placeholder="https://...">
+                            <label class="upload-btn">
+                                <i class="bi bi-upload" aria-hidden="true"></i>
+                                <span data-upload-label>Carica</span>
+                                <input type="file" hidden data-upload="event"
+                                       accept="image/png,image/jpeg,image/webp,image/svg+xml">
+                            </label>
+                        </div>
+                        <span class="field-note">Orizzontale. Vuota, la card dell'archivio usa la prima foto in evidenza.</span>
+                        <span class="field-error" data-error-for="coverUrl" hidden></span>
+                    </div>
+
+                    <div class="field">
+                        <label data-label-for="sessionizeId">Id Sessionize</label>
+                        <input type="text" data-field="sessionizeId" maxlength="20" autocomplete="off" spellcheck="false" placeholder="dtzcs2li">
+                        <span class="field-note">Serve all'import dell'agenda, qui sotto.</span>
+                        <span class="field-error" data-error-for="sessionizeId" hidden></span>
+                    </div>
+
+                    <fieldset class="field field-wide ga-stats">
+                        <legend>Numeri</legend>
+                        <div class="ga-stats-grid">
+                            <label>Partecipanti
+                                <input type="number" min="0" data-field="stats.attendees" inputmode="numeric">
+                                <span class="field-error" data-error-for="stats.attendees" hidden></span>
+                            </label>
+                            <label>Sessioni
+                                <input type="number" min="0" data-field="stats.sessions" inputmode="numeric">
+                                <span class="field-error" data-error-for="stats.sessions" hidden></span>
+                            </label>
+                            <label>Speaker
+                                <input type="number" min="0" data-field="stats.speakers" inputmode="numeric">
+                                <span class="field-error" data-error-for="stats.speakers" hidden></span>
+                            </label>
+                            <label>Tracce
+                                <input type="number" min="0" data-field="stats.tracks" inputmode="numeric">
+                                <span class="field-error" data-error-for="stats.tracks" hidden></span>
+                            </label>
+                        </div>
+                        <div class="ga-stats-footer">
+                            <button type="button" class="editor-btn" data-ga-recount>
+                                <i class="bi bi-calculator" aria-hidden="true"></i> Ricalcola dai contenuti
+                            </button>
+                            <span class="field-note">Conta sessioni, speaker e tracce salvati per quest'anno. I partecipanti si scrivono a mano.</span>
+                        </div>
+                    </fieldset>
+
+                    <div class="field field-wide editor-controls">
+                        <div class="ga-checks">
+                            <label class="field-check">
+                                <input type="checkbox" data-field="current"> Edizione corrente
+                            </label>
+                            <label class="field-check">
+                                <input type="checkbox" data-field="published"> Pubblicata sul sito
+                            </label>
+                        </div>
+                        <div class="editor-buttons">
+                            <button type="button" class="icon-btn icon-btn-danger" data-action="remove" title="Elimina">
+                                <i class="bi bi-trash" aria-hidden="true"></i><span class="visually-hidden">Elimina</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </details>
+        </li>
+    </template>
+
+    <template id="ga-session-template">
+        <li class="editor-row">
+            <details class="editor-details">
+                <summary class="editor-summary">
+                    <span class="ga-time" data-preview="time">--:--</span>
+                    <span class="editor-heading">
+                        <strong data-preview="title">Nuova sessione</strong>
+                        <span data-preview="who"></span>
+                    </span>
+                    <span class="ga-track-chip" data-preview="track" hidden></span>
+                    <span class="editor-flag editor-flag-muted" data-preview="kind" hidden></span>
+                    <i class="bi bi-chevron-down editor-chevron" aria-hidden="true"></i>
+                </summary>
+
+                <div class="editor-body">
+                    <div class="field field-wide">
+                        <label data-label-for="title">Titolo</label>
+                        <input type="text" data-field="title" maxlength="200" autocomplete="off">
+                        <span class="field-error" data-error-for="title" hidden></span>
+                    </div>
+
+                    <div class="field">
+                        <label data-label-for="start">Inizio</label>
+                        <input type="datetime-local" data-field="start">
+                        <span class="field-error" data-error-for="start" hidden></span>
+                    </div>
+                    <div class="field">
+                        <label data-label-for="end">Fine</label>
+                        <input type="datetime-local" data-field="end">
+                        <span class="field-error" data-error-for="end" hidden></span>
+                    </div>
+
+                    <div class="field">
+                        <label data-label-for="kind">Tipo</label>
+                        <select data-field="kind">
+                            <option value="talk">Talk</option>
+                            <option value="keynote">Keynote</option>
+                            <option value="plenary">Plenaria (tutta la sala)</option>
+                            <option value="service">Servizio (check-in, pausa, pranzo)</option>
+                        </select>
+                        <span class="field-note">Keynote, plenaria e servizio occupano tutta la riga dell'agenda.</span>
+                        <span class="field-error" data-error-for="kind" hidden></span>
+                    </div>
+
+                    <div class="field">
+                        <label data-label-for="trackId">Traccia</label>
+                        <select data-field="trackId"><option value="">Nessuna</option></select>
+                        <span class="field-error" data-error-for="trackId" hidden></span>
+                    </div>
+
+                    <div class="field">
+                        <label data-label-for="language">Lingua</label>
+                        <select data-field="language">
+                            <option value="">Non indicata</option>
+                            <option value="it">Italiano</option>
+                            <option value="en">English</option>
+                        </select>
+                        <span class="field-error" data-error-for="language" hidden></span>
+                    </div>
+
+                    <div class="field">
+                        <label data-label-for="id">Identificativo</label>
+                        <input type="text" data-field="id" maxlength="49" autocomplete="off" spellcheck="false">
+                        <span class="field-note">Si compila dal titolo. Per le sessioni importate e l'id Sessionize.</span>
+                        <span class="field-error" data-error-for="id" hidden></span>
+                    </div>
+
+                    <div class="field field-wide">
+                        <span class="ga-label">Speaker</span>
+                        <div class="ga-choices" data-field="speakerIds" tabindex="-1">
+                            <input type="search" class="ga-choices-search" placeholder="Filtra gli speaker..." autocomplete="off" aria-label="Filtra gli speaker">
+                            <div class="ga-choices-list" data-speaker-choices></div>
+                        </div>
+                        <span class="field-error" data-error-for="speakerIds" hidden></span>
+                    </div>
+
+                    <div class="field field-wide">
+                        <label data-label-for="description">Abstract</label>
+                        <textarea data-field="description" maxlength="4000" rows="4"></textarea>
+                        <span class="field-error" data-error-for="description" hidden></span>
+                    </div>
+
+                    <div class="field field-wide editor-controls">
+                        <span></span>
+                        <div class="editor-buttons">
+                            <button type="button" class="icon-btn icon-btn-danger" data-action="remove" title="Elimina">
+                                <i class="bi bi-trash" aria-hidden="true"></i><span class="visually-hidden">Elimina</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </details>
+        </li>
+    </template>
+
+    <template id="ga-speaker-template">
+        <li class="editor-row">
+            <details class="editor-details">
+                <summary class="editor-summary">
+                    <img class="editor-thumb editor-thumb-round" alt="" data-preview="photo"
+                         src="/assets/img/placeholder-avatar.svg"
+                         data-preview-fallback="/assets/img/placeholder-avatar.svg">
+                    <span class="editor-heading">
+                        <strong data-preview="name">Nuovo speaker</strong>
+                        <span data-preview="tagline"></span>
+                    </span>
+                    <span class="editor-flag editor-flag-muted" data-preview="sessions" hidden></span>
+                    <i class="bi bi-chevron-down editor-chevron" aria-hidden="true"></i>
+                </summary>
+
+                <div class="editor-body">
+                    <div class="field">
+                        <label data-label-for="name">Nome</label>
+                        <input type="text" data-field="name" maxlength="80" autocomplete="off">
+                        <span class="field-error" data-error-for="name" hidden></span>
+                    </div>
+                    <div class="field">
+                        <label data-label-for="id">Identificativo</label>
+                        <input type="text" data-field="id" maxlength="49" autocomplete="off" spellcheck="false">
+                        <span class="field-error" data-error-for="id" hidden></span>
+                    </div>
+                    <div class="field field-wide">
+                        <label data-label-for="tagline">Tagline</label>
+                        <input type="text" data-field="tagline" maxlength="200" autocomplete="off" placeholder="Cloud Architect @ Contoso, Microsoft MVP">
+                        <span class="field-error" data-error-for="tagline" hidden></span>
+                    </div>
+                    <div class="field">
+                        <label data-label-for="company">Azienda</label>
+                        <input type="text" data-field="company" maxlength="80" autocomplete="off">
+                        <span class="field-error" data-error-for="company" hidden></span>
+                    </div>
+                    <div class="field">
+                        <label data-label-for="badges">Badge</label>
+                        <input type="text" data-field="badges" autocomplete="off" placeholder="Microsoft MVP, MCT">
+                        <span class="field-note">Separati da virgola, al massimo 5.</span>
+                        <span class="field-error" data-error-for="badges" hidden></span>
+                    </div>
+                    <div class="field field-wide">
+                        <label data-label-for="photoUrl">Foto</label>
+                        <div class="upload-row">
+                            <input type="url" data-field="photoUrl" autocomplete="off" spellcheck="false" placeholder="https://...">
+                            <label class="upload-btn">
+                                <i class="bi bi-upload" aria-hidden="true"></i>
+                                <span data-upload-label>Carica</span>
+                                <input type="file" hidden data-upload="avatar" accept="image/png,image/jpeg,image/webp">
+                            </label>
+                        </div>
+                        <span class="field-error" data-error-for="photoUrl" hidden></span>
+                    </div>
+                    <div class="field field-wide">
+                        <label data-label-for="bio">Bio</label>
+                        <textarea data-field="bio" maxlength="2000" rows="4"></textarea>
+                        <span class="field-error" data-error-for="bio" hidden></span>
+                    </div>
+                    <div class="field">
+                        <label data-label-for="links.linkedin">LinkedIn</label>
+                        <input type="url" data-field="links.linkedin" autocomplete="off" spellcheck="false" placeholder="https://www.linkedin.com/in/...">
+                        <span class="field-error" data-error-for="links.linkedin" hidden></span>
+                    </div>
+                    <div class="field">
+                        <label data-label-for="links.website">Sito o blog</label>
+                        <input type="url" data-field="links.website" autocomplete="off" spellcheck="false" placeholder="https://...">
+                        <span class="field-error" data-error-for="links.website" hidden></span>
+                    </div>
+                    <div class="field">
+                        <label data-label-for="links.github">GitHub</label>
+                        <input type="url" data-field="links.github" autocomplete="off" spellcheck="false" placeholder="https://github.com/...">
+                        <span class="field-error" data-error-for="links.github" hidden></span>
+                    </div>
+                    <div class="field">
+                        <label data-label-for="links.x">X</label>
+                        <input type="url" data-field="links.x" autocomplete="off" spellcheck="false" placeholder="https://x.com/...">
+                        <span class="field-error" data-error-for="links.x" hidden></span>
+                    </div>
+                    <div class="field">
+                        <label data-label-for="links.bluesky">Bluesky</label>
+                        <input type="url" data-field="links.bluesky" autocomplete="off" spellcheck="false" placeholder="https://bsky.app/profile/...">
+                        <span class="field-error" data-error-for="links.bluesky" hidden></span>
+                    </div>
+                    <div class="field field-wide editor-controls">
+                        <span></span>
+                        <div class="editor-buttons">
+                            <button type="button" class="icon-btn" data-action="up" title="Sposta su">
+                                <i class="bi bi-arrow-up" aria-hidden="true"></i><span class="visually-hidden">Sposta su</span>
+                            </button>
+                            <button type="button" class="icon-btn" data-action="down" title="Sposta giu">
+                                <i class="bi bi-arrow-down" aria-hidden="true"></i><span class="visually-hidden">Sposta giu</span>
+                            </button>
+                            <button type="button" class="icon-btn icon-btn-danger" data-action="remove" title="Elimina">
+                                <i class="bi bi-trash" aria-hidden="true"></i><span class="visually-hidden">Elimina</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </details>
+        </li>
+    </template>
+
+    <template id="ga-track-template">
+        <li class="editor-row editor-row-inline">
+            <div class="field field-grow">
+                <label data-label-for="name">Nome</label>
+                <input type="text" data-field="name" maxlength="60" autocomplete="off">
+                <span class="field-error" data-error-for="name" hidden></span>
+            </div>
+            <div class="field">
+                <label data-label-for="id">Identificativo</label>
+                <input type="text" data-field="id" maxlength="49" autocomplete="off" spellcheck="false">
+                <span class="field-error" data-error-for="id" hidden></span>
+            </div>
+            <div class="field ga-color-field">
+                <label data-label-for="color">Colore</label>
+                <input type="color" data-field="color" value="#0078D4">
+                <span class="field-error" data-error-for="color" hidden></span>
+            </div>
+            <div class="editor-buttons">
+                <button type="button" class="icon-btn" data-action="up" title="Sposta su">
+                    <i class="bi bi-arrow-up" aria-hidden="true"></i><span class="visually-hidden">Sposta su</span>
+                </button>
+                <button type="button" class="icon-btn" data-action="down" title="Sposta giu">
+                    <i class="bi bi-arrow-down" aria-hidden="true"></i><span class="visually-hidden">Sposta giu</span>
+                </button>
+                <button type="button" class="icon-btn icon-btn-danger" data-action="remove" title="Elimina">
+                    <i class="bi bi-trash" aria-hidden="true"></i><span class="visually-hidden">Elimina</span>
+                </button>
+            </div>
+        </li>
+    </template>
+
+    <template id="ga-photo-template">
+        <li class="editor-row ga-photo">
+            <div class="ga-photo-frame">
+                <img alt="" data-preview="thumb" loading="lazy" decoding="async">
+                <label class="ga-photo-star" title="In evidenza">
+                    <input type="checkbox" data-field="featured">
+                    <i class="bi bi-star-fill" aria-hidden="true"></i>
+                    <span class="visually-hidden">In evidenza</span>
+                </label>
+            </div>
+            <input type="hidden" data-field="id">
+            <input type="hidden" data-field="url">
+            <input type="hidden" data-field="thumbUrl">
+            <input type="hidden" data-field="width">
+            <input type="hidden" data-field="height">
+            <div class="field">
+                <input type="text" data-field="caption" maxlength="200" autocomplete="off" placeholder="Didascalia" aria-label="Didascalia">
+                <span class="field-error" data-error-for="caption" hidden></span>
+                <span class="field-error" data-error-for="url" hidden></span>
+            </div>
+            <div class="editor-buttons">
+                <button type="button" class="icon-btn" data-action="up" title="Sposta prima">
+                    <i class="bi bi-arrow-left" aria-hidden="true"></i><span class="visually-hidden">Sposta prima</span>
+                </button>
+                <button type="button" class="icon-btn" data-action="down" title="Sposta dopo">
+                    <i class="bi bi-arrow-right" aria-hidden="true"></i><span class="visually-hidden">Sposta dopo</span>
+                </button>
+                <button type="button" class="icon-btn icon-btn-danger" data-action="remove" title="Elimina">
+                    <i class="bi bi-trash" aria-hidden="true"></i><span class="visually-hidden">Elimina</span>
+                </button>
+            </div>
+        </li>
+    </template>
+
+    <template id="ga-sponsor-template">
+        <li class="editor-row">
+            <details class="editor-details">
+                <summary class="editor-summary">
+                    <img class="editor-thumb" alt="" data-preview="logo"
+                         src="/assets/img/placeholder-logo.svg"
+                         data-preview-fallback="/assets/img/placeholder-logo.svg">
+                    <span class="editor-heading">
+                        <strong data-preview="name">Nuovo sponsor</strong>
+                        <span data-preview="tier"></span>
+                    </span>
+                    <i class="bi bi-chevron-down editor-chevron" aria-hidden="true"></i>
+                </summary>
+                <div class="editor-body">
+                    <div class="field">
+                        <label data-label-for="name">Nome</label>
+                        <input type="text" data-field="name" maxlength="80" autocomplete="off">
+                        <span class="field-error" data-error-for="name" hidden></span>
+                    </div>
+                    <div class="field">
+                        <label data-label-for="id">Identificativo</label>
+                        <input type="text" data-field="id" maxlength="49" autocomplete="off" spellcheck="false">
+                        <span class="field-error" data-error-for="id" hidden></span>
+                    </div>
+                    <div class="field">
+                        <label data-label-for="tier">Fascia</label>
+                        <select data-field="tier">
+                            <option value="organizer">Organizzatore</option>
+                            <option value="diamond">Diamond</option>
+                            <option value="platinum">Platinum</option>
+                            <option value="gold">Gold</option>
+                            <option value="silver">Silver</option>
+                            <option value="contributor">Con il contributo di</option>
+                        </select>
+                        <span class="field-error" data-error-for="tier" hidden></span>
+                    </div>
+                    <div class="field">
+                        <label data-label-for="websiteUrl">Sito</label>
+                        <input type="url" data-field="websiteUrl" autocomplete="off" spellcheck="false" placeholder="https://...">
+                        <span class="field-error" data-error-for="websiteUrl" hidden></span>
+                    </div>
+                    <div class="field field-wide">
+                        <label data-label-for="logoUrl">Logo</label>
+                        <div class="upload-row">
+                            <input type="url" data-field="logoUrl" autocomplete="off" spellcheck="false" placeholder="https://...">
+                            <label class="upload-btn">
+                                <i class="bi bi-upload" aria-hidden="true"></i>
+                                <span data-upload-label>Carica</span>
+                                <input type="file" hidden data-upload="sponsor"
+                                       accept="image/png,image/jpeg,image/webp,image/svg+xml">
+                            </label>
+                        </div>
+                        <span class="field-error" data-error-for="logoUrl" hidden></span>
+                    </div>
+                    <div class="field field-wide editor-controls">
+                        <span></span>
+                        <div class="editor-buttons">
+                            <button type="button" class="icon-btn" data-action="up" title="Sposta su">
+                                <i class="bi bi-arrow-up" aria-hidden="true"></i><span class="visually-hidden">Sposta su</span>
+                            </button>
+                            <button type="button" class="icon-btn" data-action="down" title="Sposta giu">
+                                <i class="bi bi-arrow-down" aria-hidden="true"></i><span class="visually-hidden">Sposta giu</span>
+                            </button>
+                            <button type="button" class="icon-btn icon-btn-danger" data-action="remove" title="Elimina">
+                                <i class="bi bi-trash" aria-hidden="true"></i><span class="visually-hidden">Elimina</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </details>
+        </li>
     </template>
 
     <script type="module" src="/assets/js/admin/app.js"></script>

@@ -1,6 +1,6 @@
 import { requireRole } from './auth.js';
 import { blobStore, ConflictError } from './blob.js';
-import { ok, badRequest, unauthorized, forbidden, conflict, serverError } from './http.js';
+import { ok, badRequest, unauthorized, forbidden, notFound, conflict, serverError } from './http.js';
 
 /**
  * Il contratto GET/PUT di un documento JSON gestito dall'admin.
@@ -13,15 +13,24 @@ import { ok, badRequest, unauthorized, forbidden, conflict, serverError } from '
  *
  * Gli handler accettano uno store iniettabile, cosi i test girano senza runtime
  * di Azure Functions e senza uno storage vero.
+ *
+ * `blobName` puo essere una funzione della richiesta, per le risorse con un
+ * documento per chiave (le edizioni di Global Azure, uno per anno). Se
+ * restituisce null la chiave non e valida e la risposta e 404.
  */
 export function createDocumentResource({ blobName, empty, validate }) {
+
+    const nameFor = typeof blobName === 'function' ? blobName : () => blobName;
 
     async function handleGet(request, context, store = blobStore) {
         const auth = requireRole(request, 'admin');
         if (!auth.ok) return auth.status === 401 ? unauthorized() : forbidden();
 
+        const name = nameFor(request);
+        if (!name) return notFound();
+
         try {
-            const { etag, data } = await store.readPrivate(blobName);
+            const { etag, data } = await store.readPrivate(name);
             // Un master che non c'e ancora non e un errore: e lo stato prima del
             // primo seed. L'editor parte vuoto invece che in errore.
             return ok({ etag, data: data ?? empty }, etag ? { ETag: etag } : {});
@@ -33,6 +42,9 @@ export function createDocumentResource({ blobName, empty, validate }) {
     async function handlePut(request, context, store = blobStore) {
         const auth = requireRole(request, 'admin');
         if (!auth.ok) return auth.status === 401 ? unauthorized() : forbidden();
+
+        const name = nameFor(request);
+        if (!name) return notFound();
 
         let body;
         try {
@@ -57,9 +69,9 @@ export function createDocumentResource({ blobName, empty, validate }) {
 
         let written;
         try {
-            written = await store.writePrivate(blobName, document, { ifMatch, ifAbsent: !ifMatch });
+            written = await store.writePrivate(name, document, { ifMatch, ifAbsent: !ifMatch });
         } catch (error) {
-            if (error instanceof ConflictError) return conflictResponse(context, store);
+            if (error instanceof ConflictError) return conflictResponse(context, store, name);
             return serverError(context, error, 'storage-unavailable');
         }
 
@@ -68,7 +80,7 @@ export function createDocumentResource({ blobName, empty, validate }) {
         // dicendo che la pubblicazione non e riuscita, cosi l'admin sa che il
         // sito pubblico e ancora indietro e puo risalvare.
         try {
-            await store.publishPublic(blobName, document);
+            await store.publishPublic(name, document);
         } catch (error) {
             context.error(error);
             return ok({
@@ -93,9 +105,9 @@ export function createDocumentResource({ blobName, empty, validate }) {
      * Senza, l'editor potrebbe solo dire "ricarica" e l'admin perderebbe quello
      * che ha scritto. Con la copia puo mostrare le due versioni e far scegliere.
      */
-    async function conflictResponse(context, store) {
+    async function conflictResponse(context, store, name) {
         try {
-            const current = await store.readPrivate(blobName);
+            const current = await store.readPrivate(name);
             return conflict({ etag: current.etag, data: current.data ?? empty });
         } catch (error) {
             return serverError(context, error, 'storage-unavailable');

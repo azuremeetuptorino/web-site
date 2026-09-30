@@ -1,0 +1,143 @@
+{
+    "version": 1,
+    "editions": [
+        {
+            "id": "2026",
+            "year": 2026,
+            "title": "Global Azure Torino 2026",
+            "date": "2026-04-18",
+            "venue": {
+                "name": "Fondazione ITS ICT Piemonte",
+                "address": "Via Jacopo Durandi, 13",
+                "city": "Torino"
+            },
+            "tagline": "L’appuntamento cloud dell’anno torna a Torino",
+            "highlight": "Una giornata, quattro tracce parallele, più di trenta speaker tra Microsoft MVP, MCT e professionisti del territorio. Grazie a tutti i partecipanti: ci vediamo nel 2027!",
+            "coverUrl": "https://secure.meetupstatic.com/photos/event/8/3/b/e/600_532773726.jpeg",
+            "sessionizeId": "dtzcs2li",
+            "registrationUrl": "https://www.meetup.com/it-IT/meetup-microsoft-azure-torino/events/313385524/",
+            "stats": {
+                "sessions": 21,
+                "speakers": 31,
+                "tracks": 4
+            },
+            "current": true,
+            "published": true
+        },
+        {
+            "id": "2025",
+            "year": 2025,
+            "title": "Global Azure Torino 2025",
+            "date": "2025-05-10",
+            "venue": {
+                "name": "Fondazione ITS ICT Piemonte",
+                "address": "Via Jacopo Durandi, 13",
+                "city": "Torino"
+            },
+            "current": false,
+            "published": true
+        },
+        {
+            "id": "2024",
+            "year": 2024,
+            "title": "Global Azure Torino 2024",
+            "venue": {
+                "name": "Fondazione ITS ICT Piemonte",
+                "address": "Via Jacopo Durandi, 13",
+                "city": "Torino"
+            },
+            "current": false,
+            "published": true
+        },
+        {
+            "id": "2023",
+            "year": 2023,
+            "title": "Global Azure Torino 2023",
+            "date": "2023-05-13",
+            "venue": {
+                "name": "Fondazione ITS ICT Piemonte",
+                "address": "Via Jacopo Durandi, 13",
+                "city": "Torino"
+            },
+            "highlight": "Di nuovo in presenza, con tre percorsi paralleli.",
+            "coverUrl": "https://secure.meetupstatic.com/photos/event/b/f/6/5/600_511668997.jpeg",
+            "registrationUrl": "https://www.meetup.com/it-IT/meetup-microsoft-azure-torino/events/292530973/",
+            "stats": {
+                "tracks": 3
+            },
+            "current": false,
+            "published": true
+        },
+        {
+            "id": "2022",
+            "year": 2022,
+            "title": "Global Azure Torino 2022",
+            "date": "2022-05-07",
+            "venue": {
+                "name": "Fondazione ITS ICT Piemonte",
+                "address": "Via Jacopo Durandi, 13",
+                "city": "Torino"
+            },
+            "highlight": "Il ritorno in presenza dopo due edizioni online, con tre percorsi paralleli.",
+            "coverUrl": "https://secure.meetupstatic.com/photos/event/d/1/5/1/600_502733585.jpeg",
+            "registrationUrl": "https://www.meetup.com/it-IT/meetup-microsoft-azure-torino/events/284672283/",
+            "stats": {
+                "tracks": 3
+            },
+            "current": false,
+            "published": true
+        },
+        {
+            "id": "2021",
+            "year": 2021,
+            "title": "It’s not Global Azure… but I like it – 2021",
+            "date": "2021-04-15",
+            "tagline": "Edizione online",
+            "highlight": "Dopo un’annata complessa, il nostro appuntamento non poteva mancare: un’edizione online con tre track.",
+            "coverUrl": "https://secure.meetupstatic.com/photos/event/4/4/1/7/600_495137431.jpeg",
+            "registrationUrl": "https://www.meetup.com/it-IT/meetup-microsoft-azure-torino/events/276870663/",
+            "stats": {
+                "tracks": 3
+            },
+            "current": false,
+            "published": true
+        },
+        {
+            "id": "2020",
+            "year": 2020,
+            "title": "It’s not Global Azure… but I like it!",
+            "date": "2020-04-23",
+            "tagline": "Edizione online",
+            "coverUrl": "https://secure.meetupstatic.com/photos/event/d/0/1/d/600_490133277.jpeg",
+            "registrationUrl": "https://www.meetup.com/it-IT/meetup-microsoft-azure-torino/events/270063113/",
+            "current": false,
+            "published": true
+        },
+        {
+            "id": "2019",
+            "year": 2019,
+            "title": "Global Azure Bootcamp 2019 Torino",
+            "date": "2019-04-27",
+            "venue": {
+                "name": "Fondazione ITS ICT Piemonte",
+                "address": "Via Jacopo Durandi, 13",
+                "city": "Torino"
+            },
+            "coverUrl": "https://secure.meetupstatic.com/photos/event/c/7/8/600_480483192.jpeg",
+            "registrationUrl": "https://www.meetup.com/it-IT/meetup-microsoft-azure-torino/events/260664316/",
+            "current": false,
+            "published": true
+        },
+        {
+            "id": "2018",
+            "year": 2018,
+            "title": "Global Azure Bootcamp 2018 Torino",
+            "date": "2018-04-21",
+            "tagline": "La prima edizione",
+            "current": false,
+            "published": true
+        }
+    ],
+    "updatedAt": "2026-09-30T00:00:00.000Z",
+    "updatedBy": "seed"
+}

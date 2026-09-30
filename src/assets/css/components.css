@@ -698,3 +698,86 @@ footer {
     .stat-item h4 { font-size: 1.8rem; }
     .manifesto-logo img { width: 96px; height: 96px; }
 }
+
+/* =========================================
+   TEASER GLOBAL AZURE (home)
+   Un solo banner scuro in una pagina chiara: deve farsi notare, e
+   anticipare l'aspetto della pagina /global-azure/ a cui porta.
+   ========================================= */
+section.ga-teaser-section { padding: 1rem 1.5rem 3rem; background: var(--bg-light); }
+
+.ga-teaser {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    padding: 2rem 2.4rem;
+    border-radius: 20px;
+    color: #FFFFFF;
+    background:
+        radial-gradient(90% 140% at 100% 0%, rgba(80, 230, 255, 0.3) 0%, transparent 55%),
+        radial-gradient(70% 120% at 0% 100%, rgba(134, 97, 197, 0.45) 0%, transparent 60%),
+        linear-gradient(135deg, #062B63 0%, #020A1C 100%);
+    box-shadow: 0 24px 60px rgba(2, 10, 28, 0.25);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.ga-teaser::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.2) 1px, transparent 1.4px);
+    background-size: 22px 22px;
+    mask-image: linear-gradient(90deg, transparent 30%, #000 100%);
+    -webkit-mask-image: linear-gradient(90deg, transparent 30%, #000 100%);
+}
+
+.ga-teaser:hover { transform: translateY(-3px); box-shadow: 0 30px 70px rgba(2, 10, 28, 0.32); }
+
+.ga-teaser:focus-visible { outline: 3px solid var(--azure-blue); outline-offset: 3px; }
+
+.ga-teaser-year {
+    font-size: clamp(3.5rem, 9vw, 6rem);
+    font-weight: 800;
+    letter-spacing: -0.06em;
+    line-height: 0.9;
+    background: linear-gradient(100deg, #FFFFFF, #50E6FF 60%, #A18AFF);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.ga-teaser-body { display: flex; flex-direction: column; gap: 0.3rem; flex: 1; min-width: 0; }
+
+.ga-teaser-eyebrow {
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #50E6FF;
+}
+
+.ga-teaser-body strong { font-size: 1.35rem; }
+
+.ga-teaser-text { font-size: 0.92rem; color: #C9DBF2; }
+
+.ga-teaser-cta {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0.8rem 1.2rem;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-weight: 700;
+    font-size: 0.92rem;
+}
+
+@media (max-width: 900px) {
+    section.ga-teaser-section { padding: 0.5rem 1rem 2rem; }
+    .ga-teaser { flex-direction: column; align-items: flex-start; gap: 1rem; padding: 1.6rem; }
+}

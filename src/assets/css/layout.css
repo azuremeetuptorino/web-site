@@ -119,6 +119,16 @@ nav a {
 }
 nav a:hover { color: var(--azure-blue); }
 
+/* Con sei voci, appena sopra la soglia del menu a pannello, la barra non ci
+   sta piu larga com'e: si stringe invece di andare a capo. */
+nav a { white-space: nowrap; }
+
+@media (min-width: 901px) and (max-width: 1120px) {
+    nav ul { gap: 1.05rem; }
+    nav a { font-size: 0.76rem; letter-spacing: 0.02em; }
+    .logo { font-size: 1rem; }
+}
+
 /* =========================================
    PAGINE INTERNE (senza foto in cima)
    La home accoglie con una foto alta il 65% dello schermo; /eventi/ no: ci si

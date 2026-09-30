@@ -39,8 +39,24 @@ export const ALLOWED_TYPES = Object.keys(ALLOWED);
 /** 512 KB. Un avatar ragionevole sta in un decimo di questo. */
 export const MAX_BYTES = 512 * 1024;
 
+/**
+ * Le foto delle gallerie di Global Azure fanno eccezione: l'admin le
+ * ridimensiona nel browser a 2000 px in WebP, e a quella misura una foto di
+ * sala piena sta fra 300 KB e 1 MB. Il tetto resta ben sotto il limite di
+ * richiesta delle function anche col 33% di base64.
+ */
+export const MAX_BYTES_BY_KIND = { photo: 1536 * 1024 };
+
+export const maxBytesFor = (kind) => MAX_BYTES_BY_KIND[kind] ?? MAX_BYTES;
+
 /** Dove finisce il file dentro il container pubblico. */
-const FOLDERS = { avatar: 'avatars', sponsor: 'sponsors', site: 'site', event: 'events' };
+const FOLDERS = {
+    avatar: 'avatars',
+    sponsor: 'sponsors',
+    site: 'site',
+    event: 'events',
+    photo: 'global-azure'
+};
 
 export const KINDS = Object.keys(FOLDERS);
 
@@ -164,8 +180,9 @@ export function prepareUpload(input) {
         return fail(400, { error: 'validation', message: 'dataBase64 non e base64 valido' });
     }
 
-    if (buffer.length > MAX_BYTES) {
-        return fail(413, { error: 'too-large', maxBytes: MAX_BYTES, bytes: buffer.length });
+    const maxBytes = maxBytesFor(kind);
+    if (buffer.length > maxBytes) {
+        return fail(413, { error: 'too-large', maxBytes, bytes: buffer.length });
     }
 
     // Qui casca l'.exe rinominato .png: il tipo dichiarato passa l'allowlist,

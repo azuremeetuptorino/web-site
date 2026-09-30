@@ -57,7 +57,7 @@ test('un kind sconosciuto viene respinto e dice quali sono validi', () => {
     const result = upload({ kind: 'documento' });
     assert.equal(result.ok, false);
     assert.equal(result.status, 400);
-    assert.deepEqual(result.body.allowed, ['avatar', 'sponsor', 'site', 'event']);
+    assert.deepEqual(result.body.allowed, ['avatar', 'sponsor', 'site', 'event', 'photo']);
 });
 
 test('un content-type fuori allowlist risponde 415 elencando quelli buoni', () => {
@@ -87,6 +87,18 @@ test('oltre il mezzo mega risponde 413 dicendo il limite', () => {
     assert.equal(result.status, 413);
     assert.equal(result.body.error, 'too-large');
     assert.equal(result.body.maxBytes, 512 * 1024);
+});
+
+test('le foto delle gallerie hanno un limite piu alto, ma lo hanno', () => {
+    const media = Buffer.concat([PNG, Buffer.alloc(MAX_BYTES, 9)]);
+    const accettata = upload({ kind: 'photo', dataBase64: media.toString('base64') });
+    assert.equal(accettata.ok, true);
+    assert.match(accettata.asset.path, /^global-azure\//);
+
+    const enorme = Buffer.concat([PNG, Buffer.alloc(1536 * 1024, 9)]);
+    const respinta = upload({ kind: 'photo', dataBase64: enorme.toString('base64') });
+    assert.equal(respinta.status, 413);
+    assert.equal(respinta.body.maxBytes, 1536 * 1024);
 });
 
 test('un .exe rinominato .png viene fermato dai byte, non dal nome', () => {
