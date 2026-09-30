@@ -182,10 +182,17 @@ si preme *Segna come inviato*. L'interfaccia di un canale è volutamente piccola
 avrà credenziali utilizzabili basterà aggiungere il suo `send`.
 
 Con una risorsa **Microsoft Foundry** configurata compare anche *Riscrivi con
-AI*: una sola chiamata a Claude produce le quattro varianti, che diventano bozze
+AI*: una sola chiamata a GPT-6 Astra produce le quattro varianti, che diventano bozze
 modificabili. Il prompt vieta di aggiungere qualunque dato non presente
 nell'evento, e quello che torna passa comunque per lo stesso troncamento dei
 template — il modello stima i caratteri a occhio, Telegram non tratta.
+
+Accanto ai tre richiami ogni evento ha un **promemoria libero**, sempre aperto e
+senza conto alla rovescia, per le notizie che il calendario non prevede. In ogni
+finestra c'è anche una chat: si scrive cosa cambiare ("la sala è cambiata",
+"Telegram più corto") e il modello riscrive le quattro bozze partendo da come
+sono adesso, correzioni a mano comprese. Quello che l'organizzatore scrive in
+chat vale come un dato dell'evento; il resto del divieto di inventare resta.
 
 Cosa è già uscito sta in `site-data/reminders.json`, un blob a parte: il
 validatore degli eventi scarta i campi che non conosce, e un campo aggiunto lì
@@ -218,11 +225,7 @@ Ogni push su `main` fa il deploy tramite
 `AZURE_STATIC_WEB_APPS_API_TOKEN`. Il repo **non** è collegato dal portale: così
 Azure non genera un secondo workflow accanto al nostro.
 
-Le risorse stanno in `rg-lrizzi-meetup`: la Static Web App `swa-meetup` (West
-Europe) e lo storage `stazuremeetuptorino2` (italynorth). Nella stessa resource
-group vivono anche `stazuremeetuptorino` e `afd-meetup`, che servono il sito
-**vecchio** su `torino.azuremeetup.it` e non c'entrano con questa soluzione.
-Dettagli e runbook in [docs/deploy.md](docs/deploy.md).
+
 
 ## Stato
 

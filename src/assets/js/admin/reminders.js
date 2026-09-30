@@ -45,6 +45,14 @@ let etag = null;
 let canWrite = true;
 let busy = false;
 
+/**
+ * Cosa l'admin ha aperto, per riaprirlo dopo il ricaricamento. Senza, ogni
+ * messaggio in chat chiuderebbe la chat stessa - e l'evento, se non ha
+ * promemoria da mandare.
+ */
+const openEvents = new Set();
+const openChats = new Set();
+
 /* ==========================================================
    AVVISI
    ========================================================== */
@@ -121,6 +129,8 @@ function messageFor(error) {
         case 'ai-timeout':
         case 'ai-failed':
             return 'Il servizio di riscrittura non ha risposto. Riprova fra poco, oppure usa il testo standard.';
+        case 'validation':
+            return 'Scrivi cosa vuoi cambiare prima di inviare (al massimo 2000 caratteri).';
         case 'already-sent':
             return 'Questo promemoria risulta gia inviato. Ho ricaricato la scheda.';
         case 'event-not-upcoming':
@@ -307,12 +317,15 @@ function renderWindow(event, entry) {
     slot(node, 'label').textContent = entry.label;
 
     const state = slot(node, 'state');
-    if (!entry.due) state.textContent = `si apre il ${shortDate(entry.dueAt)}`;
+    if (entry.free) state.textContent = 'quando vuoi';
+    else if (!entry.due) state.textContent = `si apre il ${shortDate(entry.dueAt)}`;
     else if (entry.superseded) state.textContent = 'superata';
     else state.textContent = 'da mandare';
 
-    node.classList.toggle('is-due', entry.due && !entry.superseded);
-    node.classList.toggle('is-faded', !entry.due || entry.superseded);
+    node.classList.toggle('is-free', entry.free);
+    node.classList.toggle('is-due', !entry.free && entry.due && !entry.superseded);
+    node.classList.toggle('is-faded', !entry.free && (!entry.due || entry.superseded));
+    slot(node, 'free-hint').hidden = !entry.free;
 
     const cards = slot(node, 'channels');
     for (const meta of data.channels) {
@@ -329,9 +342,86 @@ function renderWindow(event, entry) {
 
             run(compose, 'Scrivo...', () => apiPost('/api/reminders/compose', { eventId: event.id, window: entry.id }, etag));
         });
+
+        renderChat(node, event, entry);
     }
 
     return node;
+}
+
+/**
+ * La chat di una finestra.
+ *
+ * Ogni messaggio e un giro completo: il server chiede al modello, salva i
+ * quattro testi come bozze e la conversazione, e la scheda si ricarica. Le
+ * schede canale sotto mostrano quindi gia il risultato, da rileggere.
+ */
+function renderChat(node, event, entry) {
+    const key = `${event.id}/${entry.id}`;
+    const panel = slot(node, 'chat');
+    const log = slot(node, 'chat-log');
+    const input = slot(node, 'chat-input');
+    const send = action(node, 'chat-send');
+    const reset = action(node, 'chat-reset');
+
+    panel.hidden = false;
+    // Il libero si scrive parlando: la chat e aperta finche non la si chiude.
+    panel.open = openChats.has(key) || (entry.free && !openChats.has(`${key}:closed`));
+    panel.addEventListener('toggle', () => {
+        openChats.delete(key);
+        openChats.delete(`${key}:closed`);
+        openChats.add(panel.open ? key : `${key}:closed`);
+        if (panel.open) log.scrollTop = log.scrollHeight;
+    });
+
+    for (const message of entry.chat) {
+        const item = document.createElement('li');
+        item.className = `reminder-chat-msg is-${message.role === 'assistant' ? 'assistant' : 'user'}`;
+        item.textContent = message.text;
+        log.append(item);
+    }
+
+    const turns = entry.chat.filter((message) => message.role === 'user').length;
+    const count = slot(node, 'chat-count');
+    count.textContent = turns === 1 ? '1 richiesta' : `${turns} richieste`;
+    count.hidden = turns === 0;
+
+    reset.hidden = entry.chat.length === 0;
+
+    if (!canWrite) {
+        input.readOnly = true;
+        send.disabled = true;
+        reset.disabled = true;
+        return;
+    }
+
+    const submit = () => {
+        const message = input.value.trim();
+        if (message === '') {
+            input.focus();
+            return;
+        }
+        openChats.add(key);
+        run(send, 'Scrivo...', () => apiPost('/api/reminders/chat', { eventId: event.id, window: entry.id, message }, etag));
+    };
+
+    slot(node, 'chat-form').addEventListener('submit', (submitEvent) => {
+        submitEvent.preventDefault();
+        submit();
+    });
+    // Invio va a capo, Ctrl+Invio manda: le richieste possono stare su piu righe.
+    input.addEventListener('keydown', (keyEvent) => {
+        if (keyEvent.key === 'Enter' && (keyEvent.ctrlKey || keyEvent.metaKey)) {
+            keyEvent.preventDefault();
+            submit();
+        }
+    });
+    reset.addEventListener('click', () => {
+        if (!window.confirm('Cancello la conversazione? I testi restano come sono.')) return;
+        run(reset, 'Cancello...', () => apiPost('/api/reminders/chat', { eventId: event.id, window: entry.id, reset: true }, etag));
+    });
+
+    if (panel.open) requestAnimationFrame(() => { log.scrollTop = log.scrollHeight; });
 }
 
 function renderEvent(event) {
@@ -344,7 +434,7 @@ function renderEvent(event) {
     // Quanti promemoria sono aperti e ancora non mandati: e l'unico numero che
     // serve per decidere se aprire la scheda o lasciarla chiusa.
     const pending = event.windows
-        .filter((entry) => entry.due && !entry.superseded)
+        .filter((entry) => !entry.free && entry.due && !entry.superseded)
         .flatMap((entry) => data.channels.map((meta) => entry.channels[meta.id]))
         .filter((channel) => !channel.sent).length;
 
@@ -353,16 +443,22 @@ function renderEvent(event) {
         badge.textContent = pending === 1 ? '1 da mandare' : `${pending} da mandare`;
         badge.className = 'editor-flag reminder-flag-todo';
     } else {
-        const next = event.windows.find((entry) => !entry.due);
+        const next = event.windows.find((entry) => !entry.free && !entry.due);
         badge.textContent = next ? `prossimo il ${shortDate(next.dueAt)}` : 'tutto mandato';
         badge.className = 'editor-flag editor-flag-muted';
     }
 
-    node.querySelector('details').open = pending > 0;
+    const details = node.querySelector('details');
+    details.open = pending > 0 || openEvents.has(event.id);
+    details.addEventListener('toggle', () => {
+        if (details.open) openEvents.add(event.id);
+        else openEvents.delete(event.id);
+    });
 
     const windows = slot(node, 'windows');
-    // Prima quelle da fare, poi le superate, in fondo quelle non ancora aperte.
-    const rank = (entry) => (entry.due && !entry.superseded ? 0 : entry.due ? 2 : 1);
+    // Prima quelle da fare, poi quelle non ancora aperte, poi le superate, in
+    // fondo il libero.
+    const rank = (entry) => (entry.free ? 3 : entry.due && !entry.superseded ? 0 : entry.due ? 2 : 1);
     for (const entry of [...event.windows].sort((a, b) => rank(a) - rank(b))) {
         windows.append(renderWindow(event, entry));
     }

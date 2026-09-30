@@ -6,6 +6,7 @@ import { channelById, CHANNEL_IDS, countChars } from '../lib/reminder-channels.j
 import {
     buildOverview,
     documentFrom,
+    getChat,
     getDraft,
     getRecord,
     readState,
@@ -14,11 +15,12 @@ import {
     upcomingEvents,
     windowById,
     WINDOW_IDS,
+    withChat,
     withDraft,
     withRecord
 } from '../lib/reminders.js';
 import { sendReminder, telegramConfig, TelegramError } from '../lib/telegram.js';
-import { aiConfig, composeDrafts, ComposeError, createClient } from '../lib/ai-compose.js';
+import { aiConfig, chatDrafts, composeDrafts, ComposeError, createClient } from '../lib/ai-compose.js';
 import { ok, badRequest, unauthorized, forbidden, notFound, conflict, json, serverError } from '../lib/http.js';
 
 /**
@@ -30,12 +32,13 @@ import { ok, badRequest, unauthorized, forbidden, notFound, conflict, json, serv
  * vuole vederlo prima che esca. La scheda dell'admin dice cosa e dovuto, mostra
  * il testo gia adattato al limite di ogni canale, e aspetta un clic.
  *
- * TRE ROUTE, TRE VERBI DIVERSI:
+ * LE ROUTE, UNA PER VERBO:
  *  - GET  /api/reminders          cosa c'e da mandare e con che testo
  *  - POST /api/reminders/send     pubblica davvero (solo Telegram, oggi)
  *  - POST /api/reminders/mark     registra un post pubblicato a mano altrove
- *  - POST /api/reminders/compose  fa riscrivere i quattro testi a Claude
+ *  - POST /api/reminders/compose  fa riscrivere i quattro testi a GPT-6 Astra
  *  - POST /api/reminders/draft    salva o annulla un testo modificato a mano
+ *  - POST /api/reminders/chat     chiede al modello di modificare i testi
  *
  * `mark` esiste perche tre canali su quattro non hanno un'API utilizzabile: si
  * copia il testo, si incolla, e si torna qui a dire che e fatto. Senza quel
@@ -46,6 +49,9 @@ const EVENTS_BLOB = 'events.json';
 
 /** Chi ha premuto il pulsante, come per gli altri documenti. */
 const authorOf = (auth) => auth.principal.userDetails ?? auth.principal.userId ?? 'sconosciuto';
+
+/** Una richiesta in chat e una frase o due, non un documento da incollare. */
+const CHAT_MESSAGE_MAX = 2000;
 
 /**
  * Il controllo comune a `send` e `mark`.
@@ -307,9 +313,26 @@ export async function handleComposeReminder(request, context, deps = {}) {
     const at = new Date(prepared.now).toISOString();
     const by = authorOf(auth);
 
+    // Si riparte da capo: una chat sui testi di prima parlerebbe d'altro.
+    const next = withChat(withAiDrafts(state, event.id, window.id, composed, { at, by }), event.id, window.id, []);
+
+    try {
+        const written = await persist(store, next, etag, auth);
+        return ok({ etag: written.etag, drafts: composed.channels, model: composed.model });
+    } catch (error) {
+        if (error instanceof ConflictError) {
+            const current = await readState(store);
+            return conflict({ etag: current.etag, data: current.data });
+        }
+        return serverError(context, error, 'storage-unavailable');
+    }
+}
+
+/** Lo stato con i quattro testi del modello salvati come bozze. */
+function withAiDrafts(state, eventId, windowId, composed, { at, by }) {
     let next = state;
     for (const [channelId, draft] of Object.entries(composed.channels)) {
-        next = withDraft(next, event.id, window.id, channelId, {
+        next = withDraft(next, eventId, windowId, channelId, {
             text: draft.text,
             source: 'ai',
             model: composed.model,
@@ -317,10 +340,87 @@ export async function handleComposeReminder(request, context, deps = {}) {
             by
         });
     }
+    return next;
+}
+
+/* ==========================================================
+   POST /api/reminders/chat
+   ========================================================== */
+
+/**
+ * Un giro di chat sui testi di una finestra.
+ *
+ * Il modello riceve i testi come la scheda li mostra adesso - bozze comprese,
+ * anche quelle corrette a mano - e la richiesta; restituisce i quattro testi
+ * nuovi e una riga di risposta. I testi diventano bozze, la risposta finisce
+ * nella chat insieme alla domanda. Come per `compose`, non esce niente.
+ *
+ * `reset: true` svuota la chat senza toccare i testi.
+ */
+export async function handleChatReminder(request, context, deps = {}) {
+    const { store = blobStore, now = Date.now, env = process.env } = deps;
+
+    let prepared;
+    try {
+        prepared = await prepare(request, { store, now }, { needsChannel: false });
+    } catch (error) {
+        return serverError(context, error, 'storage-unavailable');
+    }
+    if (prepared.error) return prepared.error;
+
+    const { auth, body, event, window, state, etag } = prepared;
+    const at = new Date(prepared.now).toISOString();
+    const by = authorOf(auth);
+
+    let next;
+    let reply = null;
+    let model = null;
+
+    if (body.reset === true) {
+        next = withChat(state, event.id, window.id, []);
+    } else {
+        const message = typeof body.message === 'string' ? body.message.trim() : '';
+        if (message === '') {
+            return badRequest('validation', { issues: [{ path: 'message', message: 'obbligatorio' }] });
+        }
+        if (countChars(message) > CHAT_MESSAGE_MAX) {
+            return badRequest('validation', { issues: [{ path: 'message', message: `massimo ${CHAT_MESSAGE_MAX} caratteri` }] });
+        }
+
+        const config = aiConfig(env);
+        if (!config) return json(503, { error: 'ai-not-configured' });
+
+        const history = getChat(state, event.id, window.id);
+        const current = Object.fromEntries(CHANNEL_IDS.map((channelId) => [
+            channelId,
+            textFor(channelById(channelId), event, window.id, getDraft(state, event.id, window.id, channelId)).text
+        ]));
+
+        let composed;
+        try {
+            const client = deps.client ?? createClient(config);
+            composed = await chatDrafts(event, window.id, { current, history, message }, { client, deployment: config.deployment });
+        } catch (error) {
+            if (error instanceof ComposeError) {
+                if (error.status >= 500) context.warn?.(`[reminders/chat] ${error.code}`, error.extra);
+                return json(error.status, { error: error.code, ...error.extra });
+            }
+            return serverError(context, error, 'compose-failed');
+        }
+
+        reply = composed.reply;
+        model = composed.model;
+        next = withChat(
+            withAiDrafts(state, event.id, window.id, composed, { at, by }),
+            event.id,
+            window.id,
+            [...history, { role: 'user', text: message, at, by }, { role: 'assistant', text: reply, at, model }]
+        );
+    }
 
     try {
         const written = await persist(store, next, etag, auth);
-        return ok({ etag: written.etag, drafts: composed.channels, model: composed.model });
+        return ok({ etag: written.etag, reply, model, chat: getChat(next, event.id, window.id) });
     } catch (error) {
         if (error instanceof ConflictError) {
             const current = await readState(store);
@@ -414,6 +514,13 @@ app.http('reminders-compose', {
     methods: ['POST'],
     authLevel: 'anonymous',
     handler: handleComposeReminder
+});
+
+app.http('reminders-chat', {
+    route: 'reminders/chat',
+    methods: ['POST'],
+    authLevel: 'anonymous',
+    handler: handleChatReminder
 });
 
 app.http('reminders-draft', {

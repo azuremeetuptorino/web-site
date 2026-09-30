@@ -12,6 +12,7 @@ import {
     withRecord
 } from '../src/lib/reminders.js';
 import {
+    handleChatReminder,
     handleComposeReminder,
     handleDraftReminder,
     handleGetReminders,
@@ -137,28 +138,32 @@ const sentState = (channel = 'telegram') => ({
 const send = (options, deps) => handleSendReminder(requestWith(options), contextSpy(), { now: () => NOW, ...deps });
 const mark = (options, deps) => handleMarkReminder(requestWith(options), contextSpy(), { now: () => NOW, ...deps });
 const compose = (options, deps) => handleComposeReminder(requestWith(options), contextSpy(), { now: () => NOW, ...deps });
+const chat = (options, deps) => handleChatReminder(requestWith(options), contextSpy(), { now: () => NOW, ...deps });
 const draft = (options, deps) => handleDraftReminder(requestWith(options), contextSpy(), { now: () => NOW, ...deps });
 
 const AI_ENV = {
-    FOUNDRY_BASE_URL: 'https://esempio.services.ai.azure.com/anthropic',
+    FOUNDRY_BASE_URL: 'https://esempio.openai.azure.com/openai/v1/',
     FOUNDRY_API_KEY: 'chiave',
-    FOUNDRY_DEPLOYMENT: 'claude-opus-5'
+    FOUNDRY_DEPLOYMENT: 'gpt-6-astra'
 };
 
 /** Un modello finto che risponde con quattro testi buoni. */
 const fakeAi = (text = 'Promemoria riscritto') => ({
-    messages: {
+    responses: {
         create: async () => ({
-            model: 'claude-opus-5',
-            stop_reason: 'end_turn',
-            content: [{
-                type: 'text',
-                text: JSON.stringify({
-                    telegram: `${text} telegram ${EVENT.eventUrl}`,
-                    whatsapp: `${text} whatsapp ${EVENT.eventUrl}`,
-                    linkedin: `${text} linkedin ${EVENT.eventUrl}`,
-                    instagram: `${text} instagram ${EVENT.eventUrl}`
-                })
+            model: 'gpt-6-astra',
+            status: 'completed',
+            output: [{
+                type: 'message',
+                content: [{
+                    type: 'output_text',
+                    text: JSON.stringify({
+                        telegram: `${text} telegram ${EVENT.eventUrl}`,
+                        whatsapp: `${text} whatsapp ${EVENT.eventUrl}`,
+                        linkedin: `${text} linkedin ${EVENT.eventUrl}`,
+                        instagram: `${text} instagram ${EVENT.eventUrl}`
+                    })
+                }]
             }]
         })
     }
@@ -215,7 +220,7 @@ test('un blob che non esiste ancora e lo stato vuoto, non un errore', async () =
     const state = await readState(fakeStore());
 
     assert.equal(state.etag, null);
-    assert.deepEqual(state.data, { version: 1, sent: {}, drafts: {} });
+    assert.deepEqual(state.data, { version: 1, sent: {}, drafts: {}, chats: {} });
 });
 
 test('le chiavi che non si sanno leggere vengono ignorate', async () => {
@@ -271,7 +276,7 @@ test('la scheda riceve i testi gia pronti, uno per canale', () => {
 
     assert.equal(event.id, EVENT.id);
     assert.match(event.when, /ore /);
-    assert.equal(event.windows.length, 3);
+    assert.deepEqual(event.windows.map((window) => window.id), ['14d', '7d', '2d', 'free']);
 
     const channels = event.windows[0].channels;
     assert.deepEqual(Object.keys(channels), ['telegram', 'whatsapp', 'linkedin', 'instagram']);
@@ -683,7 +688,7 @@ test('compose: non serve indicare un canale, li riscrive tutti e quattro', async
     assert.deepEqual(Object.keys(saved), ['telegram', 'whatsapp', 'linkedin', 'instagram']);
     assert.equal(saved.telegram.source, 'ai');
     assert.equal(saved.telegram.by, ADMIN.userDetails);
-    assert.equal(saved.telegram.model, 'claude-opus-5');
+    assert.equal(saved.telegram.model, 'gpt-6-astra');
     assert.equal(store.state.publishes, 0, 'le bozze non finiscono sul sito pubblico');
 });
 
@@ -697,7 +702,7 @@ test('compose: le bozze non toccano quello che risulta gia mandato', async () =>
 
 test('compose: un ETag vecchio ferma la riscrittura prima di spendere la chiamata', async () => {
     const store = fakeStore({ reminders: sentState(), remindersEtag: '"r9"' });
-    const client = { messages: { create: async () => { throw new Error('non doveva essere chiamato'); } } };
+    const client = { responses: { create: async () => { throw new Error('non doveva essere chiamato'); } } };
 
     const response = await compose(
         { principal: ADMIN, headers: { 'If-Match': '"vecchio"' }, body: { eventId: EVENT.id, window: '7d' } },
@@ -709,7 +714,7 @@ test('compose: un ETag vecchio ferma la riscrittura prima di spendere la chiamat
 
 test('compose: un errore del servizio non lascia bozze a meta', async () => {
     const store = fakeStore();
-    const client = { messages: { create: async () => { throw Object.assign(new Error('no'), { status: 429 }); } } };
+    const client = { responses: { create: async () => { throw Object.assign(new Error('no'), { status: 429 }); } } };
 
     const response = await compose(
         { principal: ADMIN, body: { eventId: EVENT.id, window: '7d' } },
@@ -719,6 +724,162 @@ test('compose: un errore del servizio non lascia bozze a meta', async () => {
     assert.equal(response.status, 429);
     assert.equal(response.jsonBody.error, 'ai-rate-limited');
     assert.equal(store.state.writes.length, 0);
+});
+
+/* ==========================================================
+   PROMEMORIA LIBERO
+   ========================================================== */
+
+test('il promemoria libero e sempre aperto e non dice quanto manca', () => {
+    const overview = buildOverview({ eventsDoc: EVENTS_DOC, state: { sent: {}, drafts: {} }, now: NOW });
+    const free = overview.events[0].windows.find((window) => window.id === 'free');
+
+    assert.equal(free.free, true);
+    assert.equal(free.due, true);
+    assert.equal(free.superseded, false);
+    assert.deepEqual(free.chat, []);
+    assert.doesNotMatch(free.channels.telegram.text, /Manca|mancano/);
+    assert.ok(free.channels.telegram.text.includes(EVENT.eventUrl));
+});
+
+test('il promemoria libero si segna come gli altri', async () => {
+    const store = fakeStore();
+
+    const response = await mark(
+        { principal: ADMIN, body: { eventId: EVENT.id, window: 'free', channel: 'whatsapp', sent: true } },
+        { store }
+    );
+
+    assert.equal(response.status, 200);
+    assert.equal(store.state.writes[0].document.sent[EVENT.id].free.whatsapp.mode, 'manual');
+});
+
+/* ==========================================================
+   CHAT
+   ========================================================== */
+
+/** Un modello finto che registra le richieste e risponde con testi e risposta. */
+function chatAi(reply = 'Ho accorciato Telegram.') {
+    const calls = [];
+    return {
+        calls,
+        responses: {
+            create: async (request) => {
+                calls.push(request);
+                return {
+                    model: 'gpt-6-astra',
+                    status: 'completed',
+                    output: [{
+                        type: 'message',
+                        content: [{
+                            type: 'output_text',
+                            text: JSON.stringify({
+                                reply,
+                                telegram: `Corto ${EVENT.eventUrl}`,
+                                whatsapp: `Wa ${EVENT.eventUrl}`,
+                                linkedin: `Li ${EVENT.eventUrl}`,
+                                instagram: `Ig ${EVENT.eventUrl}`
+                            })
+                        }]
+                    }]
+                };
+            }
+        }
+    };
+}
+
+test('chat: la richiesta riscrive i testi e resta nella conversazione', async () => {
+    const store = fakeStore();
+    const client = chatAi();
+
+    const response = await chat(
+        { principal: ADMIN, body: { eventId: EVENT.id, window: 'free', message: 'Di che lo sponsor e Contoso' } },
+        { store, env: AI_ENV, client }
+    );
+
+    assert.equal(response.status, 200);
+    assert.equal(response.jsonBody.reply, 'Ho accorciato Telegram.');
+
+    const request = client.calls[0];
+    const last = request.input.at(-1).content;
+    assert.match(last, /Richiesta dell'organizzatore: Di che lo sponsor e Contoso/);
+    assert.match(last, /I testi come sono adesso/);
+    assert.match(request.instructions, /valgono quanto i dati dell'evento/);
+    assert.deepEqual(request.text.format.schema.required, ['reply', 'telegram', 'whatsapp', 'linkedin', 'instagram']);
+
+    const saved = store.state.writes[0].document;
+    assert.equal(saved.drafts[EVENT.id].free.telegram.text, `Corto ${EVENT.eventUrl}`);
+    assert.equal(saved.drafts[EVENT.id].free.telegram.source, 'ai');
+    assert.deepEqual(saved.chats[EVENT.id].free.map((entry) => entry.role), ['user', 'assistant']);
+    assert.equal(saved.chats[EVENT.id].free[0].by, ADMIN.userDetails);
+    assert.equal(store.state.publishes, 0);
+});
+
+test('chat: il modello riceve lo storico e i testi corretti a mano', async () => {
+    const store = fakeStore({
+        reminders: {
+            version: 1,
+            sent: {},
+            drafts: { [EVENT.id]: { '7d': { linkedin: { text: 'Corretto a mano', source: 'manual' } } } },
+            chats: { [EVENT.id]: { '7d': [
+                { role: 'user', text: 'Piu corto' },
+                { role: 'assistant', text: 'Fatto.' }
+            ] } }
+        }
+    });
+    const client = chatAi();
+
+    await chat({ principal: ADMIN, body: { eventId: EVENT.id, window: '7d', message: 'Ancora' } }, { store, env: AI_ENV, client });
+
+    const { input } = client.calls[0];
+    assert.deepEqual(input.slice(0, 2), [{ role: 'user', content: 'Piu corto' }, { role: 'assistant', content: 'Fatto.' }]);
+    assert.match(input[2].content, /Corretto a mano/);
+    assert.equal(store.state.writes[0].document.chats[EVENT.id]['7d'].length, 4);
+});
+
+test('chat: un messaggio vuoto non costa una chiamata', async () => {
+    const client = { responses: { create: async () => { throw new Error('non doveva essere chiamato'); } } };
+
+    const response = await chat(
+        { principal: ADMIN, body: { eventId: EVENT.id, window: 'free', message: '   ' } },
+        { store: fakeStore(), env: AI_ENV, client }
+    );
+
+    assert.equal(response.status, 400);
+});
+
+test('chat: reset svuota la conversazione e lascia i testi', async () => {
+    const store = fakeStore({
+        reminders: {
+            version: 1,
+            sent: {},
+            drafts: { [EVENT.id]: { free: { telegram: { text: 'bozza', source: 'ai' } } } },
+            chats: { [EVENT.id]: { free: [{ role: 'user', text: 'x' }] } }
+        }
+    });
+
+    const response = await chat({ principal: ADMIN, body: { eventId: EVENT.id, window: 'free', reset: true } }, { store });
+
+    assert.equal(response.status, 200);
+    const saved = store.state.writes[0].document;
+    assert.deepEqual(saved.chats, {});
+    assert.equal(saved.drafts[EVENT.id].free.telegram.text, 'bozza');
+});
+
+test('compose: riscrivere da capo chiude la chat della finestra', async () => {
+    const store = fakeStore({
+        reminders: { version: 1, sent: {}, drafts: {}, chats: { [EVENT.id]: { '7d': [{ role: 'user', text: 'x' }] } } }
+    });
+
+    await compose({ principal: ADMIN, body: { eventId: EVENT.id, window: '7d' } }, { store, env: AI_ENV, client: fakeAi() });
+
+    assert.deepEqual(store.state.writes[0].document.chats, {});
+});
+
+test('chat: solo gli admin', async () => {
+    const body = { eventId: EVENT.id, window: 'free', message: 'ciao' };
+    assert.equal((await chat({ body }, { store: fakeStore(), env: AI_ENV })).status, 401);
+    assert.equal((await chat({ principal: VISITOR, body }, { store: fakeStore(), env: AI_ENV })).status, 403);
 });
 
 /* ==========================================================

@@ -172,16 +172,16 @@ az staticwebapp appsettings set -n swa-meetup -g rg-lrizzi-meetup \
   --setting-names TELEGRAM_BOT_TOKEN="123456:AA..." TELEGRAM_CHAT_ID="@AzureMeetupTorino"
 ```
 
-**Claude su Foundry: far riscrivere i testi.** Aggiunge il pulsante *Riscrivi
+**GPT-6 Astra su Foundry: far riscrivere i testi.** Aggiunge il pulsante *Riscrivi
 con AI*, che genera le quattro versioni in una chiamata sola. Il risultato non
 viene pubblicato: diventa una bozza modificabile, e va comunque riletta prima di
 mandarla.
 
-1. Creare una risorsa **Microsoft Foundry** e deployare un modello Claude. Il
-   consigliato è `claude-opus-5`; `claude-sonnet-5` costa circa un terzo e per
-   testi di dieci righe la differenza si nota poco.
-2. `FOUNDRY_BASE_URL` è `https://<risorsa>.services.ai.azure.com/anthropic`,
-   **senza** `/v1` finale.
+1. Creare una risorsa **Microsoft Foundry** e deployare `gpt-6-astra`
+   (Standard Global o Data Zone EU). Non serve richiesta di accesso, ma sotto
+   il Tier 5 di quota può servire una richiesta di quota.
+2. `FOUNDRY_BASE_URL` è `https://<risorsa>.openai.azure.com/openai/v1/`: la
+   Responses API su questo endpoint non vuole `api-version`.
 3. `FOUNDRY_DEPLOYMENT` è il **nome del deployment**, che di solito coincide con
    l'id del modello ma può essere stato cambiato al momento della creazione.
 4. Si usa la chiave API e non Entra ID: le managed functions non hanno Managed
@@ -189,13 +189,15 @@ mandarla.
 
 ```bash
 az staticwebapp appsettings set -n swa-meetup -g rg-lrizzi-meetup \
-  --setting-names FOUNDRY_BASE_URL="https://<risorsa>.services.ai.azure.com/anthropic" \
+  --setting-names FOUNDRY_BASE_URL="https://<risorsa>.openai.azure.com/openai/v1/" \
                   FOUNDRY_API_KEY="<chiave>" \
-                  FOUNDRY_DEPLOYMENT="claude-opus-5"
+                  FOUNDRY_DEPLOYMENT="gpt-6-astra"
 ```
 
-Una riscrittura sono circa tremila token fra andata e ritorno: nell'ordine dei
-tre centesimi con Opus 5, uno con Sonnet 5. Si paga a consumo sulla sottoscrizione
+Una riscrittura sono un migliaio di token in ingresso e qualche migliaio in
+uscita, ragionamento compreso. Astra parte da 10 dollari per milione di token in
+ingresso, e l'uscita costa parecchio di più: conviene guardare il listino
+Foundry prima di usarlo tutti i giorni. Si paga a consumo sulla sottoscrizione
 Azure, insieme al resto.
 
 **Lo stato dei promemoria** vive in `site-data/reminders.json`, nel container

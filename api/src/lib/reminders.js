@@ -7,6 +7,11 @@
  * aprono restano aperte, perche un promemoria in ritardo e comunque meglio di
  * un promemoria saltato.
  *
+ * E UNO LIBERO. Accanto ai tre c'e il promemoria libero: sempre aperto, senza
+ * conto alla rovescia, per quando c'e qualcosa da dire che il calendario non
+ * prevede - la sala cambiata, lo sponsor confermato, gli ultimi posti. Si
+ * mette in forma parlandone con il modello, nella chat della finestra.
+ *
  * COSA E GIA USCITO. Sta in un blob suo, `site-data/reminders.json`, e non
  * dentro l'evento. Due motivi. Il validatore degli eventi scarta i campi che
  * non conosce, quindi un campo aggiunto li verrebbe cancellato al primo
@@ -30,11 +35,17 @@ export const WINDOWS = [
     { id: '2d', days: 2, label: 'Due giorni prima' }
 ];
 
-export const WINDOW_IDS = WINDOWS.map((window) => window.id);
+/** Il promemoria libero. Non ha `days`: non si apre, e aperto. */
+export const FREE_WINDOW = { id: 'free', label: 'Promemoria libero', free: true };
 
-export const windowById = (id) => WINDOWS.find((window) => window.id === id) ?? null;
+export const WINDOW_IDS = [...WINDOWS, FREE_WINDOW].map((window) => window.id);
 
-export const EMPTY_STATE = { version: 1, sent: {}, drafts: {} };
+export const windowById = (id) => [...WINDOWS, FREE_WINDOW].find((window) => window.id === id) ?? null;
+
+export const EMPTY_STATE = { version: 1, sent: {}, drafts: {}, chats: {} };
+
+/** Quanti messaggi di chat si tengono per finestra: oltre, i piu vecchi non servono piu. */
+export const CHAT_KEEP = 40;
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -122,6 +133,28 @@ function normalizeSection(raw) {
     return clean;
 }
 
+/** Le chat: evento, finestra, e una lista di messaggi invece dei canali. */
+function normalizeChats(raw) {
+    const clean = {};
+    if (!raw || typeof raw !== 'object') return clean;
+
+    for (const [eventId, windows] of Object.entries(raw)) {
+        if (!ID_PATTERN.test(eventId) || !windows || typeof windows !== 'object') continue;
+
+        for (const [windowId, messages] of Object.entries(windows)) {
+            if (!WINDOW_IDS.includes(windowId) || !Array.isArray(messages)) continue;
+
+            const valid = messages.filter((entry) =>
+                entry && ['user', 'assistant'].includes(entry.role) && typeof entry.text === 'string');
+            if (valid.length === 0) continue;
+
+            clean[eventId] ??= {};
+            clean[eventId][windowId] = valid.slice(-CHAT_KEEP);
+        }
+    }
+    return clean;
+}
+
 /**
  * Legge lo stato dal container privato.
  *
@@ -137,7 +170,8 @@ export async function readState(store) {
         data: {
             version: 1,
             sent: normalizeSection(data?.sent),
-            drafts: normalizeSection(data?.drafts)
+            drafts: normalizeSection(data?.drafts),
+            chats: normalizeChats(data?.chats)
         }
     };
 }
@@ -192,11 +226,31 @@ export const withRecord = (state, eventId, windowId, channelId, record) =>
 export const withDraft = (state, eventId, windowId, channelId, draft) =>
     withEntry(state, 'drafts', eventId, windowId, channelId, draft);
 
+export const getChat = (state, eventId, windowId) => state?.chats?.[eventId]?.[windowId] ?? [];
+
+/**
+ * Lo stato con la chat di una finestra sostituita. Una lista vuota la toglie,
+ * e con lei l'evento se non ne ha altre.
+ */
+export function withChat(state, eventId, windowId, messages) {
+    const chats = { ...state.chats };
+    const windows = { ...chats[eventId] };
+
+    if (messages.length > 0) windows[windowId] = messages.slice(-CHAT_KEEP);
+    else delete windows[windowId];
+
+    if (Object.keys(windows).length > 0) chats[eventId] = windows;
+    else delete chats[eventId];
+
+    return { ...state, chats };
+}
+
 /** Il documento come finisce sul blob, con la firma di chi ha scritto. */
 export const documentFrom = (state, by) => ({
     version: 1,
     sent: state.sent,
     drafts: state.drafts,
+    chats: state.chats ?? {},
     updatedAt: new Date().toISOString(),
     updatedBy: by
 });
@@ -250,12 +304,19 @@ export function buildOverview({ eventsDoc, state, now = Date.now(), telegram = {
         when: formatWhen(event),
         where: formatWhere(event),
 
-        windows: windowsFor(event, now).map((window) => ({
+        // Il libero chiude la lista: sempre aperto, mai superato, e fuori dal
+        // conto dei "da mandare" perche nessuno lo aspetta.
+        windows: [
+            ...windowsFor(event, now),
+            { ...FREE_WINDOW, dueAt: null, due: true, superseded: false }
+        ].map((window) => ({
             id: window.id,
             label: window.label,
+            free: Boolean(window.free),
             dueAt: window.dueAt,
             due: window.due,
             superseded: window.superseded,
+            chat: getChat(state, event.id, window.id),
 
             channels: Object.fromEntries(CHANNELS.map((channel) => [
                 channel.id,

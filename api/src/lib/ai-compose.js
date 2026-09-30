@@ -1,5 +1,5 @@
 /**
- * Riscrittura dei promemoria con Claude, ospitato su Microsoft Foundry.
+ * Riscrittura dei promemoria con GPT-6 Astra, ospitato su Microsoft Foundry.
  *
  * E facoltativa, e lo resta: i template di reminder-channels.js bastano, non
  * costano niente e non possono sbagliare. Questa e la scorciatoia per quando
@@ -19,19 +19,24 @@
  *
  * Su Foundry il modello si chiama con il NOME DEL DEPLOYMENT, non con l'id del
  * modello: sono spesso uguali, ma chi ha creato la risorsa puo averlo cambiato.
- * Structured outputs e ancora in preview qui, quindi il JSON si chiede nel
- * prompt e si legge con prudenza, invece di dipendere da output_config.format.
+ * La chiamata passa per la Responses API sull'endpoint /openai/v1/, che non
+ * vuole api-version. Il JSON si chiede con structured outputs, ma si legge
+ * comunque con prudenza: il controllo costa poco e protegge da un deployment
+ * che non lo applica.
  */
 
-import AnthropicFoundry from '@anthropic-ai/foundry-sdk';
+import OpenAI from 'openai';
 
 import { CHANNELS, COUNTDOWN, countChars, fit, formatWhen, formatWhere } from './reminder-channels.js';
 
 const TIMEOUT_MS = 60_000;
-const MAX_TOKENS = 4000;
 
-/** La versione dell'API Anthropic parlata da Foundry, come da documentazione Microsoft. */
-const API_VERSION = '2023-06-01';
+/**
+ * Il tetto copre ragionamento e testo insieme. Quattro promemoria stanno in
+ * meno di duemila token, ma se il ragionamento si mangia il tetto la risposta
+ * torna incompleta e senza testo: meglio lasciare margine.
+ */
+const MAX_OUTPUT_TOKENS = 16_000;
 
 /** Errore previsto: status HTTP e codice che l'admin sa tradurre. */
 export class ComposeError extends Error {
@@ -63,10 +68,9 @@ export function aiConfig(env = process.env) {
 
 /** Il client di Foundry. Costruito su richiesta: senza impostazioni non deve esistere. */
 export function createClient({ baseURL, apiKey }, { timeoutMs = TIMEOUT_MS } = {}) {
-    return new AnthropicFoundry({
+    return new OpenAI({
         apiKey,
         baseURL,
-        apiVersion: API_VERSION,
         timeout: timeoutMs,
         // Un solo tentativo in piu: oltre, la richiesta dell'admin scade prima.
         maxRetries: 1
@@ -94,6 +98,47 @@ I quattro canali, con i loro vincoli:
 Rispondi soltanto con un oggetto JSON, senza testo prima o dopo e senza blocco di codice, in questa forma:
 {"telegram": "...", "whatsapp": "...", "linkedin": "...", "instagram": "..."}`;
 
+/**
+ * Cosa cambia quando l'organizzatore chiede modifiche in chat.
+ *
+ * La regola sui dati si allarga di poco, e in un punto solo: quello che scrive
+ * l'organizzatore vale quanto i dati dell'evento. E il motivo per cui la chat
+ * esiste - "cita lo sponsor", "la sala e cambiata" - ma resta vietato tutto il
+ * resto, compreso completare di fantasia una richiesta vaga.
+ */
+const CHAT_PROMPT = `${SYSTEM_PROMPT.replace(/\nRispondi soltanto[\s\S]*$/, '')}
+
+In questa conversazione l'organizzatore ti chiede di modificare i testi. Ogni volta ti do i dati dell'evento, i quattro testi come sono adesso e la sua richiesta. Riscrivi i quattro testi applicando la richiesta e lasciando com'e quello che non tocca.
+
+Le informazioni che l'organizzatore scrive nella richiesta valgono quanto i dati dell'evento: puoi usarle, ma riportale come le ha scritte, senza aggiungere dettagli. Tutto il resto della regola sui dati resta valido. I limiti di caratteri dei canali restano validi anche se ti chiede di allungare.
+
+In "reply" scrivi una o due frasi rivolte all'organizzatore: cosa hai cambiato, o perche non hai potuto farlo.
+
+Rispondi soltanto con un oggetto JSON, senza testo prima o dopo e senza blocco di codice, in questa forma:
+{"reply": "...", "telegram": "...", "whatsapp": "...", "linkedin": "...", "instagram": "..."}`;
+
+/** Lo stesso oggetto chiesto nel prompt, imposto con structured outputs. */
+function formatFor(name, fields) {
+    return {
+        type: 'json_schema',
+        name,
+        strict: true,
+        schema: {
+            type: 'object',
+            properties: Object.fromEntries(fields.map((field) => [field, { type: 'string' }])),
+            required: fields,
+            additionalProperties: false
+        }
+    };
+}
+
+const CHANNEL_FIELDS = CHANNELS.map((channel) => channel.id);
+const DRAFTS_FORMAT = formatFor('promemoria', CHANNEL_FIELDS);
+const CHAT_FORMAT = formatFor('promemoria_modificati', ['reply', ...CHANNEL_FIELDS]);
+
+/** Quanti scambi precedenti si rimandano al modello: bastano a capire "ancora piu corto". */
+export const CHAT_HISTORY_TURNS = 10;
+
 /** I dati dell'evento come li legge il modello: etichettati, senza JSON da interpretare. */
 export function promptFor(event, windowId) {
     const where = formatWhere(event);
@@ -106,7 +151,21 @@ export function promptFor(event, windowId) {
         event.excerpt ? `Descrizione: ${event.excerpt}` : 'Descrizione: non disponibile',
         event.eventUrl ? `Link di iscrizione: ${event.eventUrl}` : 'Link di iscrizione: non disponibile, non inventarlo e non scrivere inviti a iscriversi',
         '',
-        `Anticipo con cui si sta ricordando: ${COUNTDOWN[windowId] ?? windowId}`
+        windowId in COUNTDOWN
+            ? `Anticipo con cui si sta ricordando: ${COUNTDOWN[windowId]}`
+            : 'Tipo di promemoria: libero, fuori dal calendario dei richiami. Non scrivere quanto manca all\'evento.'
+    ].join('\n');
+}
+
+/** Il messaggio di un giro di chat: i dati, i testi come sono ora, la richiesta. */
+export function chatPromptFor(event, windowId, current, message) {
+    return [
+        promptFor(event, windowId),
+        '',
+        'I testi come sono adesso:',
+        JSON.stringify(current, null, 2),
+        '',
+        `Richiesta dell'organizzatore: ${message}`
     ].join('\n');
 }
 
@@ -114,11 +173,18 @@ export function promptFor(event, windowId) {
    LA RISPOSTA
    ========================================================== */
 
-/** Il testo della risposta, saltando i blocchi di ragionamento. */
-function textOf(message) {
-    return (message?.content ?? [])
-        .filter((block) => block?.type === 'text')
-        .map((block) => block.text)
+/** Le parti di contenuto dei messaggi, saltando gli elementi di ragionamento. */
+function contentOf(response) {
+    return (response?.output ?? [])
+        .filter((item) => item?.type === 'message')
+        .flatMap((item) => item.content ?? []);
+}
+
+/** Il testo della risposta. */
+function textOf(response) {
+    return contentOf(response)
+        .filter((part) => part?.type === 'output_text')
+        .map((part) => part.text)
         .join('')
         .trim();
 }
@@ -185,7 +251,7 @@ export function tidy(text, channel, event, windowId) {
 function translate(error) {
     if (error instanceof ComposeError) return error;
 
-    if (error?.name === 'TimeoutError' || error?.name === 'AbortError') {
+    if (['APIConnectionTimeoutError', 'TimeoutError', 'AbortError'].includes(error?.name)) {
         return new ComposeError(504, 'ai-timeout');
     }
 
@@ -198,6 +264,48 @@ function translate(error) {
 }
 
 /**
+ * Una chiamata al modello, con i controlli che valgono per tutte.
+ *
+ * @returns {Promise<{drafts: Record<string, string>, model: string}>}
+ */
+async function requestDrafts({ client, deployment, instructions, input, format }) {
+    let response;
+    try {
+        response = await client.responses.create({
+            model: deployment,
+            max_output_tokens: MAX_OUTPUT_TOKENS,
+            instructions,
+            input,
+            // Ragionare aiuta a distribuire lo stesso contenuto su quattro
+            // lunghezze diverse; "medium" basta per un testo di dieci righe.
+            reasoning: { effort: 'medium' },
+            text: { format },
+            // I promemoria non servono a Foundry dopo la risposta.
+            store: false
+        });
+    } catch (error) {
+        throw translate(error);
+    }
+
+    // Un rifiuto arriva come risposta riuscita: senza questo controllo si
+    // finirebbe a cercare il JSON dentro una spiegazione del perche no.
+    if (contentOf(response).some((part) => part?.type === 'refusal')) {
+        throw new ComposeError(502, 'ai-refused');
+    }
+
+    // Finito il tetto di token la risposta torna troncata, a volte vuota.
+    if (response?.status === 'incomplete') {
+        throw new ComposeError(502, 'ai-failed', { reason: response.incomplete_details?.reason ?? 'incomplete' });
+    }
+
+    return { drafts: parseDrafts(textOf(response)), model: response?.model ?? deployment };
+}
+
+const tidyAll = (drafts, event, windowId) => Object.fromEntries(
+    CHANNELS.map((channel) => [channel.id, tidy(drafts[channel.id], channel, event, windowId)])
+);
+
+/**
  * Chiede i quattro testi in una sola chiamata.
  *
  * Una e non quattro perche il modello, vedendoli insieme, non ripete la stessa
@@ -206,34 +314,42 @@ function translate(error) {
  * @returns {Promise<{channels: Record<string, {text: string, length: number, limit: number, truncated: boolean}>, model: string}>}
  */
 export async function composeDrafts(event, windowId, { client, deployment }) {
-    let message;
-    try {
-        message = await client.messages.create({
-            model: deployment,
-            max_tokens: MAX_TOKENS,
-            system: SYSTEM_PROMPT,
-            messages: [{ role: 'user', content: promptFor(event, windowId) }],
-            // Pensare aiuta a distribuire lo stesso contenuto su quattro
-            // lunghezze diverse; "medium" basta per un testo di dieci righe.
-            thinking: { type: 'adaptive' },
-            output_config: { effort: 'medium' }
-        });
-    } catch (error) {
-        throw translate(error);
-    }
+    const { drafts, model } = await requestDrafts({
+        client,
+        deployment,
+        instructions: SYSTEM_PROMPT,
+        input: promptFor(event, windowId),
+        format: DRAFTS_FORMAT
+    });
 
-    // Un rifiuto arriva come risposta riuscita: senza questo controllo si
-    // finirebbe a cercare il JSON dentro una spiegazione del perche no.
-    if (message?.stop_reason === 'refusal') {
-        throw new ComposeError(502, 'ai-refused', { category: message.stop_details?.category ?? null });
-    }
+    return { model, channels: tidyAll(drafts, event, windowId) };
+}
 
-    const drafts = parseDrafts(textOf(message));
+/**
+ * Un giro di chat: riscrive i quattro testi secondo la richiesta.
+ *
+ * Lo storico si rimanda come conversazione, ma i testi attuali stanno
+ * nell'ultimo messaggio: possono essere stati corretti a mano fra un giro e
+ * l'altro, e il modello deve partire da quelli e non da quello che ricorda.
+ *
+ * @param {Record<string, string>} current  i testi di adesso, per canale
+ * @param {{role: 'user' | 'assistant', text: string}[]} history
+ * @returns {Promise<{reply: string, channels: Record<string, {text: string, length: number, limit: number, truncated: boolean}>, model: string}>}
+ */
+export async function chatDrafts(event, windowId, { current, history = [], message }, { client, deployment }) {
+    const previous = history
+        .slice(-CHAT_HISTORY_TURNS * 2)
+        .map((entry) => ({ role: entry.role === 'assistant' ? 'assistant' : 'user', content: entry.text }));
 
-    return {
-        model: message?.model ?? deployment,
-        channels: Object.fromEntries(
-            CHANNELS.map((channel) => [channel.id, tidy(drafts[channel.id], channel, event, windowId)])
-        )
-    };
+    const { drafts, model } = await requestDrafts({
+        client,
+        deployment,
+        instructions: CHAT_PROMPT,
+        input: [...previous, { role: 'user', content: chatPromptFor(event, windowId, current, message) }],
+        format: CHAT_FORMAT
+    });
+
+    const reply = typeof drafts.reply === 'string' && drafts.reply.trim() !== '' ? drafts.reply.trim() : 'Testi aggiornati.';
+
+    return { model, reply, channels: tidyAll(drafts, event, windowId) };
 }

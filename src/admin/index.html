@@ -970,6 +970,34 @@
                     <i class="bi bi-stars" aria-hidden="true"></i> <span data-slot="compose-label">Riscrivi con AI</span>
                 </button>
             </div>
+            <p class="reminder-free-hint" data-slot="free-hint" hidden>
+                Sempre disponibile, senza conto alla rovescia: per la sala cambiata, lo
+                sponsor confermato, gli ultimi posti. Scrivi nella chat cosa vuoi dire.
+            </p>
+
+            <!-- La chat con il modello: ogni richiesta riscrive i quattro testi
+                 qui sotto, che restano bozze da rileggere. -->
+            <details class="reminder-chat" data-slot="chat" hidden>
+                <summary class="reminder-chat-summary">
+                    <i class="bi bi-chat-dots" aria-hidden="true"></i> Chiedi modifiche all’AI
+                    <span class="editor-flag editor-flag-muted" data-slot="chat-count" hidden></span>
+                </summary>
+                <ol class="reminder-chat-log" data-slot="chat-log" aria-live="polite"></ol>
+                <form class="reminder-chat-form" data-slot="chat-form">
+                    <textarea class="reminder-chat-input" data-slot="chat-input" rows="2" maxlength="2000"
+                              aria-label="Richiesta per l’AI"
+                              placeholder="Es. “Di che lo sponsor è Contoso” oppure “Telegram più corto”"></textarea>
+                    <span class="reminder-chat-actions">
+                        <button type="button" class="editor-btn" data-action="chat-reset" hidden>
+                            <i class="bi bi-trash3" aria-hidden="true"></i> <span>Nuova conversazione</span>
+                        </button>
+                        <button type="submit" class="editor-btn editor-btn-primary" data-action="chat-send">
+                            <i class="bi bi-send" aria-hidden="true"></i> <span>Invia</span>
+                        </button>
+                    </span>
+                </form>
+            </details>
+
             <div class="reminder-cards" data-slot="channels"></div>
         </section>
     </template>

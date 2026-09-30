@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { aiConfig, composeDrafts, ComposeError, parseDrafts, promptFor, tidy } from '../src/lib/ai-compose.js';
+import { aiConfig, chatDrafts, composeDrafts, ComposeError, parseDrafts, promptFor, tidy } from '../src/lib/ai-compose.js';
 import { channelById } from '../src/lib/reminder-channels.js';
 
 /**
@@ -22,7 +22,7 @@ const EVENT = {
     venue: { name: 'ITS ICT Piemonte', city: 'Torino' }
 };
 
-const DEPLOYMENT = 'claude-opus-5';
+const DEPLOYMENT = 'gpt-6-astra';
 
 const draftsFor = (text) => JSON.stringify({
     telegram: `${text} telegram ${EVENT.eventUrl}`,
@@ -36,12 +36,19 @@ function fakeClient(reply) {
     const calls = [];
     return {
         calls,
-        messages: {
+        responses: {
             create: async (request) => {
                 calls.push(request);
                 if (reply instanceof Error) throw reply;
-                if (typeof reply === 'object' && reply.stop_reason) return reply;
-                return { model: DEPLOYMENT, stop_reason: 'end_turn', content: [{ type: 'text', text: reply }] };
+                if (typeof reply === 'object' && reply.status) return reply;
+                return {
+                    model: DEPLOYMENT,
+                    status: 'completed',
+                    output: [
+                        { type: 'reasoning', summary: [] },
+                        { type: 'message', role: 'assistant', content: [{ type: 'output_text', text: reply }] }
+                    ]
+                };
             }
         }
     };
@@ -55,10 +62,10 @@ const compose = (client) => composeDrafts(EVENT, '7d', { client, deployment: DEP
 
 test('servono tutte e tre le impostazioni', () => {
     assert.equal(aiConfig({}), null);
-    assert.equal(aiConfig({ FOUNDRY_BASE_URL: 'https://x/anthropic', FOUNDRY_API_KEY: 'k' }), null);
+    assert.equal(aiConfig({ FOUNDRY_BASE_URL: 'https://x/openai/v1/', FOUNDRY_API_KEY: 'k' }), null);
     assert.deepEqual(
-        aiConfig({ FOUNDRY_BASE_URL: ' https://x/anthropic ', FOUNDRY_API_KEY: ' k ', FOUNDRY_DEPLOYMENT: ' d ' }),
-        { baseURL: 'https://x/anthropic', apiKey: 'k', deployment: 'd' }
+        aiConfig({ FOUNDRY_BASE_URL: ' https://x/openai/v1/ ', FOUNDRY_API_KEY: ' k ', FOUNDRY_DEPLOYMENT: ' d ' }),
+        { baseURL: 'https://x/openai/v1/', apiKey: 'k', deployment: 'd' }
     );
 });
 
@@ -77,6 +84,25 @@ test('il prompt porta i dati dell’evento, non li fa indovinare', () => {
     assert.match(prompt, /in presenza/);
 });
 
+test('il promemoria libero non porta un conto alla rovescia', () => {
+    const prompt = promptFor(EVENT, 'free');
+
+    assert.match(prompt, /libero/);
+    assert.doesNotMatch(prompt, /Anticipo con cui/);
+});
+
+test('la chat rimanda al piu gli ultimi dieci scambi', async () => {
+    const client = fakeClient(JSON.stringify({ reply: '', ...JSON.parse(draftsFor('Testo')) }));
+    const history = Array.from({ length: 30 }, (_, index) => ({ role: index % 2 ? 'assistant' : 'user', text: `m${index}` }));
+
+    const result = await chatDrafts(EVENT, 'free', { current: {}, history, message: 'ok' }, { client, deployment: DEPLOYMENT });
+
+    assert.equal(client.calls[0].input.length, 21);
+    assert.equal(client.calls[0].input[0].content, 'm10');
+    assert.equal(result.reply, 'Testi aggiornati.', 'una risposta vuota ha comunque una riga');
+    assert.doesNotMatch(client.calls[0].instructions, /\{"telegram": "\.\.\."/, 'il formato e quello con reply');
+});
+
 test('un dato che manca viene dichiarato mancante, non omesso in silenzio', () => {
     const prompt = promptFor({ ...EVENT, eventUrl: undefined, excerpt: undefined }, '2d');
 
@@ -90,9 +116,11 @@ test('il sistema chiede di non inventare niente', async () => {
 
     const request = client.calls[0];
     assert.equal(request.model, DEPLOYMENT);
-    assert.match(request.system, /Non inventare relatori/);
-    assert.match(request.system, /soltanto con un oggetto JSON/);
-    assert.equal(request.temperature, undefined, 'i modelli 5.x rifiutano temperature');
+    assert.match(request.instructions, /Non inventare relatori/);
+    assert.match(request.instructions, /soltanto con un oggetto JSON/);
+    assert.equal(request.text.format.type, 'json_schema');
+    assert.deepEqual(request.text.format.schema.required, ['telegram', 'whatsapp', 'linkedin', 'instagram']);
+    assert.equal(request.store, false);
 });
 
 /* ==========================================================
@@ -118,9 +146,21 @@ test('se manca un canale la risposta non si usa', () => {
 });
 
 test('un rifiuto del modello non viene scambiato per un testo', async () => {
-    const client = fakeClient({ stop_reason: 'refusal', stop_details: { category: 'other' }, content: [] });
+    const client = fakeClient({
+        status: 'completed',
+        output: [{ type: 'message', content: [{ type: 'refusal', refusal: 'No.' }] }]
+    });
 
     await assert.rejects(() => compose(client), (error) => error.code === 'ai-refused' && error.status === 502);
+});
+
+test('una risposta troncata dal tetto di token non passa per buona', async () => {
+    const client = fakeClient({ status: 'incomplete', incomplete_details: { reason: 'max_output_tokens' }, output: [] });
+
+    await assert.rejects(
+        () => compose(client),
+        (error) => error.code === 'ai-failed' && error.extra.reason === 'max_output_tokens'
+    );
 });
 
 /* ==========================================================
