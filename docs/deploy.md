@@ -5,24 +5,32 @@ push su `main` fa il deploy da solo.
 
 ## Le risorse
 
-Tutto vive in `rg-lrizzi-meetup` (italynorth), subscription *Sponsorship 14k*.
+Tutto vive in `rg-meetuptorino-p`, subscription *Sponsorship 10k - 3*.
 
 | Risorsa | Regione | Ruolo |
 |---|---|---|
 | `swa-meetup` | West Europe | Static Web App Free: hosting, managed functions, auth |
 | `stazuremeetuptorino2` | italynorth | Dati del sito: container `public` e `site-data` |
+| `afd-meetup` | Global | Front Door Standard: ingresso di `torino.azuremeetup.it`, inoltra alla SWA |
 
 La SWA sta in West Europe perche in italynorth non esiste: le regioni valide
 sono West Europe, Central US, East US 2, West US 2 ed East Asia. Lo storage
 invece resta vicino a chi legge.
 
-> Nella stessa resource group ci sono `stazuremeetuptorino` (**senza** il 2),
-> `afd-meetup` e il dominio `torino.azuremeetup.it`. Sono il sito **vecchio**:
-> Front Door davanti al container `$web` di quell'account, che ha shared key e
-> accesso anonimo disabilitati di proposito. Questa soluzione non li tocca e non
-> deve usarli. Spostare `torino.azuremeetup.it` su `swa-meetup` e un intervento
-> a se, da fare sapendo che SWA gestisce gia il proprio dominio custom e che
-> l'auth Entra ID passa per `/.auth/*`.
+> `torino.azuremeetup.it` e un dominio custom del Front Door `afd-meetup`
+> (endpoint `torinomeetup`, certificato gestito da Azure). La route `/*` inoltra
+> in HTTPS all'origin group `swa-meetup`, cioe all'hostname
+> `*.azurestaticapps.net` della SWA, senza cache: ogni richiesta arriva alla
+> SWA, che ha gia la propria distribuzione globale. Prima puntava al container
+> `$web` del vecchio storage `stazuremeetuptorino` (**senza** il 2), che non
+> serve piu a questo sito.
+>
+> La SWA resta sul piano Free, dove `forwardingGateway` e `networking` di
+> `staticwebapp.config.json` non sono disponibili. Due conseguenze da sapere:
+> l'hostname `*.azurestaticapps.net` resta raggiungibile direttamente, e il
+> login admin costruisce i redirect con quell'hostname. Chi entra da
+> `torino.azuremeetup.it/login` si ritrova, a login fatto, su
+> `<hostname SWA>/admin/`: e normale, l'area admin si usa da li.
 
 ## Cosa costa
 
@@ -89,7 +97,7 @@ Il workflow ha bisogno di una cosa sola: il secret
 ```bash
 gh auth login   # servono gli scope repo e workflow, e ADMIN sul repo
 
-TOKEN=$(az staticwebapp secrets list -n swa-meetup -g rg-lrizzi-meetup \
+TOKEN=$(az staticwebapp secrets list -n swa-meetup -g rg-meetuptorino-p \
   --query "properties.apiKey" -o tsv)
 
 gh secret set AZURE_STATIC_WEB_APPS_API_TOKEN -b "$TOKEN" \
@@ -125,9 +133,9 @@ negoziabile — i prefissi `AZUREBLOBSTORAGE_`, `WEBSITE_`, `FUNCTIONS_` e
 
 ```bash
 CONN=$(az storage account show-connection-string \
-  -n stazuremeetuptorino2 -g rg-lrizzi-meetup --query connectionString -o tsv)
+  -n stazuremeetuptorino2 -g rg-meetuptorino-p --query connectionString -o tsv)
 
-az staticwebapp appsettings set -n swa-meetup -g rg-lrizzi-meetup \
+az staticwebapp appsettings set -n swa-meetup -g rg-meetuptorino-p \
   --setting-names DATA_STORAGE_CONNECTION="$CONN"
 ```
 
@@ -168,7 +176,7 @@ Business: per quei tre il flusso resta copia-incolla.
    (`@AzureMeetupTorino`); per un canale privato serve l'id numerico `-100…`.
 
 ```bash
-az staticwebapp appsettings set -n swa-meetup -g rg-lrizzi-meetup \
+az staticwebapp appsettings set -n swa-meetup -g rg-meetuptorino-p \
   --setting-names TELEGRAM_BOT_TOKEN="123456:AA..." TELEGRAM_CHAT_ID="@AzureMeetupTorino"
 ```
 
@@ -188,7 +196,7 @@ mandarla.
    Identity.
 
 ```bash
-az staticwebapp appsettings set -n swa-meetup -g rg-lrizzi-meetup \
+az staticwebapp appsettings set -n swa-meetup -g rg-meetuptorino-p \
   --setting-names FOUNDRY_BASE_URL="https://<risorsa>.openai.azure.com/openai/v1/" \
                   FOUNDRY_API_KEY="<chiave>" \
                   FOUNDRY_DEPLOYMENT="gpt-6-astra"
@@ -206,7 +214,7 @@ privato. Non ha copia pubblica e non va nel seed: nasce da solo alla prima azion
 ## 5. Verifica
 
 ```bash
-SITE=$(az staticwebapp show -n swa-meetup -g rg-lrizzi-meetup --query defaultHostname -o tsv)
+SITE=$(az staticwebapp show -n swa-meetup -g rg-meetuptorino-p --query defaultHostname -o tsv)
 
 curl -I "https://$SITE/"                # 200 + header di sicurezza
 curl -I "https://$SITE/data/team.json"  # 200, Cache-Control 300s
@@ -243,9 +251,39 @@ in movimento, eventi e sponsor renderizzati.
 
 ## 6. Dominio custom
 
-Il piano Free consente 2 domini per app. Dal portale: **Custom domains > Add**,
-poi segui le istruzioni DNS (CNAME per un sottodominio, TXT + ALIAS/ANAME per
-l'apex). Il certificato viene emesso e rinnovato da Azure.
+`torino.azuremeetup.it` **non** e configurato come custom domain della SWA: il
+DNS punta (CNAME) all'endpoint del Front Door `afd-meetup`, che inoltra alla
+SWA. Dominio e certificato si gestiscono dal Front Door, non dalla SWA.
+
+Per rifare o verificare il collegamento Front Door -> SWA (subscription
+*Sponsorship 10k - 3*):
+
+```bash
+S=d1c41152-00b1-441b-bbbc-a41ea0dbaefc
+AFD="--subscription $S -g rg-meetuptorino-p --profile-name afd-meetup"
+SWA_HOST=$(az staticwebapp show -n swa-meetup -g rg-meetuptorino-p --subscription $S --query defaultHostname -o tsv)
+
+az afd origin-group create $AFD --origin-group-name swa-meetup \
+  --probe-request-type HEAD --probe-protocol Https --probe-interval-in-seconds 100 --probe-path / \
+  --sample-size 4 --successful-samples-required 3 --additional-latency-in-milliseconds 50
+az afd origin create $AFD --origin-group-name swa-meetup --origin-name swa-meetup \
+  --host-name "$SWA_HOST" --origin-host-header "$SWA_HOST" --http-port 80 --https-port 443 \
+  --priority 1 --weight 1000 --enabled-state Enabled --enforce-certificate-name-check true
+az afd route update $AFD --endpoint-name torinomeetup --route-name torinomeetup \
+  --origin-group swa-meetup --forwarding-protocol HttpsOnly --https-redirect Enabled \
+  --supported-protocols Http Https --link-to-default-domain Enabled
+```
+
+La propagazione richiede qualche minuto. Verifica: la home su
+`https://torino.azuremeetup.it/` deve rispondere con l'header
+`Content-Security-Policy` (lo mette solo la SWA) ed essere identica a quella
+sull'hostname `*.azurestaticapps.net`.
+
+Se un giorno si volesse togliere il Front Door, il piano Free consente 2 domini
+per app: dal portale della SWA **Custom domains > Add**, poi le istruzioni DNS
+(CNAME per un sottodominio, TXT + ALIAS/ANAME per l'apex). Il certificato
+viene emesso e rinnovato da Azure. In quel caso il login admin funzionerebbe
+anche dal dominio custom.
 
 ## Autenticazione
 
