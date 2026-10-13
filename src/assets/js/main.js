@@ -5,6 +5,7 @@ import { renderSponsors } from './render-sponsors.js';
 import { renderSite } from './render-site.js';
 import { renderEvents, visibleEvents } from './render-events.js';
 import { renderTeaser, renderTeaserPhotos, visibleEditions, pickEdition, editionStart } from './render-global-azure.js';
+import { pickHomeBanner, renderFeaturedTeaser } from './render-featured.js';
 import { initHeroNetwork } from './hero-network.js';
 import { initTypewriter, renderNextEvent, startCountdown } from './hero.js';
 import { initReveal } from './reveal.js';
@@ -130,8 +131,22 @@ function renderHomeEvents(track, payload) {
 }
 
 /* ==========================================================
-   2c. BANNER GLOBAL AZURE
+   2c. BANNER: GLOBAL AZURE O UN EVENTO SPECIALE
    ========================================================== */
+
+/**
+ * Il banner e di Global Azure, salvo quando sta per arrivare un evento
+ * speciale (vedi pickHomeBanner): allora porta alla pagina di quell'evento.
+ */
+function renderHomeBanner(container, { events, globalAzure }) {
+    const choice = pickHomeBanner(events, globalAzure);
+    if (choice.kind === 'event') {
+        const shown = renderFeaturedTeaser(container, choice.event);
+        startCountdown(container.querySelector('[data-teaser-countdown]'), Date.parse(choice.event.dateTime));
+        return shown;
+    }
+    return globalAzure ? renderHomeTeaser(container, globalAzure) : 0;
+}
 
 /**
  * Il banner nasce da renderTeaser; qui si accende quello che gli serve in
@@ -172,7 +187,7 @@ function renderHomeTeaser(container, index) {
    Ogni sezione fallisce per conto suo: un JSON mancante non
    deve portarsi dietro il resto della pagina.
    ========================================================== */
-async function hydrate({ collection, trackId, sectionId, render, onSuccess, errorMessage, errorLink }) {
+async function hydrate({ collection, load, trackId, sectionId, render, onSuccess, errorMessage, errorLink }) {
     const track = document.getElementById(trackId);
     const section = document.getElementById(sectionId) ?? track;
     if (!track) return;
@@ -185,7 +200,7 @@ async function hydrate({ collection, trackId, sectionId, render, onSuccess, erro
     };
 
     try {
-        const payload = await loadCollection(collection);
+        const payload = await (load ? load() : loadCollection(collection));
         if (render(track, payload) > 0) {
             onSuccess?.();
         } else {
@@ -194,6 +209,19 @@ async function hydrate({ collection, trackId, sectionId, render, onSuccess, erro
     } catch (error) {
         fail(error);
     }
+}
+
+// Gli eventi servono a due sezioni, il carosello e il banner: si scaricano una volta.
+const eventsPayload = loadCollection('events');
+
+/** Il banner vive anche con uno solo dei due documenti; senza nessuno, non c'e. */
+async function loadBannerData() {
+    const [events, globalAzure] = await Promise.allSettled([eventsPayload, loadCollection('global-azure')]);
+    if (events.status === 'rejected' && globalAzure.status === 'rejected') throw globalAzure.reason;
+    return {
+        events: events.status === 'fulfilled' ? events.value : null,
+        globalAzure: globalAzure.status === 'fulfilled' ? globalAzure.value : null
+    };
 }
 
 await Promise.allSettled([
@@ -218,6 +246,7 @@ await Promise.allSettled([
     }),
     hydrate({
         collection: 'events',
+        load: () => eventsPayload,
         trackId: 'events-track',
         sectionId: 'events-carousel',
         render: renderHomeEvents,
@@ -225,12 +254,13 @@ await Promise.allSettled([
         errorMessage: 'Non riusciamo a caricare il calendario in questo momento.',
         errorLink: { url: MEETUP_GROUP_URL, label: 'Vedi gli eventi su Meetup' }
     }),
-    // Nessun messaggio d'errore: senza edizioni il banner semplicemente non c'e.
+    // Nessun messaggio d'errore: senza edizioni ne eventi speciali il banner semplicemente non c'e.
     hydrate({
         collection: 'global-azure',
+        load: loadBannerData,
         trackId: 'ga-teaser',
         sectionId: 'global-azure-teaser',
-        render: renderHomeTeaser,
+        render: renderHomeBanner,
         onSuccess: () => { document.getElementById('global-azure-teaser').hidden = false; },
         errorMessage: null
     }),

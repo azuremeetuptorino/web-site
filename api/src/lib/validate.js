@@ -630,7 +630,10 @@ function validateEvent(issues, path, value, seenIds) {
         imageUrl: webUrl(issues, `${path}.imageUrl`, value.imageUrl),
         excerpt: text(issues, `${path}.excerpt`, value.excerpt, { max: EVENT_LIMITS.excerpt }),
         venue: validateVenue(issues, `${path}.venue`, value.venue),
-        active: flag(issues, `${path}.active`, value.active)
+        active: flag(issues, `${path}.active`, value.active),
+        // Ha una pagina sul sito (/evento/?id=...), con sessioni e foto in
+        // event-pages/<id>.json: la card porta li invece che su Luma o Meetup.
+        featured: flag(issues, `${path}.featured`, value.featured, false) || undefined
     };
 
     for (const [key, entry] of Object.entries(event)) {
@@ -941,18 +944,20 @@ function validateGaSponsor(issues, path, value, seenIds) {
 }
 
 /**
- * I contenuti di un'edizione: cinque liste, tutte facoltative.
+ * Le liste di contenuti di un documento, tutte facoltative. `keys` dice quali
+ * si accettano: un'edizione di Global Azure ha anche gli sponsor, la pagina di
+ * un evento no.
  *
- * Le sessioni si validano per ultime perche puntano a tracce e speaker: un
+ * Le sessioni si validano dopo tracce e speaker perche puntano a loro: un
  * riferimento rotto (una traccia cancellata ma ancora usata) e un 400 sul campo
  * della sessione, non un buco silenzioso nell'agenda pubblica.
  */
-export function validateGlobalAzureEdition(input) {
+function validateContentLists(input, keys) {
     if (typeof input !== 'object' || input === null || Array.isArray(input)) {
         return { ok: false, issues: [{ path: '', message: 'il documento deve essere un oggetto' }] };
     }
 
-    for (const key of Object.keys(GA_MAX)) {
+    for (const key of keys) {
         const list = input[key];
         if (list === undefined || list === null) continue;
         if (!Array.isArray(list)) {
@@ -974,22 +979,42 @@ export function validateGlobalAzureEdition(input) {
     const tracks = each('tracks', validateTrack);
     const speakers = each('speakers', validateGaSpeaker);
     const sessions = each('sessions', validateGaSession, { tracks: tracks.ids, speakers: speakers.ids });
-    const photos = each('photos', validatePhoto);
-    const sponsors = each('sponsors', validateGaSponsor);
-
-    if (issues.length > 0) return { ok: false, issues };
-
-    return {
-        ok: true,
-        value: {
-            version: 1,
-            tracks: tracks.items,
-            speakers: speakers.items,
-            // L'agenda si legge in ordine di orario: ordinarla qui vuol dire che
-            // il sito pubblico non deve farlo e l'admin rivede lo stesso ordine.
-            sessions: [...sessions.items].sort((a, b) => a.start.localeCompare(b.start)),
-            photos: photos.items,
-            sponsors: sponsors.items
-        }
+    const lists = {
+        tracks: tracks.items,
+        speakers: speakers.items,
+        // L'agenda si legge in ordine di orario: ordinarla qui vuol dire che
+        // il sito pubblico non deve farlo e l'admin rivede lo stesso ordine.
+        sessions: [...sessions.items].sort((a, b) => a.start.localeCompare(b.start)),
+        photos: each('photos', validatePhoto).items
     };
+    if (keys.includes('sponsors')) lists.sponsors = each('sponsors', validateGaSponsor).items;
+
+    return { issues, lists };
+}
+
+/** I contenuti di un'edizione: tracce, speaker, sessioni, foto, sponsor. */
+export function validateGlobalAzureEdition(input) {
+    const result = validateContentLists(input, ['tracks', 'speakers', 'sessions', 'photos', 'sponsors']);
+    if (result.ok === false) return result;
+    if (result.issues.length > 0) return { ok: false, issues: result.issues };
+    return { ok: true, value: { version: 1, ...result.lists } };
+}
+
+/**
+ * La pagina di un evento speciale: le stesse liste di un'edizione senza gli
+ * sponsor, piu l'id Sessionize da cui si importa l'agenda. Titolo, data e
+ * luogo non stanno qui: sono quelli dell'evento in events.json.
+ */
+export function validateEventPage(input) {
+    const result = validateContentLists(input, ['tracks', 'speakers', 'sessions', 'photos']);
+    if (result.ok === false) return result;
+
+    const id = sessionizeId(result.issues, 'sessionizeId', input.sessionizeId);
+    if (result.issues.length > 0) return { ok: false, issues: result.issues };
+    return { ok: true, value: compact({ version: 1, sessionizeId: id, ...result.lists }) };
+}
+
+/** L'id di un evento, che finisce nel nome del blob della sua pagina. */
+export function isEventId(value) {
+    return typeof value === 'string' && ID_PATTERN.test(value);
 }

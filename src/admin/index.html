@@ -39,7 +39,7 @@
     <main class="admin-main">
         <h1 class="admin-title">Gestione contenuti</h1>
         <p class="admin-subtitle">
-            Da qui si modificano team, sponsor, eventi, le edizioni di Global Azure e i contenuti della home mostrati sul sito pubblico.
+            Da qui si modificano team, sponsor, eventi, le edizioni di Global Azure, le pagine degli eventi speciali e i contenuti della home mostrati sul sito pubblico.
             Gli eventi si importano dal link della loro pagina su Luma o Meetup, e da
             <strong>Promemoria</strong> si ricordano sui canali social.
         </p>
@@ -62,6 +62,10 @@
             <button type="button" class="admin-tab" role="tab" id="tab-global-azure"
                     data-tab="global-azure" aria-controls="panel-global-azure" aria-selected="false" tabindex="-1">
                 <i class="bi bi-cloud-sun" aria-hidden="true"></i> Global Azure
+            </button>
+            <button type="button" class="admin-tab" role="tab" id="tab-pagine-evento"
+                    data-tab="pagine-evento" aria-controls="panel-pagine-evento" aria-selected="false" tabindex="-1">
+                <i class="bi bi-easel" aria-hidden="true"></i> Pagine evento
             </button>
             <button type="button" class="admin-tab" role="tab" id="tab-home"
                     data-tab="home" aria-controls="panel-home" aria-selected="false" tabindex="-1">
@@ -413,6 +417,154 @@
 
             <p class="editor-empty ga-block" id="ga-edition-none" hidden>
                 Crea e salva un'edizione qui sopra per gestirne agenda, foto e sponsor.
+            </p>
+        </section>
+
+        <!-- ================= PAGINE EVENTO ================= -->
+        <section class="admin-panel" id="panel-pagine-evento" role="tabpanel" aria-labelledby="tab-pagine-evento" tabindex="0" hidden>
+
+            <!-- ----- Contenuti della pagina dell'evento scelto ----- -->
+            <div class="admin-placeholder ga-block" id="ep-loading">
+                <i class="bi bi-hourglass-split" aria-hidden="true"></i>
+                <strong>Carico la pagina dell'evento...</strong>
+            </div>
+
+            <div class="editor ga-block" id="ep-editor" hidden>
+                <header class="ga-block-header ga-block-header-split">
+                    <div>
+                        <h2 class="ga-block-title"><i class="bi bi-easel" aria-hidden="true"></i> Pagina dell'evento</h2>
+                        <p class="ga-block-note">
+                            Sessioni, speaker e foto dell'evento scelto, sulla sua pagina <a id="ep-public-link" href="/eventi/" target="_blank" rel="noopener">sul sito</a>.
+                            Titolo, data, luogo e link di iscrizione sono quelli della scheda Eventi.
+                        </p>
+                    </div>
+                    <label class="ga-year-picker">
+                        <span>Evento</span>
+                        <select id="ep-event"></select>
+                    </label>
+                </header>
+
+                <div class="editor-bar">
+                    <div class="editor-actions">
+                        <button type="button" class="editor-btn editor-btn-primary" id="ep-save">
+                            <i class="bi bi-cloud-arrow-up" aria-hidden="true"></i> Salva e pubblica
+                        </button>
+                        <button type="button" class="editor-btn" id="ep-reload">
+                            <i class="bi bi-arrow-clockwise" aria-hidden="true"></i> Ricarica
+                        </button>
+                    </div>
+                    <p class="editor-state" id="ep-state" role="status" aria-live="polite"></p>
+                </div>
+
+                <div class="editor-alert" id="ep-alert" hidden></div>
+
+                <div class="ga-subtabs" role="tablist" aria-label="Contenuti della pagina">
+                    <button type="button" class="ga-subtab" role="tab" aria-selected="true" data-ga-section="sessions">
+                        <i class="bi bi-calendar3-week" aria-hidden="true"></i> Agenda <span class="ga-count" data-ga-count="sessions">0</span>
+                    </button>
+                    <button type="button" class="ga-subtab" role="tab" aria-selected="false" tabindex="-1" data-ga-section="speakers">
+                        <i class="bi bi-mic" aria-hidden="true"></i> Speaker <span class="ga-count" data-ga-count="speakers">0</span>
+                    </button>
+                    <button type="button" class="ga-subtab" role="tab" aria-selected="false" tabindex="-1" data-ga-section="tracks">
+                        <i class="bi bi-signpost-split" aria-hidden="true"></i> Tracce <span class="ga-count" data-ga-count="tracks">0</span>
+                    </button>
+                    <button type="button" class="ga-subtab" role="tab" aria-selected="false" tabindex="-1" data-ga-section="photos">
+                        <i class="bi bi-images" aria-hidden="true"></i> Foto <span class="ga-count" data-ga-count="photos">0</span>
+                    </button>
+                </div>
+
+                <!-- Agenda -->
+                <section class="ga-section" data-ga-panel="sessions">
+                    <div class="editor-import" id="ep-sessionize">
+                        <label class="editor-import-label" for="ep-sessionize-id">
+                            <i class="bi bi-cloud-download" aria-hidden="true"></i> Importa agenda e speaker da Sessionize
+                        </label>
+                        <div class="editor-import-row">
+                            <div class="field">
+                                <input type="text" id="ep-sessionize-id" autocomplete="off" spellcheck="false"
+                                       placeholder="id dell'endpoint, per esempio dtzcs2li">
+                            </div>
+                            <button type="button" class="editor-btn editor-btn-primary" id="ep-sessionize-btn">
+                                <i class="bi bi-download" aria-hidden="true"></i> <span data-import-label>Importa</span>
+                            </button>
+                        </div>
+                        <p class="field-note">
+                            L'id si trova in Sessionize, alla voce <strong>API / Embed</strong> dell'evento. Tracce, speaker e
+                            sessioni gia in lista si aggiornano, le nuove si aggiungono; quelle inserite a mano restano
+                            come sono. Niente finisce sul sito finche non premi <strong>Salva e pubblica</strong>.
+                        </p>
+                        <p class="field-error" id="ep-sessionize-error" hidden></p>
+                    </div>
+
+                    <div class="ga-toolbar">
+                        <button type="button" class="editor-btn" data-add="sessions">
+                            <i class="bi bi-plus-square" aria-hidden="true"></i> Aggiungi sessione
+                        </button>
+                        <label class="ga-filter">
+                            <span>Traccia</span>
+                            <select id="ep-session-filter"><option value="">Tutte</option></select>
+                        </label>
+                    </div>
+
+                    <ol class="editor-list" data-list="sessions" data-template="ga-session-template"></ol>
+                    <p class="editor-empty" data-empty="sessions" hidden>
+                        Nessuna sessione. Importa da Sessionize oppure usa <strong>Aggiungi sessione</strong>.
+                    </p>
+                </section>
+
+                <!-- Speaker -->
+                <section class="ga-section" data-ga-panel="speakers" hidden>
+                    <div class="ga-toolbar">
+                        <button type="button" class="editor-btn" data-add="speakers">
+                            <i class="bi bi-person-plus" aria-hidden="true"></i> Aggiungi speaker
+                        </button>
+                        <label class="ga-filter ga-filter-grow">
+                            <span>Cerca</span>
+                            <input type="search" id="ep-speaker-search" placeholder="Nome o azienda" autocomplete="off">
+                        </label>
+                    </div>
+                    <ol class="editor-list" data-list="speakers" data-template="ga-speaker-template"></ol>
+                    <p class="editor-empty" data-empty="speakers" hidden>Nessuno speaker.</p>
+                </section>
+
+                <!-- Tracce -->
+                <section class="ga-section" data-ga-panel="tracks" hidden>
+                    <div class="ga-toolbar">
+                        <button type="button" class="editor-btn" data-add="tracks">
+                            <i class="bi bi-plus-square" aria-hidden="true"></i> Aggiungi traccia
+                        </button>
+                    </div>
+                    <ol class="editor-list" data-list="tracks" data-template="ga-track-template"></ol>
+                    <p class="editor-empty" data-empty="tracks" hidden>Nessuna traccia.</p>
+                    <p class="editor-hint">L'ordine delle tracce e l'ordine delle colonne dell'agenda sul sito.</p>
+                </section>
+
+                <!-- Foto -->
+                <section class="ga-section" data-ga-panel="photos" hidden>
+                    <label class="ga-dropzone" id="ep-photo-drop">
+                        <input type="file" id="ep-photo-input" multiple hidden
+                               accept="image/jpeg,image/png,image/webp">
+                        <i class="bi bi-cloud-arrow-up" aria-hidden="true"></i>
+                        <strong>Trascina qui le foto, oppure clicca per sceglierle</strong>
+                        <span>JPEG, PNG o WebP di qualunque dimensione: vengono ridotte nel browser a 2000 px, con miniatura.</span>
+                    </label>
+                    <div class="ga-progress" id="ep-photo-progress" hidden>
+                        <div class="ga-progress-bar"><span id="ep-photo-progress-bar"></span></div>
+                        <p id="ep-photo-progress-text" role="status" aria-live="polite"></p>
+                    </div>
+                    <ol class="editor-list ga-photo-grid" data-list="photos" data-template="ga-photo-template"></ol>
+                    <p class="editor-empty" data-empty="photos" hidden>Nessuna foto per questo evento.</p>
+                    <p class="editor-hint">
+                        La stella mette una foto <strong>in evidenza</strong>: nella galleria occupa piu spazio.
+                        L'ordine qui e l'ordine della galleria.
+                    </p>
+                </section>
+
+            </div>
+
+            <p class="editor-empty ga-block" id="ep-none" hidden>
+                Nessun evento ha una pagina dedicata. Nella scheda <strong>Eventi</strong> spunta
+                <strong>Pagina dedicata</strong> su un evento e salva: qui potrai aggiungerne sessioni e foto.
             </p>
         </section>
 
@@ -919,6 +1071,7 @@
                         <span data-preview="when"></span>
                     </span>
                     <span class="editor-flag editor-flag-muted" data-preview="past" hidden>passato</span>
+                    <span class="editor-flag" data-preview="featured" hidden>pagina dedicata</span>
                     <span class="editor-flag" data-preview="hidden" hidden>non mostrato</span>
                     <i class="bi bi-chevron-down editor-chevron" aria-hidden="true"></i>
                 </summary>
@@ -1027,6 +1180,13 @@
                             <input type="checkbox" data-field="active">
                             Mostrato sul sito
                         </label>
+                        <label class="field-check">
+                            <input type="checkbox" data-field="featured">
+                            Pagina dedicata
+                        </label>
+                        <button type="button" class="editor-btn" data-open-event-page hidden>
+                            <i class="bi bi-easel" aria-hidden="true"></i> Sessioni e foto
+                        </button>
 
                         <div class="editor-buttons">
                             <button type="button" class="icon-btn icon-btn-danger" data-action="remove" title="Elimina">
