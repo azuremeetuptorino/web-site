@@ -285,6 +285,62 @@ per app: dal portale della SWA **Custom domains > Add**, poi le istruzioni DNS
 viene emesso e rinnovato da Azure. In quel caso il login admin funzionerebbe
 anche dal dominio custom.
 
+## 7. Sito Global Azure (secondo hostname, stessa SWA)
+
+Il sito di Global Azure Torino non e un deploy a parte: e la pagina
+`/global-azure/` della stessa SWA, servita alla radice di un hostname dedicato
+dal Front Door `afd-meetup`. Sull'endpoint `torinomeetup` ci sono due route con
+pattern `/*`, distinte per dominio:
+
+| Route | Domini | Rule set |
+|---|---|---|
+| `torinomeetup` | `torino.azuremeetup.it` | nessuno |
+| `global-azure` | hostname di default `torinomeetup-ffc6avhbfjg7frhb.z03.azurefd.net` (+ il dominio definitivo, quando ci sara) | `globalazure` |
+
+Entrambe inoltrano in HTTPS all'origin group `swa-meetup`, senza cache. La rule
+set `globalazure` ha una sola regola, `RootToGlobalAzure`: se il path e la
+radice (`/`) lo riscrive in `/global-azure/`. Tutto il resto passa invariato:
+e indispensabile, perche la pagina referenzia CSS, JS e dati con percorsi
+assoluti (`/assets/...`), che con un *origin path* sulla route si romperebbero.
+Conseguenza: sull'hostname Global Azure `/eventi/` e gli altri percorsi del
+sito principale restano raggiungibili.
+
+L'hostname di default dell'endpoint e l'**anteprima permanente**:
+`https://torinomeetup-ffc6avhbfjg7frhb.z03.azurefd.net/` mostra la pagina
+Global Azure. Il sito principale non lo usa (il DNS pubblico arriva con host
+`torino.azuremeetup.it`).
+
+### Quando il dominio definitivo esiste
+
+```bash
+S=d1c41152-00b1-441b-bbbc-a41ea0dbaefc
+AFD="--subscription $S -g rg-meetuptorino-p --profile-name afd-meetup"
+HOST=<hostname definitivo>
+
+az afd custom-domain create $AFD --custom-domain-name global-azure --host-name "$HOST" \
+  --certificate-type ManagedCertificate --minimum-tls-version TLS12
+az afd custom-domain show $AFD --custom-domain-name global-azure --query validationProperties
+```
+
+Nel DNS del dominio, due record:
+
+1. `TXT  _dnsauth.<hostname>` = il `validationToken` restituito sopra. Il token
+   scade dopo 7 giorni: se nel frattempo non e stato validato, rigenerarlo con
+   `az afd custom-domain regenerate-validation-token $AFD --custom-domain-name global-azure`.
+2. `CNAME <hostname>` -> `torinomeetup-ffc6avhbfjg7frhb.z03.azurefd.net`.
+
+Quando `domainValidationState` e `Approved`, agganciare il dominio alla route:
+
+```bash
+az afd route update $AFD --endpoint-name torinomeetup --route-name global-azure \
+  --formatted-custom-domains "[{id:/subscriptions/$S/resourceGroups/rg-meetuptorino-p/providers/Microsoft.Cdn/profiles/afd-meetup/customDomains/global-azure}]"
+```
+
+Il certificato gestito viene emesso da Azure in qualche minuto; la propagazione
+della route fino a 20-30. Verifica: `https://<hostname>/` deve essere identica
+a `https://<hostname SWA>/global-azure/`, e `https://<hostname>/assets/css/global-azure.css`
+deve rispondere 200.
+
 ## Autenticazione
 
 Il provider Entra ID **preconfigurato** (`/.auth/login/aad`) è multi-tenant e
