@@ -711,6 +711,10 @@ section.ga-teaser-section { padding: 1rem 1.5rem 3rem; background: var(--bg-ligh
     color: transparent;
 }
 
+/* Evento speciale: giorno e mese al posto dell'anno. */
+.ga-teaser-date { display: flex; flex-direction: column; align-items: center; min-width: 2.2ch; }
+.ga-teaser-date small { font-size: 0.3em; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; line-height: 1.4; }
+
 .ga-teaser-body { display: flex; flex-direction: column; gap: 0.3rem; flex: 1; min-width: 0; }
 
 .ga-teaser-eyebrow {

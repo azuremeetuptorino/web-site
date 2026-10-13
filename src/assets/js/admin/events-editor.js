@@ -97,6 +97,7 @@ export const eventsEditor = createEditorCore({
                 field(row, 'venue.address').value = event.venue?.address ?? '';
                 field(row, 'venue.city').value = event.venue?.city ?? '';
                 field(row, 'active').checked = event.active !== false;
+                field(row, 'featured').checked = event.featured === true;
             },
 
             collect(row, index, { value, field }) {
@@ -115,7 +116,8 @@ export const eventsEditor = createEditorCore({
                         address: value(row, 'venue.address'),
                         city: value(row, 'venue.city')
                     },
-                    active: field(row, 'active').checked
+                    active: field(row, 'active').checked,
+                    featured: field(row, 'featured').checked
                 };
             },
 
@@ -133,6 +135,11 @@ export const eventsEditor = createEditorCore({
                 if (thumb.getAttribute('src') !== wanted) thumb.setAttribute('src', wanted);
 
                 preview(row, 'hidden').hidden = field(row, 'active').checked;
+                // Sessioni e foto si gestiscono nella scheda Pagine evento, per
+                // un evento gia salvato: prima la pagina non esiste.
+                const featured = field(row, 'featured').checked;
+                preview(row, 'featured').hidden = !featured;
+                row.querySelector('[data-open-event-page]').hidden = !featured || row.dataset.new === 'true';
                 const reference = fromLocalInput(value(row, 'endTime')) || start;
                 preview(row, 'past').hidden = !(reference && Date.parse(reference) < Date.now());
             }
@@ -222,7 +229,12 @@ function place(event, source) {
 
     let row;
     if (existing) {
-        row = eventsEditor.refill(existing, { ...event, id: eventsEditor.value(existing, 'id') });
+        // La pagina dedicata e una scelta nostra: la piattaforma non ne sa niente.
+        row = eventsEditor.refill(existing, {
+            ...event,
+            id: eventsEditor.value(existing, 'id'),
+            featured: eventsEditor.field(existing, 'featured').checked
+        });
         eventsEditor.setAlert(
             'warn',
             `«${event.title ?? event.id}» era gia in lista: ho aggiornato la scheda con i dati letti da ${platform}. Controlla e poi salva.`

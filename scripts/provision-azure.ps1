@@ -31,7 +31,7 @@
 #>
 [CmdletBinding(SupportsShouldProcess = $true)]
 param(
-    [string] $ResourceGroup = 'rg-lrizzi-meetup',
+    [string] $ResourceGroup = 'rg-meetuptorino-p',
     [string] $Location = 'westeurope',
     [string] $StaticWebAppName = 'swa-meetup',
 

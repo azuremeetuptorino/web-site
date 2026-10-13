@@ -23,6 +23,7 @@ Branch **`feat/azure-static-web-apps`**, mai pushato.
 | P5b | Cinque eventi in home, archivio filtrabile su `/eventi/` | fatto, **guardato in un browser** |
 | P5c | Promemoria social dall'admin | fatto, 286 test verdi; **da guardare in un browser** |
 | P5d | Global Azure Torino: pagina `/global-azure/` e tab admin | fatto, 316 test verdi, **guardato in un browser** contro Azurite |
+| P5e | Pagine degli eventi speciali `/evento/?id=` e banner in home | fatto, 338 test verdi, **guardato in un browser** contro Azurite |
 | P6 | Telemetria, SEO, accessibilità | da fare |
 
 ## Cosa è entrato con la P3
@@ -377,6 +378,40 @@ dell'admin.
   (il seed non sovrascrive i master esistenti).
 - I dati 2024, 2025 e delle edizioni online sono parziali: date, numeri e
   copertine sono da completare dall'admin.
+
+## Cosa è entrato con la P5e
+
+Alcuni eventi meritano una pagina come Global Azure, ma senza edizioni: una
+sola pagina con **sessioni** (e i loro speaker) e **foto**. Se uno di questi è
+in arrivo, il banner della home porta a lui invece che a Global Azure.
+
+**Le decisioni, con il perché.**
+
+| Tema | Scelta | Perché non l'altra |
+|---|---|---|
+| Dati base | titolo, data, luogo, immagine e iscrizione restano nell'evento di `events.json`, con la spunta `featured` | un indice a parte duplicherebbe quello che l'import da Luma/Meetup già scrive |
+| Contenuti | `event-pages/<id evento>.json`: tracce, speaker, sessioni, foto, `sessionizeId` | lo stesso schema di un'edizione GA, senza sponsor: stessi validatori, stessi render |
+| URL | `/evento/?id=<id>`, come `?anno=` di Global Azure | una route `/eventi/<slug>/` vorrebbe un rewrite in `staticwebapp.config.json` |
+| Banner | vince l'evento speciale non finito più vicino; Global Azure resta se è in arrivo prima o se è il suo giorno | con nessun evento speciale in arrivo il comportamento è quello di prima |
+| Card | la card e la "Prossimo evento" della hero portano alla pagina sul sito | da lì c'è comunque "Iscriviti" verso Luma o Meetup |
+
+**I file.**
+
+- `api/src/lib/validate.js`: `validateContentLists`, condiviso da
+  `validateGlobalAzureEdition` e dal nuovo `validateEventPage`. `featured` in
+  `validateEvent` (si salva solo se vero). `isEventId`.
+- `api/src/functions/event-pages.js`: `GET/PUT /api/event-pages/{id}`. L'import
+  Sessionize riusa `POST /api/global-azure/sessionize`.
+- `src/assets/js/content-sections.js`: agenda, filtro tracce, dialog, galleria e
+  lightbox, usciti da `global-azure-page.js` e usati da tutte e due le pagine.
+- `src/assets/js/render-featured.js`: `pickHomeBanner`, `renderFeaturedTeaser`,
+  la hero della pagina. `src/evento/index.html` e `event-page.js`.
+- `main.js`: `events.json` si scarica una volta per il carosello e il banner.
+- Admin: `admin/content-editor.js` è l'editor dei contenuti uscito da
+  `global-azure-editor.js`, con gli id di contorno per prefisso (`ga-`, `ep-`).
+  Il tab **Pagine evento** (`event-pages-editor.js`) lo usa sugli eventi
+  `featured`. Nella scheda Eventi: spunta "Pagina dedicata" e bottone "Sessioni
+  e foto". Reimportare da Luma o Meetup non toglie la spunta.
 
 ## Passata sul mobile
 

@@ -137,6 +137,16 @@ section.ga-hero {
     font-variant-numeric: tabular-nums;
 }
 
+/* Pagina di un evento speciale: al posto dell'anno c'e il titolo, che e piu lungo. */
+.ga-hero-year.ga-hero-name {
+    font-size: clamp(2.6rem, 8vw, 6rem);
+    letter-spacing: -0.04em;
+    line-height: 1;
+    margin-left: 0;
+    max-width: 18ch;
+    overflow-wrap: anywhere;
+}
+
 .ga-hero-tagline {
     max-width: 38ch;
     font-size: clamp(1.05rem, 1.8vw, 1.35rem);

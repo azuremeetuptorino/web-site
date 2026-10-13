@@ -95,6 +95,14 @@ export function formatWhere(event) {
 }
 
 /**
+ * La pagina sul sito di un evento speciale. Gli altri eventi non ne hanno una:
+ * la loro pagina e quella su Luma o Meetup.
+ */
+export function eventPageUrl(event) {
+    return `/evento/?id=${encodeURIComponent(event.id)}`;
+}
+
+/**
  * Una card. `excerpt: true` aggiunge la descrizione: in griglia c'e lo spazio
  * per dire di cosa si parla, nel carosello no.
  */
@@ -103,8 +111,10 @@ export function eventCard(event, now = Date.now(), { excerpt = false } = {}) {
     const title = escapeHtml(event.title);
     const image = escapeHtml(safeUrl(event.imageUrl, PLACEHOLDER_EVENT));
     const badge = past ? 'past' : 'upcoming';
-    const url = safeUrl(event.eventUrl, '#');
-    const external = url !== '#' ? ' target="_blank" rel="noopener noreferrer"' : '';
+    // Un evento speciale porta alla sua pagina, dove c'e anche il link per
+    // iscriversi; gli altri direttamente a Luma o Meetup.
+    const url = event.featured ? eventPageUrl(event) : safeUrl(event.eventUrl, '#');
+    const external = !event.featured && url !== '#' ? ' target="_blank" rel="noopener noreferrer"' : '';
     const when = formatWhen(event);
     const where = formatWhere(event);
 

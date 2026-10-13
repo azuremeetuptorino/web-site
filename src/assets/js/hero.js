@@ -1,5 +1,5 @@
 import { escapeHtml, safeUrl } from './dom.js';
-import { visibleEvents, isPast, formatWhen, formatWhere } from './render-events.js';
+import { visibleEvents, isPast, formatWhen, formatWhere, eventPageUrl } from './render-events.js';
 
 /**
  * I pezzi animati della hero in home: la parola che si scrive da sola, la card
@@ -143,7 +143,9 @@ export function renderNextEvent(card, payload, now = Date.now()) {
         return false;
     }
 
-    const url = safeUrl(next.eventUrl, '');
+    // Un evento speciale ha la sua pagina sul sito: si resta qui.
+    const url = next.featured ? '' : safeUrl(next.eventUrl, '');
+    if (next.featured) card.href = eventPageUrl(next);
     if (url) {
         card.href = url;
         card.target = '_blank';
