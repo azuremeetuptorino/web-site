@@ -242,11 +242,7 @@ Azure non genera un secondo workflow accanto al nostro.
 | P5c | Promemoria social dall'admin (Telegram via Bot API, gli altri copia e segna) | fatto |
 | P6 | Telemetria, SEO, accessibilità | da fare |
 
-## Riprendere il lavoro
 
-[docs/stato-lavori.md](docs/stato-lavori.md) tiene il punto della situazione:
-cosa e fatto, le decisioni gia prese, i bloccanti aperti e il prossimo passo.
-Il piano completo e in [docs/piano.md](docs/piano.md).
 
 ## Licenza
 
