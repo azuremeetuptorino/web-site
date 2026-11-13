@@ -168,7 +168,8 @@ una scorciatoia che rende il lavoro a mano quasi nullo.
   scheda esistente** invece di creare un doppione, conservando l'id salvato.
 - Schema: `id`, `title`, `dateTime` e `endTime` **in UTC** sul blob, `timezone`
   (default `Europe/Rome`) per scrivere l'ora italiana a chi guarda da altrove,
-  `isOnline`, `eventUrl`, `imageUrl`, `excerpt` (max 300), `venue
+  `isOnline`, `eventUrl`, `imageUrl` (card), `coverUrl` (sfondo della pagina
+  dedicata, se vuoto si usa `imageUrl`), `excerpt` (max 300), `venue
   {name,address,city}`, `active`. Via `status`, `going`, `group`, `source`.
 - `editor-core.js` ora **espone** `add`, `refill`, `rows`, `value`, `setAlert`,
   `clearAlert`, `markDirty`, `handleError`: servono alla barra di importazione,

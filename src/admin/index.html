@@ -1106,7 +1106,7 @@
                     </div>
 
                     <div class="field field-wide">
-                        <label data-label-for="imageUrl">Immagine</label>
+                        <label data-label-for="imageUrl">Immagine della card</label>
                         <div class="upload-row">
                             <input type="url" data-field="imageUrl" autocomplete="off" spellcheck="false"
                                    placeholder="https://...">
@@ -1122,6 +1122,25 @@
                             PNG, JPEG o WebP orizzontale, max 512 KB.
                         </span>
                         <span class="field-error" data-error-for="imageUrl" hidden></span>
+                    </div>
+
+                    <div class="field field-wide" data-cover-field hidden>
+                        <label data-label-for="coverUrl">Sfondo della pagina</label>
+                        <div class="upload-row">
+                            <input type="url" data-field="coverUrl" autocomplete="off" spellcheck="false"
+                                   placeholder="https://...">
+                            <label class="upload-btn">
+                                <i class="bi bi-upload" aria-hidden="true"></i>
+                                <span data-upload-label>Carica</span>
+                                <input type="file" hidden data-upload="event" data-upload-target="coverUrl"
+                                       accept="image/png,image/jpeg,image/webp,image/svg+xml">
+                            </label>
+                        </div>
+                        <span class="field-note">
+                            Lo sfondo della hero nella pagina dedicata. Vuoto: si usa l'immagine della card.
+                            PNG, JPEG o WebP orizzontale e largo, max 512 KB.
+                        </span>
+                        <span class="field-error" data-error-for="coverUrl" hidden></span>
                     </div>
 
                     <div class="field field-wide">
