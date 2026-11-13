@@ -68,9 +68,6 @@ test('sull\'hostname dedicato i link del sito puntano al dominio principale', ()
     assert.equal(view.dedicatedHostHref('/'), 'https://torino.azuremeetup.it/');
     assert.equal(view.dedicatedHostHref('/#staff'), 'https://torino.azuremeetup.it/#staff');
     assert.equal(view.dedicatedHostHref('/eventi/'), 'https://torino.azuremeetup.it/eventi/');
-    assert.equal(view.dedicatedHostHref('/global-azure/'), '/');
-    assert.equal(view.dedicatedHostHref('/global-azure/?anno=2025'), '/?anno=2025');
-    assert.equal(view.dedicatedHostHref('/global-azure-x/'), 'https://torino.azuremeetup.it/global-azure-x/');
     assert.equal(view.dedicatedHostHref('#agenda'), '#agenda');
     assert.equal(view.dedicatedHostHref('https://example.com/'), 'https://example.com/');
 });

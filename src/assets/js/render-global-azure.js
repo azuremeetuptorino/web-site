@@ -45,12 +45,10 @@ export function isDedicatedHost(hostname) {
 
 /**
  * Sull'hostname dedicato il Front Door riscrive solo `/` in `/global-azure/`:
- * i percorsi del sito principale vanno portati sul suo dominio, e il link a
- * Global Azure resta sulla radice dell'hostname dedicato.
+ * i percorsi del sito principale vanno portati sul suo dominio.
  */
 export function dedicatedHostHref(href) {
     if (!href.startsWith('/') || href.startsWith('//')) return href;
-    if (/^\/global-azure\/?(?=[?#]|$)/.test(href)) return href.replace(/^\/global-azure\/?/, '/');
     return `${MAIN_SITE_URL}${href}`;
 }
 

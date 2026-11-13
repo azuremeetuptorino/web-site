@@ -306,8 +306,9 @@ Conseguenza: sull'hostname Global Azure `/eventi/` e gli altri percorsi del
 sito principale restano raggiungibili. I link della pagina (logo, menu,
 "Scrivici") pero non ci portano: su un hostname che non e
 `torino.azuremeetup.it`, `*.azurestaticapps.net` o locale,
-`global-azure-page.js` li riscrive verso `https://torino.azuremeetup.it/...`,
-e la voce "Global Azure" verso la radice dell'hostname dedicato.
+`global-azure-page.js` li riscrive verso `https://torino.azuremeetup.it/...`.
+La voce "Global Azure" del menu e il banner in home puntano invece sempre a
+`https://torino.globalazure.it/`, scritto per esteso nell'HTML.
 
 L'hostname di default dell'endpoint e l'**anteprima permanente**:
 `https://torinomeetup-ffc6avhbfjg7frhb.z03.azurefd.net/` mostra la pagina
