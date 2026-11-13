@@ -37,6 +37,14 @@ export const PUBLIC_DATA_BASE = IS_LOCAL
 /** Copia imbarcata nel deploy, usata se la sorgente primaria fallisce. */
 export const LOCAL_DATA_BASE = '/data';
 
+/**
+ * Dominio del sito principale. La pagina Global Azure e servita anche alla
+ * radice di un hostname dedicato (torino.globalazure.it, vedi docs/deploy.md):
+ * li i link al resto del sito devono puntare qui.
+ */
+export const MAIN_SITE_HOST = 'torino.azuremeetup.it';
+export const MAIN_SITE_URL = `https://${MAIN_SITE_HOST}`;
+
 /** Link esterni usati negli stati di errore e nelle CTA. */
 export const MEETUP_GROUP_URL = 'https://www.meetup.com/it-IT/meetup-microsoft-azure-torino/';
 export const SESSIONIZE_URL = 'https://sessionize.com/azure-meetup-torino';

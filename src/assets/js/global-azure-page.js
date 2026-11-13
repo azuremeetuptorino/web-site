@@ -6,7 +6,8 @@ import { initEmailCopy } from './email-copy.js';
 import {
     visibleEditions, pickEdition, editionPhase,
     renderHeroMeta, renderHeroActions, statsFor, renderStats, renderEditionSwitch,
-    renderSpeakers, renderGaSponsors, renderEditionCards, sectionOrder, editionStart
+    renderSpeakers, renderGaSponsors, renderEditionCards, sectionOrder, editionStart,
+    isDedicatedHost, dedicatedHostHref
 } from './render-global-azure.js';
 import { initContentSections, normalizeContent } from './content-sections.js';
 import { initHeroNetwork } from './hero-network.js';
@@ -269,6 +270,12 @@ window.addEventListener('popstate', () => {
 /* ==========================================================
    AVVIO
    ========================================================== */
+
+if (isDedicatedHost(location.hostname)) {
+    for (const link of document.querySelectorAll('a[href^="/"]')) {
+        link.setAttribute('href', dedicatedHostHref(link.getAttribute('href')));
+    }
+}
 
 loadCollection('site')
     .then((payload) => renderSite(document, payload, { title: false }))
