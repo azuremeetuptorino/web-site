@@ -91,6 +91,7 @@ export const eventsEditor = createEditorCore({
                 field(row, 'timezone').value = event.timezone ?? DEFAULT_TIMEZONE;
                 field(row, 'eventUrl').value = event.eventUrl ?? '';
                 field(row, 'imageUrl').value = event.imageUrl ?? '';
+                field(row, 'coverUrl').value = event.coverUrl ?? '';
                 field(row, 'excerpt').value = event.excerpt ?? '';
                 field(row, 'isOnline').checked = event.isOnline === true;
                 field(row, 'venue.name').value = event.venue?.name ?? '';
@@ -110,6 +111,7 @@ export const eventsEditor = createEditorCore({
                     isOnline: field(row, 'isOnline').checked,
                     eventUrl: value(row, 'eventUrl'),
                     imageUrl: value(row, 'imageUrl'),
+                    coverUrl: value(row, 'coverUrl'),
                     excerpt: value(row, 'excerpt'),
                     venue: {
                         name: value(row, 'venue.name'),
@@ -139,6 +141,9 @@ export const eventsEditor = createEditorCore({
                 // un evento gia salvato: prima la pagina non esiste.
                 const featured = field(row, 'featured').checked;
                 preview(row, 'featured').hidden = !featured;
+                // Lo sfondo serve solo a chi ha una pagina, ma un valore gia
+                // salvato resta visibile per poterlo togliere.
+                row.querySelector('[data-cover-field]').hidden = !featured && !value(row, 'coverUrl');
                 row.querySelector('[data-open-event-page]').hidden = !featured || row.dataset.new === 'true';
                 const reference = fromLocalInput(value(row, 'endTime')) || start;
                 preview(row, 'past').hidden = !(reference && Date.parse(reference) < Date.now());
@@ -229,10 +234,12 @@ function place(event, source) {
 
     let row;
     if (existing) {
-        // La pagina dedicata e una scelta nostra: la piattaforma non ne sa niente.
+        // La pagina dedicata e il suo sfondo sono scelte nostre: la piattaforma
+        // non ne sa niente.
         row = eventsEditor.refill(existing, {
             ...event,
             id: eventsEditor.value(existing, 'id'),
+            coverUrl: eventsEditor.value(existing, 'coverUrl'),
             featured: eventsEditor.field(existing, 'featured').checked
         });
         eventsEditor.setAlert(

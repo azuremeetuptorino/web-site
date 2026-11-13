@@ -76,7 +76,7 @@ function renderHead(event, phase) {
     el.actions.innerHTML = renderEventHeroActions(event, phase, content);
     el.hero.dataset.phase = phase;
 
-    const cover = safeUrl(event.imageUrl, '');
+    const cover = safeUrl(event.coverUrl, '') || safeUrl(event.imageUrl, '');
     el.hero.style.setProperty('--ga-cover', cover ? `url("${cover.replace(/"/g, '%22')}")` : 'none');
     el.hero.classList.toggle('has-cover', Boolean(cover));
 

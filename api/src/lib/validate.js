@@ -627,7 +627,10 @@ function validateEvent(issues, path, value, seenIds) {
         // La pagina dell'evento su Luma o Meetup: e dove ci si iscrive. Senza,
         // la card non e un link, ed e legittimo per un evento passato.
         eventUrl: webUrl(issues, `${path}.eventUrl`, value.eventUrl),
+        // imageUrl e la card, coverUrl lo sfondo della pagina dedicata: senza,
+        // la pagina usa imageUrl.
         imageUrl: webUrl(issues, `${path}.imageUrl`, value.imageUrl),
+        coverUrl: webUrl(issues, `${path}.coverUrl`, value.coverUrl),
         excerpt: text(issues, `${path}.excerpt`, value.excerpt, { max: EVENT_LIMITS.excerpt }),
         venue: validateVenue(issues, `${path}.venue`, value.venue),
         active: flag(issues, `${path}.active`, value.active),

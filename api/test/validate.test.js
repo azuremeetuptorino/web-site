@@ -370,7 +370,13 @@ test('eventi: due id uguali si scontrano', () => {
     assert.deepEqual(paths(result), ['events[1].id']);
 });
 
-test('eventi: eventUrl e imageUrl seguono le stesse regole delle altre URL', () => {
-    const result = validateEvents(eventDoc(event({ eventUrl: 'javascript:alert(1)', imageUrl: '//cdn.evil/x.png' })));
-    assert.deepEqual(paths(result), ['events[0].eventUrl', 'events[0].imageUrl']);
+test('eventi: eventUrl, imageUrl e coverUrl seguono le stesse regole delle altre URL', () => {
+    const result = validateEvents(eventDoc(event({ eventUrl: 'javascript:alert(1)', imageUrl: '//cdn.evil/x.png', coverUrl: 'data:image/png;base64,x' })));
+    assert.deepEqual(paths(result), ['events[0].eventUrl', 'events[0].imageUrl', 'events[0].coverUrl']);
+});
+
+test('eventi: coverUrl valida si conserva', () => {
+    const result = validateEvents(eventDoc(event({ coverUrl: 'https://cdn.example.com/sfondo.webp' })));
+    assert.equal(result.ok, true);
+    assert.equal(result.value.events[0].coverUrl, 'https://cdn.example.com/sfondo.webp');
 });
