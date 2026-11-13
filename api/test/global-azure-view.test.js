@@ -57,3 +57,20 @@ test('a edizione passata il primo bottone della hero porta alle foto', () => {
     assert.ok(html.indexOf('#foto') < html.indexOf('#agenda'));
     assert.match(html, /ga-btn-primary" href="#foto"/);
 });
+
+test('sull\'hostname dedicato i link del sito puntano al dominio principale', () => {
+    assert.equal(view.isDedicatedHost('torino.globalazure.it'), true);
+    assert.equal(view.isDedicatedHost('torinomeetup-ffc6avhbfjg7frhb.z03.azurefd.net'), true);
+    assert.equal(view.isDedicatedHost('torino.azuremeetup.it'), false);
+    assert.equal(view.isDedicatedHost('nice-sea-123.azurestaticapps.net'), false);
+    assert.equal(view.isDedicatedHost('localhost'), false);
+
+    assert.equal(view.dedicatedHostHref('/'), 'https://torino.azuremeetup.it/');
+    assert.equal(view.dedicatedHostHref('/#staff'), 'https://torino.azuremeetup.it/#staff');
+    assert.equal(view.dedicatedHostHref('/eventi/'), 'https://torino.azuremeetup.it/eventi/');
+    assert.equal(view.dedicatedHostHref('/global-azure/'), '/');
+    assert.equal(view.dedicatedHostHref('/global-azure/?anno=2025'), '/?anno=2025');
+    assert.equal(view.dedicatedHostHref('/global-azure-x/'), 'https://torino.azuremeetup.it/global-azure-x/');
+    assert.equal(view.dedicatedHostHref('#agenda'), '#agenda');
+    assert.equal(view.dedicatedHostHref('https://example.com/'), 'https://example.com/');
+});

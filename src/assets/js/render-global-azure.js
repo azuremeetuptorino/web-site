@@ -1,5 +1,5 @@
 import { escapeHtml, safeUrl } from './dom.js';
-import { PLACEHOLDER_AVATAR, PLACEHOLDER_LOGO, PLACEHOLDER_EVENT } from './config.js';
+import { PLACEHOLDER_AVATAR, PLACEHOLDER_LOGO, PLACEHOLDER_EVENT, MAIN_SITE_HOST, MAIN_SITE_URL } from './config.js';
 
 /**
  * Markup della pagina /global-azure/.
@@ -25,6 +25,34 @@ export const GA_TIERS = [
 const LANGUAGE = { it: 'Italiano', en: 'English' };
 
 const FULL_WIDTH = new Set(['keynote', 'plenary', 'service']);
+
+/* ==========================================================
+   HOSTNAME DEDICATO
+   ========================================================== */
+
+const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1', '[::1]']);
+
+/**
+ * Vero quando la pagina arriva da un hostname dedicato a Global Azure
+ * (torino.globalazure.it, l'anteprima *.azurefd.net): tutto tranne il dominio
+ * principale, il default della SWA e lo sviluppo locale.
+ */
+export function isDedicatedHost(hostname) {
+    return !LOCAL_HOSTS.has(hostname)
+        && hostname !== MAIN_SITE_HOST
+        && !hostname.endsWith('.azurestaticapps.net');
+}
+
+/**
+ * Sull'hostname dedicato il Front Door riscrive solo `/` in `/global-azure/`:
+ * i percorsi del sito principale vanno portati sul suo dominio, e il link a
+ * Global Azure resta sulla radice dell'hostname dedicato.
+ */
+export function dedicatedHostHref(href) {
+    if (!href.startsWith('/') || href.startsWith('//')) return href;
+    if (/^\/global-azure\/?(?=[?#]|$)/.test(href)) return href.replace(/^\/global-azure\/?/, '/');
+    return `${MAIN_SITE_URL}${href}`;
+}
 
 /* ==========================================================
    FORMATI
