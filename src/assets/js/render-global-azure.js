@@ -297,7 +297,19 @@ function renderDay(sessions, tracks, context) {
             html.push(`<div class="ga-slot" style="grid-row:${rowOf.get(session.start)}"><span>${escapeHtml(formatClock(session.start))}</span></div>`);
         }
         const row = rowOf.get(session.start);
-        const span = Math.max(1, starts.filter((start) => start >= session.start && start < session.end).length);
+        const track = context.tracksById.get(session.trackId);
+        const wide = FULL_WIDTH.has(session.kind) || !track;
+        const nextBlockingStart = sessions
+            .filter((candidate) => candidate.start > session.start)
+            .find((candidate) => {
+                const candidateTrack = context.tracksById.get(candidate.trackId);
+                const candidateWide = FULL_WIDTH.has(candidate.kind) || !candidateTrack;
+                return wide || candidateWide || candidate.trackId === session.trackId;
+            })?.start;
+        const occupiedUntil = nextBlockingStart && nextBlockingStart < session.end
+            ? nextBlockingStart
+            : session.end;
+        const span = Math.max(1, starts.filter((start) => start >= session.start && start < occupiedUntil).length);
         html.push(sessionCard(session, context, { row, span, column: columnOf.get(session.trackId) ?? '2 / -1' }));
     }
 

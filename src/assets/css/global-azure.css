@@ -693,17 +693,7 @@ button.ga-session:focus-visible { outline: 3px solid var(--azure-blue); outline-
 
     .ga-agenda-body { display: flex; flex-direction: column; gap: 0.7rem; }
 
-    .ga-slot {
-        position: sticky;
-        top: calc(var(--ga-header) + 52px);
-        z-index: 4;
-        margin-top: 0.6rem;
-        padding: 0.45rem 0;
-        border-top: none;
-        background: var(--bg-light);
-        font-size: 0.85rem;
-        color: var(--ga-blue);
-    }
+    .ga-slot { display: none; }
 
     .ga-session.is-filtered { display: none; }
 

@@ -71,3 +71,34 @@ test('sull\'hostname dedicato i link del sito puntano al dominio principale', ()
     assert.equal(view.dedicatedHostHref('#agenda'), '#agenda');
     assert.equal(view.dedicatedHostHref('https://example.com/'), 'https://example.com/');
 });
+
+test('le sessioni sovrapposte nella stessa traccia non invadono la riga successiva', () => {
+    const content = {
+        tracks: [{ id: 'main', name: 'Sala principale' }],
+        speakers: [],
+        sessions: [
+            { id: 'prima', title: 'Prima', start: '2026-12-11T14:25:00.000Z', end: '2026-12-11T14:55:00.000Z', trackId: 'main' },
+            { id: 'seconda', title: 'Seconda', start: '2026-12-11T14:50:00.000Z', end: '2026-12-11T15:25:00.000Z', trackId: 'main' }
+        ]
+    };
+
+    const first = view.renderAgenda(content).match(/<button[^>]+data-session="prima"[\s\S]*?<\/button>/)?.[0];
+    assert.match(first, /grid-row:1 \/ span 1/);
+});
+
+test('una sessione puo occupare piu righe se la traccia non ha una collisione', () => {
+    const content = {
+        tracks: [
+            { id: 'a', name: 'Sala A' },
+            { id: 'b', name: 'Sala B' }
+        ],
+        speakers: [],
+        sessions: [
+            { id: 'lunga', title: 'Lunga', start: '2026-12-11T09:00:00.000Z', end: '2026-12-11T10:00:00.000Z', trackId: 'a' },
+            { id: 'breve', title: 'Breve', start: '2026-12-11T09:30:00.000Z', end: '2026-12-11T10:00:00.000Z', trackId: 'b' }
+        ]
+    };
+
+    const long = view.renderAgenda(content).match(/<button[^>]+data-session="lunga"[\s\S]*?<\/button>/)?.[0];
+    assert.match(long, /grid-row:1 \/ span 2/);
+});
