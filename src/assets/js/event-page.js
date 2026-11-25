@@ -65,9 +65,17 @@ function orderSections(phase) {
 function renderHead(event, phase) {
     document.title = `${event.title} | Azure Meetup Torino`;
     const description = event.excerpt || `${event.title}: sessioni, speaker e foto.`;
+    const image = safeUrl(event.imageUrl, '/assets/img/placeholder-event.svg');
+    const shareImage = new URL(image, location.origin).href;
     document.querySelector('meta[name="description"]')?.setAttribute('content', description);
     document.querySelector('meta[property="og:title"]')?.setAttribute('content', event.title);
     document.querySelector('meta[property="og:description"]')?.setAttribute('content', description);
+    document.querySelector('meta[property="og:image"]')?.setAttribute('content', shareImage);
+    document.querySelector('meta[property="og:image:alt"]')?.setAttribute('content', event.title);
+    document.querySelector('meta[name="twitter:title"]')?.setAttribute('content', event.title);
+    document.querySelector('meta[name="twitter:description"]')?.setAttribute('content', description);
+    document.querySelector('meta[name="twitter:image"]')?.setAttribute('content', shareImage);
+    document.querySelector('meta[name="twitter:image:alt"]')?.setAttribute('content', event.title);
 
     el.name.textContent = event.title;
     el.tagline.textContent = event.excerpt ?? '';
